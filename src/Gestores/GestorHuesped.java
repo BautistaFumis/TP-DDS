@@ -5,6 +5,8 @@ import Excepciones.CamposObligatoriosException;
 import Excepciones.DocumentoDuplicadoException;
 import Persistencia.HuespedDAO;
 
+import java.util.List;
+
 public class GestorHuesped {
 
     private final HuespedDAO huespedDAO;
@@ -33,5 +35,15 @@ public class GestorHuesped {
     public void registrarHuespedAceptandoDuplicado(Huesped huesped) {
         // En este flujo no validamos la existencia, solo guardamos.
         huespedDAO.altaHuesped(huesped);
+    }
+    /**
+     * Orquesta la búsqueda de huéspedes según criterios.
+     * @param apellido Criterio para el apellido.
+     * @param nombre Criterio para el nombre.
+     * @return Lista de huéspedes encontrados.
+     */
+    public List<Huesped> buscarHuespedes(String apellido, String nombre) {
+        // La lógica de negocio aquí es simple: solo delegar al DAO.
+        return huespedDAO.buscarPorCriterios(apellido, nombre);
     }
 }

@@ -11,6 +11,7 @@ import Gestores.GestorUsuario; // Asumiendo que el gestor de usuario está en es
 import Persistencia.HuespedDAO;
 import Persistencia.HuespedDAOImpl;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -71,10 +72,11 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    System.out.println("Ya se encuentra autenticado.");
+                    System.out.println("Ya se encuentra autenticado."); // Esto no estabamos seguros de si ponerlo o no, porque la autenticacion se hace al ingresar a la aplicacion.
                     break;
                 case 2:
-                    System.out.println("Ejecutando CU02: Buscar Huésped (lógica no implementada)...");
+                    // Se llama al método que contiene la lógica del CU02
+                    ejecutarBusquedaHuesped(scanner, gestorHuesped);
                     break;
                 case 9:
                     // Se llama al método que contiene la lógica del CU09
@@ -142,7 +144,7 @@ public class Main {
             } catch (CamposObligatoriosException e) {
                 System.err.println("\nERROR: " + e.getMessage());
             } catch (DocumentoDuplicadoException e) {
-                System.err.println("\n⚠ ADVERTENCIA: " + e.getMessage());
+                System.err.println("\n ADVERTENCIA: " + e.getMessage());
                 System.out.print("¿Desea aceptarlo igualmente? [1] ACEPTAR IGUALMENTE / [2] CORREGIR: ");
                 String opcion = scanner.nextLine();
                 if ("1".equals(opcion)) {
@@ -157,6 +159,60 @@ public class Main {
             if (!scanner.nextLine().equalsIgnoreCase("SI")) {
                 continuar = false;
             }
+        }
+    }
+
+    private static void ejecutarBusquedaHuesped(Scanner scanner, GestorHuesped gestor) {
+        System.out.println("\n--- BÚSQUEDA DE HUÉSPED (CU02) ---");
+        System.out.println("Ingrese los criterios de búsqueda (deje en blanco para omitir).");
+
+        System.out.print("Apellido: ");
+        String apellido = scanner.nextLine();
+        System.out.print("Nombre: ");
+        String nombre = scanner.nextLine();
+
+        // 1. Realizamos la búsqueda a través del gestor
+        List<Huesped> resultados = gestor.buscarHuespedes(apellido, nombre);
+
+        // 2. Flujo Alternativo 4.A: No se encontraron resultados
+        if (resultados.isEmpty()) {
+            System.out.println("\nNo se encontró ninguna concordancia.");
+            System.out.println("Redirigiendo al alta de huésped...");
+            ejecutarAltaHuesped(scanner, gestor); // Reutilizamos el CU09
+            return; // Termina la ejecución de este método
+        }
+
+        // 3. Flujo Principal: Se encontraron resultados
+        System.out.println("\n--- RESULTADOS DE LA BÚSQUEDA ---");
+        for (int i = 0; i < resultados.size(); i++) {
+            Huesped h = resultados.get(i);
+            System.out.printf("%d. %s, %s - %s: %d\n", (i + 1), h.getApellido(), h.getNombre(), h.getTipoDocumento(), h.getDocumento());
+        }
+
+        System.out.print("\nSeleccione un huésped por su número o presione [Enter] para crear uno nuevo: ");
+        String seleccion = scanner.nextLine();
+
+        // 4. Flujo Alternativo 5.A: El usuario no selecciona a nadie y presiona Enter
+        if (seleccion.isEmpty()) {
+            System.out.println("\nNo se seleccionó un huésped existente.");
+            System.out.println("Redirigiendo al alta de huésped...");
+            ejecutarAltaHuesped(scanner, gestor); // Reutilizamos el CU09
+            return;
+        }
+
+        try {
+            int indice = Integer.parseInt(seleccion) - 1;
+            if (indice >= 0 && indice < resultados.size()) {
+                Huesped huespedSeleccionado = resultados.get(indice);
+                System.out.println("\nHuésped seleccionado: " + huespedSeleccionado.getNombre() + " " + huespedSeleccionado.getApellido());
+                // 5. Flujo Principal 6: Derivar al CU10 "Modificar Huésped"
+                System.out.println("Ejecutando CU10: Modificar Huésped (lógica no implementada)...");
+                // Aquí iría la llamada al método: ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
+            } else {
+                System.err.println("Número de selección inválido.");
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Entrada inválida. Por favor, ingrese un número.");
         }
     }
 }
