@@ -1,3 +1,8 @@
+package Persistencia;
+
+import Clases.Direccion;
+import Clases.Huesped;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -63,7 +68,7 @@ public class HuespedDAOImpl implements HuespedDAO {
         int nroDoc = Integer.parseInt(datos[4]);
         int telefono = Integer.parseInt(datos[5]);
 
-        Direccion direccion = new Direccion(); // Ahora funciona gracias al constructor vacío
+        Direccion direccion = new Direccion();
 
         return new Huesped(nombre, apellido, email, tipoDoc, telefono, nroDoc, direccion);
     }

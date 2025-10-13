@@ -1,3 +1,10 @@
+package Gestores;
+
+import Clases.Huesped;
+import Excepciones.CamposObligatoriosException;
+import Excepciones.DocumentoDuplicadoException;
+import Persistencia.HuespedDAO;
+
 public class GestorHuesped {
 
     private final HuespedDAO huespedDAO;

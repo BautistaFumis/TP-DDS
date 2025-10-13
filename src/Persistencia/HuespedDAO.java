@@ -1,3 +1,7 @@
+package Persistencia;
+
+import Clases.Huesped;
+
 import java.util.Optional;
 
 public interface HuespedDAO {

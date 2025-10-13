@@ -1,3 +1,11 @@
+import Clases.Direccion;
+import Clases.Huesped;
+import Persistencia.HuespedDAO;
+import Excepciones.CamposObligatoriosException;
+import Excepciones.DocumentoDuplicadoException;
+import Gestores.GestorHuesped;
+import Persistencia.HuespedDAOImpl;
+
 import java.util.Scanner;
 
 public class Main {

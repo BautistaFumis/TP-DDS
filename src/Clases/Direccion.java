@@ -1,3 +1,5 @@
+package Clases;
+
 public class Direccion {
     private String pais;
     private String provincia;

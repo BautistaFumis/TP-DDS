@@ -1,3 +1,5 @@
+package Clases;
+
 public class Huesped {
     private String nombre;
     private String apellido;
