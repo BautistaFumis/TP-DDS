@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class HuespedDAOImpl implements HuespedDAO {
 
-    private final String RUTA_ARCHIVO = "C://Users//bauti//OneDrive//Documentos//UTN//3//Desarrollo//TP//huespedes.csv/";
+    private final String RUTA_ARCHIVO = "huespedes.csv";
 
     @Override
     public void altaHuesped(Huesped huesped) {
