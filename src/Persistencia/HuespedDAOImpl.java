@@ -1,6 +1,5 @@
 package Persistencia;
 
-import Logica.Dominio.Direccion;
 import Logica.Dominio.Huesped;
 
 import java.io.*;
