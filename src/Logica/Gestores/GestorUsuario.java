@@ -22,17 +22,12 @@ public class GestorUsuario {
      * @param password La contraseña ingresada.
      * @throws CredencialesInvalidasException si el usuario no existe o la contraseña es incorrecta.
      */
-    public void autenticar(String id, String password) throws CredencialesInvalidasException {
-        // Buscamos al usuario usando el DAO
-        Optional<Usuario> usuarioOpt = usuarioDAO.buscarPorId(id);
 
-        // Verificamos si el usuario existe y si la contraseña coincide.
-        // Si el Optional está vacío o la contraseña no es igual, lanzamos la excepción.
+    public void autenticar(String id, String password) throws CredencialesInvalidasException {
+        Optional<Usuario> usuarioOpt = usuarioDAO.buscarPorId(id);
         if (usuarioOpt.isEmpty() || !usuarioOpt.get().getPassword().equals(password)) {
             throw new CredencialesInvalidasException("El usuario o la contraseña no son válidos");
         }
-
-        // Si no se lanza ninguna excepción, la autenticación es exitosa.
     }
 
     /**
