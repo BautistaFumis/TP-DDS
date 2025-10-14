@@ -1,6 +1,6 @@
 package Persistencia;
 
-import Clases.Usuario;
+import Logica.Dominio.Usuario;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

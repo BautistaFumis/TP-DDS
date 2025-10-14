@@ -1,4 +1,4 @@
-package Clases;
+package Logica.Dominio;
 
 public class Usuario {
     private String id;

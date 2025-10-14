@@ -1,7 +1,7 @@
 package Persistencia;
 
-import Clases.Direccion;
-import Clases.Huesped;
+import Logica.Dominio.Direccion;
+import Logica.Dominio.Huesped;
 
 import java.io.*;
 import java.nio.file.Files;

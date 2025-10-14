@@ -1,4 +1,4 @@
-package Clases;
+package Logica.Dominio;
 
 public class Direccion {
     private String pais;

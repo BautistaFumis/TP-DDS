@@ -1,13 +1,12 @@
-// Archivo: src/Main.java
+package App;
 
-// --- Importaciones combinadas de ambos archivos ---
-import Clases.Direccion;
-import Clases.Huesped;
-import Excepciones.CamposObligatoriosException;
-import Excepciones.CredencialesInvalidasException; // Asumiendo que esta excepción está en este paquete
-import Excepciones.DocumentoDuplicadoException;
-import Gestores.GestorHuesped;
-import Gestores.GestorUsuario; // Asumiendo que el gestor de usuario está en este paquete
+import Logica.Dominio.Direccion;
+import Logica.Dominio.Huesped;
+import Logica.Excepciones.CamposObligatoriosException;
+import Logica.Excepciones.CredencialesInvalidasException;
+import Logica.Excepciones.DocumentoDuplicadoException;
+import Logica.Gestores.GestorHuesped;
+import Logica.Gestores.GestorUsuario;
 import Persistencia.HuespedDAO;
 import Persistencia.HuespedDAOImpl;
 
@@ -17,8 +16,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        // --- 1. Inicialización de componentes ---
-        // Se instancian todos los objetos necesarios para que la aplicación funcione.
+        // 1. Inicialización de Objetos
         Scanner scanner = new Scanner(System.in);
         GestorUsuario gestorUsuario = new GestorUsuario();
         HuespedDAO huespedDAO = new HuespedDAOImpl();
@@ -26,11 +24,10 @@ public class Main {
         boolean autenticado = false;
 
         System.out.println("========================================");
-        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA ");
+        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA");
         System.out.println("========================================");
 
-        // --- 2. Bucle de Autenticación ---
-        // El programa no continuará hasta que el usuario se autentique con éxito.
+        //2. Bucle de Autenticación - El programa no continuará hasta que el usuario se autentique con éxito.
         while (!autenticado) {
             try {
                 System.out.println("\nPor favor, inicie sesión:");
@@ -50,8 +47,7 @@ public class Main {
             }
         }
 
-        // --- 3. Menú Principal de Casos de Uso ---
-        // Este menú solo se muestra después de una autenticación exitosa.
+        // 3. Menú Principal de Casos de Uso
         int option;
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
@@ -75,11 +71,11 @@ public class Main {
                     System.out.println("Ya se encuentra autenticado."); // Esto no estabamos seguros de si ponerlo o no, porque la autenticacion se hace al ingresar a la aplicacion.
                     break;
                 case 2:
-                    // Se llama al método que contiene la lógica del CU02
+                    // Se llama al metodo que contiene la lógica del CU02
                     ejecutarBusquedaHuesped(scanner, gestorHuesped);
                     break;
                 case 9:
-                    // Se llama al método que contiene la lógica del CU09
+                    // Se llama al metodo que contiene la lógica del CU09
                     ejecutarAltaHuesped(scanner, gestorHuesped);
                     break;
                 case 10:
@@ -179,7 +175,7 @@ public class Main {
             System.out.println("\nNo se encontró ninguna concordancia.");
             System.out.println("Redirigiendo al alta de huésped...");
             ejecutarAltaHuesped(scanner, gestor); // Reutilizamos el CU09
-            return; // Termina la ejecución de este método
+            return;
         }
 
         // 3. Flujo Principal: Se encontraron resultados
@@ -196,7 +192,7 @@ public class Main {
         if (seleccion.isEmpty()) {
             System.out.println("\nNo se seleccionó un huésped existente.");
             System.out.println("Redirigiendo al alta de huésped...");
-            ejecutarAltaHuesped(scanner, gestor); // Reutilizamos el CU09
+            ejecutarAltaHuesped(scanner, gestor);
             return;
         }
 
@@ -207,7 +203,7 @@ public class Main {
                 System.out.println("\nHuésped seleccionado: " + huespedSeleccionado.getNombre() + " " + huespedSeleccionado.getApellido());
                 // 5. Flujo Principal 6: Derivar al CU10 "Modificar Huésped"
                 System.out.println("Ejecutando CU10: Modificar Huésped (lógica no implementada)...");
-                // Aquí iría la llamada al método: ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
+                // Aquí iría la llamada al metodo: ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
             } else {
                 System.err.println("Número de selección inválido.");
             }

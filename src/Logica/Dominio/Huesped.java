@@ -1,4 +1,4 @@
-package Clases;
+package Logica.Dominio;
 
 public class Huesped {
     private String nombre;
@@ -6,7 +6,7 @@ public class Huesped {
     private String email;
     private String tipoDocumento;
     private long telefono;
-    private int documento;
+    private int documento; // Capaz habria que hacerlo LONG
     private Direccion direccion;
 
     public Huesped(){};

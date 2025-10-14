@@ -1,6 +1,6 @@
 package Persistencia;
 
-import Clases.Huesped;
+import Logica.Dominio.Huesped;
 
 import java.util.List;
 import java.util.Optional;
