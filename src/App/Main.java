@@ -24,7 +24,7 @@ public class Main {
         boolean autenticado = false;
 
         System.out.println("========================================");
-        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA");
+        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA ");
         System.out.println("========================================");
 
         //2. Bucle de Autenticación - El programa no continuará hasta que el usuario se autentique con éxito.
