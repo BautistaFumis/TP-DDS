@@ -109,7 +109,7 @@ public class Main {
 
             Huesped huespedParaAlta = new Huesped();
 
-            System.out.print("(*) Apellido: ");
+            System.out.print("(*) Apellido:  ");
             huespedParaAlta.setApellido(scanner.nextLine());
 
             System.out.print("(*) Nombre: ");
