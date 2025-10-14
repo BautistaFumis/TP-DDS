@@ -70,15 +70,13 @@ public class HuespedDAOImpl implements HuespedDAO {
         // no hecho
         System.out.println("Método bajaHuesped no implementado.");
     }
-
+// hay que ver esta funcion para que se pueda trabajar con minimo un campo y el resto opcionales
     @Override
     public List<Huesped> buscarPorCriterios(String apellido, String nombre) {
         try (Stream<String> lineas = Files.lines(Paths.get(RUTA_ARCHIVO))) {
             return lineas
                     .map(linea -> linea.split(","))
                     .map(this::convertirCSVAHuesped)
-                    // --- FILTRO ADICIONAL ---
-                    // Se asegura de que no se procesen objetos nulos.
                     .filter(java.util.Objects::nonNull)
                     .filter(huesped -> {
                         boolean coincideApellido = (apellido == null || apellido.isEmpty()) ||
@@ -93,6 +91,7 @@ public class HuespedDAOImpl implements HuespedDAO {
             return Collections.emptyList();
         }
     }
+
     private String convertirHuespedEnCSV(Huesped huesped) {
         return huesped.getApellido() + "," +
                 huesped.getNombre() + "," +
@@ -109,7 +108,6 @@ public class HuespedDAOImpl implements HuespedDAO {
         if (datos == null || datos.length < 6) {
             return null; // Ignora la línea malformada en lugar de fallar
         }
-
         try {
             Huesped huesped = new Huesped();
             huesped.setApellido(datos[0]);

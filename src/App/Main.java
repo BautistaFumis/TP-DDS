@@ -101,6 +101,7 @@ public class Main {
      * @param scanner El objeto Scanner para leer la entrada del usuario.
      * @param gestor El GestorHuesped que maneja la lógica de negocio.
      */
+    // faltan datos del huesped, ver el dominio
     private static void ejecutarAltaHuesped(Scanner scanner, GestorHuesped gestor) {
         boolean continuar = true;
         while (continuar) {
@@ -118,6 +119,7 @@ public class Main {
             System.out.print("Email: ");
             huespedParaAlta.setEmail(scanner.nextLine());
 
+            // ver de usar ENUM
             System.out.print("(*) Tipo de Documento (DNI, PASAPORTE): ");
             huespedParaAlta.setTipoDocumento(scanner.nextLine());
 
@@ -137,7 +139,7 @@ public class Main {
 
             } catch (NumberFormatException e) {
                 System.err.println("\nERROR: El documento y el teléfono deben ser números válidos.");
-            } catch (CamposObligatoriosException e) {
+            } catch (CamposObligatoriosException e) { //ver si funciona y volver a ingresar datos
                 System.err.println("\nERROR: " + e.getMessage());
             } catch (DocumentoDuplicadoException e) {
                 System.err.println("\n ADVERTENCIA: " + e.getMessage());
@@ -147,6 +149,7 @@ public class Main {
                     gestor.registrarHuespedAceptandoDuplicado(huespedParaAlta);
                     System.out.println("ÉXITO: Se ha registrado el huésped duplicado.");
                 } else {
+                    //aca hay que volver a el ingresa con foco en tipo de documento
                     System.out.println("Operación cancelada. Por favor, ingrese los datos nuevamente.");
                 }
             }
@@ -167,18 +170,16 @@ public class Main {
         System.out.print("Nombre: ");
         String nombre = scanner.nextLine();
 
-        // 1. Realizamos la búsqueda a través del gestor
         List<Huesped> resultados = gestor.buscarHuespedes(apellido, nombre);
 
-        // 2. Flujo Alternativo 4.A: No se encontraron resultados
         if (resultados.isEmpty()) {
+            // aca dar la opcion de poner 1 si queres agregarlo y 2 si no queres agregarlo
             System.out.println("\nNo se encontró ninguna concordancia.");
             System.out.println("Redirigiendo al alta de huésped...");
-            ejecutarAltaHuesped(scanner, gestor); // Reutilizamos el CU09
+            ejecutarAltaHuesped(scanner, gestor);
             return;
         }
 
-        // 3. Flujo Principal: Se encontraron resultados
         System.out.println("\n--- RESULTADOS DE LA BÚSQUEDA ---");
         for (int i = 0; i < resultados.size(); i++) {
             Huesped h = resultados.get(i);
@@ -188,22 +189,20 @@ public class Main {
         System.out.print("\nSeleccione un huésped por su número o presione [Enter] para crear uno nuevo: ");
         String seleccion = scanner.nextLine();
 
-        // 4. Flujo Alternativo 5.A: El usuario no selecciona a nadie y presiona Enter
         if (seleccion.isEmpty()) {
             System.out.println("\nNo se seleccionó un huésped existente.");
             System.out.println("Redirigiendo al alta de huésped...");
             ejecutarAltaHuesped(scanner, gestor);
             return;
         }
-
+// hacer un loop hasta que ingrese un numero valido
         try {
             int indice = Integer.parseInt(seleccion) - 1;
             if (indice >= 0 && indice < resultados.size()) {
                 Huesped huespedSeleccionado = resultados.get(indice);
                 System.out.println("\nHuésped seleccionado: " + huespedSeleccionado.getNombre() + " " + huespedSeleccionado.getApellido());
-                // 5. Flujo Principal 6: Derivar al CU10 "Modificar Huésped"
                 System.out.println("Ejecutando CU10: Modificar Huésped (lógica no implementada)...");
-                // Aquí iría la llamada al metodo: ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
+                // Aca va la llamada al metodo: ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
             } else {
                 System.err.println("Número de selección inválido.");
             }

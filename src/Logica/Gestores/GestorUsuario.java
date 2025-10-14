@@ -36,14 +36,12 @@ public class GestorUsuario {
      * @param password La contraseña a validar.
      * @throws PasswordInvalidaException si la contraseña no cumple el formato.
      */
-    public void validarFormatoPassword(String password) throws PasswordInvalidaException {
+
+    public void validarFormatoPassword(String password) throws PasswordInvalidaException { // preguntar donde se valida
         long letras = password.chars().filter(Character::isLetter).count();
         long numeros = password.chars().filter(Character::isDigit).count();
-
-        // Requisito: Al menos 5 letras y 3 números.
         if (letras < 5 || numeros < 3) {
             throw new PasswordInvalidaException("La contraseña debe tener al menos 5 letras y 3 números.");
         }
-        // Aquí se podrían agregar las validaciones más complejas de números no consecutivos.
     }
 }
