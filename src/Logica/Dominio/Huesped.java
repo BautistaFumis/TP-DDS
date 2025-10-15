@@ -1,5 +1,8 @@
 package Logica.Dominio;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 public class Huesped {
     private String nombre;
     private String apellido;
@@ -8,10 +11,15 @@ public class Huesped {
     private Long telefono;
     private String documento; // Capaz habria que hacerlo LONG
     private Direccion direccion;
+    private String cuit;
+    private String categoriaIVA;
+    private LocalDate fechaNacimiento;
+    private String ocupacion;
+    private String nacionalidad;
 
     public Huesped(){};
 
-    public Huesped(String nombre, String apellido, String email, String tipoDocumento, Long telefono, String documento, Direccion direccion) {
+    public Huesped(String nombre, String apellido, String email, String tipoDocumento, Long telefono, String documento, Direccion direccion, String cuit, String categoriaIVA, LocalDate fechaNacimiento, String ocupacion, String nacionalidad) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -19,6 +27,11 @@ public class Huesped {
         this.telefono = telefono;
         this.documento = documento;
         this.direccion = direccion;
+        this.cuit = cuit;
+        this.categoriaIVA = categoriaIVA;
+        this.fechaNacimiento = fechaNacimiento;
+        this.ocupacion = ocupacion;
+        this.nacionalidad = nacionalidad;
     }
 
     public String getNombre() {
@@ -46,10 +59,12 @@ public class Huesped {
     }
 
     public String getTipoDocumento() {
+
         return tipoDocumento;
     }
 
     public void setTipoDocumento(String tipoDocumento) {
+
         this.tipoDocumento = tipoDocumento;
     }
 
@@ -58,22 +73,67 @@ public class Huesped {
     }
 
     public void setTelefono(Long telefono) {
+
         this.telefono = telefono;
     }
 
     public String getDocumento() {
+
         return documento;
     }
 
     public void setDocumento(String documento) {
+
         this.documento = documento;
     }
 
     public Direccion getDireccion() {
+
         return direccion;
     }
 
     public void setDireccion(Direccion direccion) {
+
         this.direccion = direccion;
+    }
+
+    public String getCuit() {
+        return cuit;
+    }
+
+    public void setCuit(String cuit) {
+        this.cuit = cuit;
+    }
+
+    public String getCategoriaIVA() {
+        return categoriaIVA;
+    }
+
+    public void setCategoriaIVA(String categoriaIVA) {
+        this.categoriaIVA = categoriaIVA;
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getOcupacion() {
+        return ocupacion;
+    }
+
+    public void setOcupacion(String ocupacion) {
+        this.ocupacion = ocupacion;
+    }
+
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
+
+    public void setNacionalidad(String nacionalidad) {
+        this.nacionalidad = nacionalidad;
     }
 }

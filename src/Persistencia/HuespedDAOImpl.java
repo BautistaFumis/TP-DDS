@@ -1,10 +1,13 @@
 package Persistencia;
 
+import Logica.Dominio.Direccion;
 import Logica.Dominio.Huesped;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.stream.Stream;
 public class HuespedDAOImpl implements HuespedDAO {
 
     private final String RUTA_ARCHIVO = "huespedes.csv";
+    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void altaHuesped(Huesped huesped) {
@@ -124,34 +128,83 @@ public class HuespedDAOImpl implements HuespedDAO {
         // 7. Devuelve la lista de huéspedes que coincidieron.
         return huespedesEncontrados;
     }
+
+
+    /**
+     * Convierte un objeto Huesped completo a una línea de texto CSV.
+     * Actualizado para incluir todos los 19 campos.
+     */
     private String convertirHuespedEnCSV(Huesped huesped) {
-        return huesped.getApellido() + "," +
-                huesped.getNombre() + "," +
-                huesped.getEmail() + "," +
-                huesped.getTipoDocumento() + "," +
-                huesped.getDocumento() + "," +
-                huesped.getTelefono();
+        // Usamos String.join para manejar las comas de forma más limpia
+        return String.join(",",
+                huesped.getApellido(),
+                huesped.getNombre(),
+                huesped.getTipoDocumento(),
+                huesped.getDocumento(),
+                huesped.getCuit(),
+                huesped.getCategoriaIVA(),
+                huesped.getFechaNacimiento().format(FORMATO_FECHA), // Formatea la fecha a texto
+                huesped.getDireccion().getCalle(),
+                String.valueOf(huesped.getDireccion().getNumero()),
+                huesped.getDireccion().getDepartamento(),
+                String.valueOf(huesped.getDireccion().getPiso()),
+                String.valueOf(huesped.getDireccion().getCodigoPostal()),
+                huesped.getDireccion().getLocalidad(),
+                huesped.getDireccion().getProvincia(),
+                huesped.getDireccion().getPais(),
+                String.valueOf(huesped.getTelefono()),
+                huesped.getEmail(),
+                huesped.getOcupacion(),
+                huesped.getNacionalidad()
+        );
     }
 
+    /**
+     * Convierte una línea de texto CSV (un array de datos) a un objeto Huesped.
+     * Actualizado para leer todos los campos y construir el objeto Direccion.
+     */
     private Huesped convertirCSVAHuesped(String[] datos) {
-        // --- VALIDACIÓN DE SEGURIDAD ---
-        // Si el array no tiene la cantidad mínima de columnas, devuelve null.
-        // Ajusta el '6' al número de columnas que esperas como mínimo.
-        if (datos == null || datos.length < 6) {
-            return null; // Ignora la línea malformada en lugar de fallar
+        // Se actualiza la validación al nuevo número de columnas
+        if (datos == null || datos.length < 19) {
+            return null; // Ignora la línea malformada
         }
         try {
             Huesped huesped = new Huesped();
+            Direccion direccion = new Direccion();
+
+            // Asigna los datos del huésped
             huesped.setApellido(datos[0]);
             huesped.setNombre(datos[1]);
-            huesped.setEmail(datos[2]);
-            huesped.setTipoDocumento(datos[3]);
-            huesped.setDocumento(datos[4]);
-            huesped.setTelefono(Long.parseLong(datos[5]));
+            huesped.setTipoDocumento(datos[2]);
+            huesped.setDocumento(datos[3]);
+            huesped.setCuit(datos[4]);
+            huesped.setCategoriaIVA(datos[5]);
+            huesped.setFechaNacimiento(LocalDate.parse(datos[6], FORMATO_FECHA)); // Convierte el texto a fecha
+
+            // Asigna los datos de la dirección
+            direccion.setCalle(datos[7]);
+            direccion.setNumero(Integer.parseInt(datos[8]));
+            direccion.setDepartamento(datos[9]);
+            direccion.setPiso(Integer.parseInt(datos[10]));
+            direccion.setCodigoPostal(Integer.parseInt(datos[11]));
+            direccion.setLocalidad(datos[12]);
+            direccion.setProvincia(datos[13]);
+            direccion.setPais(datos[14]);
+
+            // Asigna el objeto Dirección al Huésped
+            huesped.setDireccion(direccion);
+
+            // Continúa con los datos restantes
+            huesped.setTelefono(Long.parseLong(datos[15]));
+            huesped.setEmail(datos[16]);
+            huesped.setOcupacion(datos[17]);
+            huesped.setNacionalidad(datos[18]);
+
             return huesped;
-        } catch (NumberFormatException e) {
-            System.err.println("Advertencia: Se ignoró una línea con formato de número incorrecto.");
+        } catch (Exception e) { // Captura cualquier error de formato (número, fecha)
+            System.err.println("Advertencia: Se ignoró una línea con formato incorrecto.");
             return null;
         }
     }
+
 }

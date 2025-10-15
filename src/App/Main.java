@@ -10,6 +10,8 @@ import Logica.Gestores.GestorUsuario;
 import Persistencia.HuespedDAO;
 import Persistencia.HuespedDAOImpl;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -105,31 +107,53 @@ public class Main {
         while (continuar) {
             System.out.println("\n--- ALTA DE NUEVO HUÉSPED (CU09) ---");
             System.out.println("Por favor, ingrese los datos solicitados. Los campos con (*) son obligatorios.");
-
             Huesped huespedParaAlta = new Huesped();
 
-            System.out.print("(*) Apellido: ");
-            huespedParaAlta.setApellido(scanner.nextLine());
-
-            System.out.print("(*) Nombre: ");
-            huespedParaAlta.setNombre(scanner.nextLine());
-
-            System.out.print("Email: ");
-            huespedParaAlta.setEmail(scanner.nextLine());
-
-            // ver de usar ENUM
-            System.out.print("(*) Tipo de Documento (DNI, PASAPORTE): ");
-            huespedParaAlta.setTipoDocumento(scanner.nextLine());
-
             try {
+                System.out.print("(*) Apellido: ");
+                huespedParaAlta.setApellido(scanner.nextLine());
+                System.out.print("(*) Nombre: ");
+                huespedParaAlta.setNombre(scanner.nextLine());
+                // ver de usar ENUM
+                System.out.print("(*) Tipo de Documento (DNI, LE, LC, PASAPORTE, Otro): ");
+                huespedParaAlta.setTipoDocumento(scanner.nextLine());
                 System.out.print("(*) Número de Documento: ");
                 huespedParaAlta.setDocumento(scanner.nextLine());
-
+                System.out.print("CUIT: ");
+                huespedParaAlta.setCuit(scanner.nextLine());
+                System.out.print("Posicion frente al IVA: ");
+                huespedParaAlta.setCategoriaIVA(scanner.nextLine());
+                DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                System.out.print("(*) Fecha de Nacimiento (formato dd/mm/aaaa): ");
+                String fechaTexto = scanner.nextLine();
+                LocalDate fechaNacimiento = LocalDate.parse(fechaTexto, formatoFecha);
+                huespedParaAlta.setFechaNacimiento(fechaNacimiento);
+                System.out.print("Direccion: \n");
+                huespedParaAlta.setDireccion(new Direccion());
+                System.out.print("(*) Calle: ");
+                huespedParaAlta.getDireccion().setCalle(scanner.nextLine());
+                System.out.print("(*) Numero: ");
+                huespedParaAlta.getDireccion().setNumero(Integer.parseInt(scanner.nextLine()));
+                System.out.print("Departamento: ");
+                huespedParaAlta.getDireccion().setDepartamento(scanner.nextLine());
+                System.out.print("Piso: ");
+                huespedParaAlta.getDireccion().setPiso(Integer.parseInt(scanner.nextLine()));
+                System.out.print("(*) Codigo Postal: ");
+                huespedParaAlta.getDireccion().setCodigoPostal(Integer.parseInt(scanner.nextLine()));
+                System.out.print("(*) Localidad: ");
+                huespedParaAlta.getDireccion().setLocalidad(scanner.nextLine());
+                System.out.print("(*) Provincia: ");
+                huespedParaAlta.getDireccion().setProvincia(scanner.nextLine());
+                System.out.print("(*) Pais: ");
+                huespedParaAlta.getDireccion().setPais(scanner.nextLine());
                 System.out.print("Teléfono: ");
                 huespedParaAlta.setTelefono(Long.parseLong(scanner.nextLine()));
-
-                // La dirección se crea vacía por ahora.
-                huespedParaAlta.setDireccion(new Direccion());
+                System.out.print("Email: ");
+                huespedParaAlta.setEmail(scanner.nextLine());
+                System.out.print("Ocupacion: ");
+                huespedParaAlta.setOcupacion(scanner.nextLine());
+                System.out.print("Nacionalidad: ");
+                huespedParaAlta.setNacionalidad(scanner.nextLine());
 
                 gestor.registrarNuevoHuesped(huespedParaAlta);
 
