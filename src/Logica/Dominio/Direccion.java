@@ -8,10 +8,10 @@ public class Direccion {
     private String calle;
     private int numero;
     private String departamento;
-    private int piso;
+    private String piso;
 
     public Direccion(){};
-    public Direccion(String pais, String provincia, String localidad, int codigoPostal, String calle, int numero, String departamento, int piso) {
+    public Direccion(String pais, String provincia, String localidad, int codigoPostal, String calle, int numero, String departamento, String piso) {
         this.pais = pais;
         this.provincia = provincia;
         this.localidad = localidad;
@@ -78,11 +78,11 @@ public class Direccion {
         this.departamento = departamento;
     }
 
-    public int getPiso() {
+    public String getPiso() {
         return piso;
     }
 
-    public void setPiso(int piso) {
+    public void setPiso(String piso) {
         this.piso = piso;
     }
 }

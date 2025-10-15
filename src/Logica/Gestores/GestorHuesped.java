@@ -16,32 +16,36 @@ public class GestorHuesped {
     }
 
     public void registrarNuevoHuesped(Huesped huesped) throws CamposObligatoriosException, DocumentoDuplicadoException {
-        // --- VALIDACIÓN ACTUALIZADA ---
-        // Se comprueban todos los campos marcados con (*) en la consola.
-        if (huesped.getApellido() == null || huesped.getApellido().isEmpty() ||
-                huesped.getNombre() == null || huesped.getNombre().isEmpty() ||
-                huesped.getTipoDocumento() == null || huesped.getTipoDocumento().isEmpty() ||
-                huesped.getDocumento() == null || huesped.getDocumento().isEmpty() ||
-                huesped.getFechaNacimiento() == null ||
-                huesped.getDireccion() == null || // Se verifica que el objeto Dirección exista
-                huesped.getDireccion().getCalle() == null || huesped.getDireccion().getCalle().isEmpty() ||
-                huesped.getDireccion().getNumero() <= 0 || // Los números deben ser positivos
-                huesped.getDireccion().getCodigoPostal() <= 0 ||
-                huesped.getDireccion().getLocalidad() == null || huesped.getDireccion().getLocalidad().isEmpty() ||
-                huesped.getDireccion().getProvincia() == null || huesped.getDireccion().getProvincia().isEmpty() ||
-                huesped.getDireccion().getPais() == null || huesped.getDireccion().getPais().isEmpty()) {
+        // --- VALIDACIÓN COMPLETA DE CAMPOS OBLIGATORIOS ---
+        if(huesped.getCategoriaIVA() == null  || huesped.getCategoriaIVA().trim().isEmpty()) huesped.setCategoriaIVA("Consumidor Final");
 
+        if (huesped.getApellido() == null || huesped.getApellido().trim().isEmpty() ||
+                huesped.getNombre() == null || huesped.getNombre().trim().isEmpty() ||
+                huesped.getTipoDocumento() == null || huesped.getTipoDocumento().trim().isEmpty() ||
+                huesped.getDocumento() == null || huesped.getDocumento().trim().isEmpty() ||
+                huesped.getFechaNacimiento() == null ||
+                huesped.getDireccion() == null ||
+                huesped.getDireccion().getCalle() == null || huesped.getDireccion().getCalle().trim().isEmpty() ||
+                huesped.getDireccion().getNumero() <= 0 || // Un número de calle no puede ser 0 o negativo
+                huesped.getDireccion().getCodigoPostal() <= 0 || // El código postal tampoco
+                huesped.getDireccion().getLocalidad() == null || huesped.getDireccion().getLocalidad().trim().isEmpty() ||
+                huesped.getDireccion().getProvincia() == null || huesped.getDireccion().getProvincia().trim().isEmpty() ||
+                huesped.getDireccion().getPais() == null || huesped.getDireccion().getPais().trim().isEmpty()) {
+
+            // Si falta algún dato, se lanza la excepción con un mensaje claro.
             throw new CamposObligatoriosException("Debe completar todos los campos obligatorios (*).");
         }
 
-        // Se busca por el documento que ahora es un String
+        // Verifica si el documento ya existe
         if (huespedDAO.buscarHuesped(huesped.getTipoDocumento(), huesped.getDocumento()).isPresent()) {
             throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
         }
 
+        // Si todas las validaciones pasan, se procede a dar el alta.
         huespedDAO.altaHuesped(huesped);
     }
-public void registrarHuespedAceptandoDuplicado(Huesped huesped){
+
+    public void registrarHuespedAceptandoDuplicado(Huesped huesped){
         huespedDAO.altaHuesped(huesped);
 }
     /**

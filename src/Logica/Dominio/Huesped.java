@@ -8,7 +8,7 @@ public class Huesped {
     private String apellido;
     private String email;
     private String tipoDocumento;
-    private Long telefono;
+    private String telefono;
     private String documento; // Capaz habria que hacerlo LONG
     private Direccion direccion;
     private String cuit;
@@ -19,7 +19,7 @@ public class Huesped {
 
     public Huesped(){};
 
-    public Huesped(String nombre, String apellido, String email, String tipoDocumento, Long telefono, String documento, Direccion direccion, String cuit, String categoriaIVA, LocalDate fechaNacimiento, String ocupacion, String nacionalidad) {
+    public Huesped(String nombre, String apellido, String email, String tipoDocumento, String telefono, String documento, Direccion direccion, String cuit, String categoriaIVA, LocalDate fechaNacimiento, String ocupacion, String nacionalidad) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -68,11 +68,11 @@ public class Huesped {
         this.tipoDocumento = tipoDocumento;
     }
 
-    public Long getTelefono() {
+    public String getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(Long telefono) {
+    public void setTelefono(String telefono) {
 
         this.telefono = telefono;
     }

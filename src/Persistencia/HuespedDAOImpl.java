@@ -185,7 +185,7 @@ public class HuespedDAOImpl implements HuespedDAO {
             direccion.setCalle(datos[7]);
             direccion.setNumero(Integer.parseInt(datos[8]));
             direccion.setDepartamento(datos[9]);
-            direccion.setPiso(Integer.parseInt(datos[10]));
+            direccion.setPiso(datos[10]);
             direccion.setCodigoPostal(Integer.parseInt(datos[11]));
             direccion.setLocalidad(datos[12]);
             direccion.setProvincia(datos[13]);
@@ -195,7 +195,7 @@ public class HuespedDAOImpl implements HuespedDAO {
             huesped.setDireccion(direccion);
 
             // Continúa con los datos restantes
-            huesped.setTelefono(Long.parseLong(datos[15]));
+            huesped.setTelefono(datos[15]);
             huesped.setEmail(datos[16]);
             huesped.setOcupacion(datos[17]);
             huesped.setNacionalidad(datos[18]);

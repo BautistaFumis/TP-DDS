@@ -12,6 +12,7 @@ import Persistencia.HuespedDAOImpl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -134,10 +135,10 @@ public class Main {
                 huespedParaAlta.getDireccion().setCalle(scanner.nextLine());
                 System.out.print("(*) Numero: ");
                 huespedParaAlta.getDireccion().setNumero(Integer.parseInt(scanner.nextLine()));
-                System.out.print("Departamento: ");
+                System.out.print("Departamento (Letra o Numero): ");
                 huespedParaAlta.getDireccion().setDepartamento(scanner.nextLine());
-                System.out.print("Piso: ");
-                huespedParaAlta.getDireccion().setPiso(Integer.parseInt(scanner.nextLine()));
+                System.out.print("Piso (Numero): ");
+                huespedParaAlta.getDireccion().setPiso(scanner.nextLine());
                 System.out.print("(*) Codigo Postal: ");
                 huespedParaAlta.getDireccion().setCodigoPostal(Integer.parseInt(scanner.nextLine()));
                 System.out.print("(*) Localidad: ");
@@ -147,7 +148,7 @@ public class Main {
                 System.out.print("(*) Pais: ");
                 huespedParaAlta.getDireccion().setPais(scanner.nextLine());
                 System.out.print("Teléfono: ");
-                huespedParaAlta.setTelefono(Long.parseLong(scanner.nextLine()));
+                huespedParaAlta.setTelefono(scanner.nextLine());
                 System.out.print("Email: ");
                 huespedParaAlta.setEmail(scanner.nextLine());
                 System.out.print("Ocupacion: ");
@@ -159,10 +160,12 @@ public class Main {
 
                 System.out.println("\nÉXITO: El huésped '" + huespedParaAlta.getNombre() + " " + huespedParaAlta.getApellido() + "' ha sido satisfactoriamente cargado al sistema.");
 
+            } catch (DateTimeParseException e) {
+                System.err.println("\nERROR: El formato de la fecha es incorrecto. Debe ser dd/mm/aaaa.");
             } catch (NumberFormatException e) {
-                System.err.println("\nERROR: El documento y el teléfono deben ser números válidos.");
-            } catch (CamposObligatoriosException e) { //ver si funciona y volver a ingresar datos
-                System.err.println("\nERROR: " + e.getMessage());
+                System.err.println("\nERROR: Uno de los campos numéricos (Número, Piso, CP, Teléfono) tiene un formato inválido.");
+            } catch (CamposObligatoriosException e) {
+                System.err.println("\nERROR: " + e.getMessage() + " Por favor, intente de nuevo.");
             } catch (DocumentoDuplicadoException e) {
                 System.err.println("\n ADVERTENCIA: " + e.getMessage());
                 System.out.print("¿Desea aceptarlo igualmente? [1] ACEPTAR IGUALMENTE / [2] CORREGIR: ");
