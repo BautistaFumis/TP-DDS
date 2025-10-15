@@ -30,18 +30,5 @@ public class GestorUsuario {
         }
     }
 
-    /**
-     * Valida que una contraseña cumpla con las reglas de negocio.
-     * (Esta función será más útil para los CU de alta o modificación de usuario)
-     * @param password La contraseña a validar.
-     * @throws PasswordInvalidaException si la contraseña no cumple el formato.
-     */
 
-    public void validarFormatoPassword(String password) throws PasswordInvalidaException { // preguntar donde se valida
-        long letras = password.chars().filter(Character::isLetter).count();
-        long numeros = password.chars().filter(Character::isDigit).count();
-        if (letras < 5 || numeros < 3) {
-            throw new PasswordInvalidaException("La contraseña debe tener al menos 5 letras y 3 números.");
-        }
-    }
 }

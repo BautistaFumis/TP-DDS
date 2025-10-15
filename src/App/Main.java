@@ -16,7 +16,6 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        // 1. Inicialización de Objetos
         Scanner scanner = new Scanner(System.in);
         GestorUsuario gestorUsuario = new GestorUsuario();
         HuespedDAO huespedDAO = new HuespedDAOImpl();
@@ -27,18 +26,18 @@ public class Main {
         System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA");
         System.out.println("========================================");
 
-        //2. Bucle de Autenticación - El programa no continuará hasta que el usuario se autentique con éxito.
+
         while (!autenticado) {
             try {
                 System.out.println("\nPor favor, inicie sesión:");
                 System.out.print("Usuario: ");
                 String id = scanner.nextLine();
 
-                System.out.print("Contraseña: ");
+                System.out.print("Contraseña: "); // Debe ser oculta... Verlo para entrega
                 String password = scanner.nextLine();
 
-                gestorUsuario.autenticar(id, password);
-                autenticado = true; // Si no hay excepción, el login es exitoso
+                gestorUsuario.autenticar(id, password); // Si esto falla, capturamos la excepcion
+                autenticado = true;
                 System.out.println("\n¡Inicio de sesión exitoso! Bienvenido, " + id + ".");
 
             } catch (CredencialesInvalidasException e) {
@@ -47,7 +46,6 @@ public class Main {
             }
         }
 
-        // 3. Menú Principal de Casos de Uso
         int option;
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
@@ -125,10 +123,10 @@ public class Main {
 
             try {
                 System.out.print("(*) Número de Documento: ");
-                huespedParaAlta.setDocumento(Integer.parseInt(scanner.nextLine()));
+                huespedParaAlta.setDocumento(scanner.nextLine());
 
                 System.out.print("Teléfono: ");
-                huespedParaAlta.setTelefono(Integer.parseInt(scanner.nextLine()));
+                huespedParaAlta.setTelefono(Long.parseLong(scanner.nextLine()));
 
                 // La dirección se crea vacía por ahora.
                 huespedParaAlta.setDireccion(new Direccion());
@@ -169,8 +167,12 @@ public class Main {
         String apellido = scanner.nextLine();
         System.out.print("Nombre: ");
         String nombre = scanner.nextLine();
+        System.out.print("Tipo de Documento (DNI, LE, LC, PASAPORTE, Otro): ");
+        String tipoDocumento = scanner.nextLine();
+        System.out.print("Numero de Documento: ");
+        String documento = scanner.nextLine();
 
-        List<Huesped> resultados = gestor.buscarHuespedes(apellido, nombre);
+        List<Huesped> resultados = gestor.buscarHuespedes(apellido, nombre, tipoDocumento , documento);
 
         if (resultados.isEmpty()) {
             // aca dar la opcion de poner 1 si queres agregarlo y 2 si no queres agregarlo
@@ -183,7 +185,7 @@ public class Main {
         System.out.println("\n--- RESULTADOS DE LA BÚSQUEDA ---");
         for (int i = 0; i < resultados.size(); i++) {
             Huesped h = resultados.get(i);
-            System.out.printf("%d. %s, %s - %s: %d\n", (i + 1), h.getApellido(), h.getNombre(), h.getTipoDocumento(), h.getDocumento());
+            System.out.printf("%d. %s, %s - %s: %s\n", (i + 1), h.getApellido(), h.getNombre(), h.getTipoDocumento(), h.getDocumento());
         }
 
         System.out.print("\nSeleccione un huésped por su número o presione [Enter] para crear uno nuevo: ");

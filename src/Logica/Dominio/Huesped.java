@@ -5,13 +5,13 @@ public class Huesped {
     private String apellido;
     private String email;
     private String tipoDocumento;
-    private long telefono;
-    private int documento; // Capaz habria que hacerlo LONG
+    private Long telefono;
+    private String documento; // Capaz habria que hacerlo LONG
     private Direccion direccion;
 
     public Huesped(){};
 
-    public Huesped(String nombre, String apellido, String email, String tipoDocumento, long telefono, int documento, Direccion direccion) {
+    public Huesped(String nombre, String apellido, String email, String tipoDocumento, Long telefono, String documento, Direccion direccion) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -53,19 +53,19 @@ public class Huesped {
         this.tipoDocumento = tipoDocumento;
     }
 
-    public long getTelefono() {
+    public Long getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(long telefono) {
+    public void setTelefono(Long telefono) {
         this.telefono = telefono;
     }
 
-    public int getDocumento() {
+    public String getDocumento() {
         return documento;
     }
 
-    public void setDocumento(int documento) {
+    public void setDocumento(String documento) {
         this.documento = documento;
     }
 

@@ -18,7 +18,7 @@ public class GestorHuesped {
     public void registrarNuevoHuesped(Huesped huesped) throws CamposObligatoriosException, DocumentoDuplicadoException {
         if (huesped.getApellido() == null || huesped.getApellido().isEmpty() ||
                 huesped.getNombre() == null || huesped.getNombre().isEmpty() ||
-                huesped.getDocumento() == 0) {
+                huesped.getDocumento() == null || huesped.getDocumento().isEmpty()) {
             throw new CamposObligatoriosException("Debe completar todos los campos obligatorios (*).");
         }
         if (huespedDAO.buscarHuesped(huesped.getTipoDocumento(), huesped.getDocumento()).isPresent()) {
@@ -35,9 +35,11 @@ public class GestorHuesped {
      * Orquesta la búsqueda de huéspedes según criterios.
      * @param apellido Criterio para el apellido.
      * @param nombre Criterio para el nombre.
+     * @param tipoDocumento Criterio para el tipo del documento.
+     * @param documento Criterio para el numero de documento.
      * @return Lista de huéspedes encontrados.
      */
-    public List<Huesped> buscarHuespedes(String apellido, String nombre) {
-        return huespedDAO.buscarPorCriterios(apellido, nombre);
+    public List<Huesped> buscarHuespedes(String apellido, String nombre, String tipoDocumento, String documento) {
+        return huespedDAO.buscarPorCriterios(apellido, nombre, tipoDocumento, documento);
     }
 }

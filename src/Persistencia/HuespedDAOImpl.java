@@ -5,6 +5,7 @@ import Logica.Dominio.Huesped;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class HuespedDAOImpl implements HuespedDAO {
     }
 
     @Override
-    public Optional<Huesped> buscarHuesped(String tipoDocumento, int documento) {
+    public Optional<Huesped> buscarHuesped(String tipoDocumento, String documento) {
         // 1. Abre el archivo de forma segura
         try (BufferedReader reader = new BufferedReader(new FileReader(RUTA_ARCHIVO))) {
             String linea;
@@ -37,10 +38,10 @@ public class HuespedDAOImpl implements HuespedDAO {
                 if (datos.length > 4 && datos[3].equalsIgnoreCase(tipoDocumento)) {
                     try {
                         // 5. Convierte el documento del archivo a número
-                        int documentoEnArchivo = Integer.parseInt(datos[4]);
+                        String documentoEnArchivo = (datos[4]);
 
                         // 6. Si el número de documento también coincide, ¡lo encontramos!
-                        if (documentoEnArchivo == documento) {
+                        if (documentoEnArchivo.equals(documento)) {
                             // 7. Convierte el array de datos a un objeto Huesped y lo devuelve
                             return Optional.of(convertirCSVAHuesped(datos));
                         }
@@ -70,28 +71,59 @@ public class HuespedDAOImpl implements HuespedDAO {
         // no hecho
         System.out.println("Método bajaHuesped no implementado.");
     }
-// hay que ver esta funcion para que se pueda trabajar con minimo un campo y el resto opcionales
+
     @Override
-    public List<Huesped> buscarPorCriterios(String apellido, String nombre) {
-        try (Stream<String> lineas = Files.lines(Paths.get(RUTA_ARCHIVO))) {
-            return lineas
-                    .map(linea -> linea.split(","))
-                    .map(this::convertirCSVAHuesped)
-                    .filter(java.util.Objects::nonNull)
-                    .filter(huesped -> {
-                        boolean coincideApellido = (apellido == null || apellido.isEmpty()) ||
-                                huesped.getApellido().toLowerCase().startsWith(apellido.toLowerCase());
-                        boolean coincideNombre = (nombre == null || nombre.isEmpty()) ||
-                                huesped.getNombre().toLowerCase().startsWith(nombre.toLowerCase());
-                        return coincideApellido && coincideNombre;
-                    })
-                    .collect(Collectors.toList());
+    public List<Huesped> buscarPorCriterios(String apellido, String nombre, String tipoDocumento, String numeroDocumento) {
+        // 1. Crea una lista vacía para guardar los resultados.
+        List<Huesped> huespedesEncontrados = new ArrayList<>();
+
+        // 2. Lee el archivo de forma segura.
+        try (BufferedReader reader = new BufferedReader(new FileReader(RUTA_ARCHIVO))) {
+            String linea;
+
+            // 3. Lee el archivo línea por línea hasta que se acabe.
+            while ((linea = reader.readLine()) != null) {
+
+                // Si la línea está vacía, la salta y continúa con la siguiente.
+                if (linea.trim().isEmpty()) {
+                    continue;
+                }
+
+                String[] datos = linea.split(",");
+                Huesped huesped = convertirCSVAHuesped(datos); // Reutilizamos tu conversor
+
+                // 4. Si la línea se pudo convertir en un huésped válido...
+                if (huesped != null) {
+
+                    // 5. Comprueba cada criterio de búsqueda.
+                    // Si el usuario no ingresó un criterio (está vacío), se considera una coincidencia.
+
+                    boolean coincideApellido = (apellido == null || apellido.isEmpty()) ||
+                            huesped.getApellido().toLowerCase().startsWith(apellido.toLowerCase());
+
+                    boolean coincideNombre = (nombre == null || nombre.isEmpty()) ||
+                            huesped.getNombre().toLowerCase().startsWith(nombre.toLowerCase());
+
+                    boolean coincideTipoDoc = (tipoDocumento == null || tipoDocumento.isEmpty()) ||
+                            huesped.getTipoDocumento().equalsIgnoreCase(tipoDocumento);
+
+                    // Para el número, solo comparamos si el usuario ingresó algo.
+                    boolean coincideNumeroDoc = (numeroDocumento == null || numeroDocumento.isEmpty()) ||
+                            String.valueOf(huesped.getDocumento()).equals(numeroDocumento);
+
+                    // 6. Si TODOS los criterios coinciden, añade el huésped a la lista.
+                    if (coincideApellido && coincideNombre && coincideTipoDoc && coincideNumeroDoc) {
+                        huespedesEncontrados.add(huesped);
+                    }
+                }
+            }
         } catch (IOException e) {
             System.err.println("Error al leer el archivo de huéspedes: " + e.getMessage());
-            return Collections.emptyList();
         }
-    }
 
+        // 7. Devuelve la lista de huéspedes que coincidieron.
+        return huespedesEncontrados;
+    }
     private String convertirHuespedEnCSV(Huesped huesped) {
         return huesped.getApellido() + "," +
                 huesped.getNombre() + "," +
@@ -114,8 +146,8 @@ public class HuespedDAOImpl implements HuespedDAO {
             huesped.setNombre(datos[1]);
             huesped.setEmail(datos[2]);
             huesped.setTipoDocumento(datos[3]);
-            huesped.setDocumento(Integer.parseInt(datos[4]));
-            huesped.setTelefono(Integer.parseInt(datos[5]));
+            huesped.setDocumento(datos[4]);
+            huesped.setTelefono(Long.parseLong(datos[5]));
             return huesped;
         } catch (NumberFormatException e) {
             System.err.println("Advertencia: Se ignoró una línea con formato de número incorrecto.");
