@@ -21,7 +21,18 @@ public class Direccion {
         this.departamento = departamento;
         this.piso = piso;
     }
-
+    public Direccion(Direccion otra) {
+        if (otra != null) {
+            this.calle = otra.calle;
+            this.numero = otra.numero;
+            this.departamento = otra.departamento;
+            this.piso = otra.piso;
+            this.codigoPostal = otra.codigoPostal;
+            this.localidad = otra.localidad;
+            this.provincia = otra.provincia;
+            this.pais = otra.pais;
+        }
+    }
     public String getPais() {
         return pais;
     }

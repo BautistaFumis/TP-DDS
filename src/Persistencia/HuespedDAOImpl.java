@@ -6,6 +6,7 @@ import Logica.Dominio.Huesped;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -64,11 +65,6 @@ public class HuespedDAOImpl implements HuespedDAO {
         return Optional.empty();
     }
 
-    @Override
-    public void modificarHuesped(Huesped huesped) {
-        // no hecho
-        System.out.println("Método modificarHuesped no implementado.");
-    }
 
     @Override
     public void bajaHuesped(int documento) {
@@ -206,5 +202,27 @@ public class HuespedDAOImpl implements HuespedDAO {
             return null;
         }
     }
+    @Override
+    public void modificarHuesped(Huesped huespedModificado) {
+        try {
+            List<String> lineas = Files.readAllLines(Paths.get(RUTA_ARCHIVO));
 
+            List<String> lineasActualizadas = lineas.stream()
+                    .map(linea -> {
+                        String[] datos = linea.split(",", -1);
+                        // Compara por tipo y número de documento para encontrar la línea a reemplazar
+                        if (datos.length > 4 && datos[2].equals(huespedModificado.getTipoDocumento()) && datos[3].equals(huespedModificado.getDocumento())) {
+                            return convertirHuespedEnCSV(huespedModificado);
+                        }
+                        return linea;
+                    })
+                    .collect(Collectors.toList());
+
+            // Sobrescribe el archivo con los datos actualizados
+            Files.write(Paths.get(RUTA_ARCHIVO), lineasActualizadas, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+
+        } catch (IOException e) {
+            System.err.println("Error al modificar el archivo de huéspedes: " + e.getMessage());
+        }
+    }
 }

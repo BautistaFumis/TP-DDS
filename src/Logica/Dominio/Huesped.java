@@ -33,6 +33,23 @@ public class Huesped {
         this.ocupacion = ocupacion;
         this.nacionalidad = nacionalidad;
     }
+    public Huesped(Huesped otro) {
+        if (otro != null) {
+            this.nombre = otro.nombre;
+            this.apellido = otro.apellido;
+            this.email = otro.email;
+            this.tipoDocumento = otro.tipoDocumento;
+            this.telefono = otro.telefono;
+            this.documento = otro.documento;
+            // Llama al constructor de copia de Direccion
+            this.direccion = new Direccion(otro.direccion);
+            this.cuit = otro.cuit;
+            this.categoriaIVA = otro.categoriaIVA;
+            this.fechaNacimiento = otro.fechaNacimiento;
+            this.ocupacion = otro.ocupacion;
+            this.nacionalidad = otro.nacionalidad;
+        }
+    }
 
     public String getNombre() {
         return nombre;
