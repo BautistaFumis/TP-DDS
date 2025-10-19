@@ -1,6 +1,8 @@
-Fumis,Bautista,DNI,45828019,20-45828019-4,Consumidor Final,28/05/2004,AURA,2444,9,9,3000,Santa Fe,Santa Fe,Argentina,3425112233,bautistafumis@gmail.com,Estudiante,Argentina
-Gomez,Maria,DNI,32123456,,Consumidor Final,15/10/1985,San Martin,1234,,,3000,Santa Fe,Santa Fe,Argentina,3424987654,maria.gomez@example.com,Contadora,Argentina
-Martinez,Carlos,PASAPORTE,ABC98765,20-28765432-1,Responsable Inscripto,22/07/1980,Av. Corrientes,950,5,A,1043,Buenos Aires,CABA,Argentina,1155667788,carlos.martinez@work.com,Arquitecto,Uruguaya
-Rodriguez,Laura,LC,15876543,,Consumidor Final,05/03/1965,Av. Freyre,2150,PB,,3000,Santa Fe,Santa Fe,Argentina,3425123123,laura.r@example.com,Docente,Argentina
+Fumis,Bautista,DNI,45828019,20-45828019-4,Consumidor Final,28/05/2004,Saavedra,2444,,9,3000,Santa Fe,Santa Fe,Argentina,3425112233,bautistafumis@gmail.com,Estudiante,Argentina
 Fernandez,Juan,LE,8123456,,Monotributista,11/12/1950,Bv. Pellegrini,3201,,,3000,Santa Fe,Santa Fe,Argentina,3424111222,juan.fernandez@example.com,Jubilado,Argentina
-Garcia,Sofia,DNI,41987654,27-41987654-5,Consumidor Final,19/09/1999,Alvear,1530,,,2000,Rosario,Santa Fe,Argentina,3415876543,sofia.garcia@example.com,Diseñadora Grafica,Argentina
+Garcia,Sofia,DNI,41987654,27-41987654-5,Consumidor Final,19/09/1999,Alvear,1530,,,2000,Rosario,Santa Fe,Argentina,3415876543,sofia.garcia@example.com,Diseñadora,Argentina
+Lopez,Martin,DNI,35123456,,Consumidor Final,18/02/1990,Urquiza,1850,,,3000,Santa Fe,Santa Fe,Argentina,3425443322,martin.lopez@example.com,Programador,Argentina
+Gomez,Ana,PASAPORTE,DEF45678,,Monotributista,25/06/1992,Rivadavia,2899,,,3100,Parana,Entre Rios,Argentina,3434556677,ana.gomez@example.com,Abogada,Argentina
+Perez,Juana,DNI,38765432,,Consumidor Final,30/11/1995,J. J. Paso,4500,,,3000,Santa Fe,Santa Fe,Argentina,3425998877,juana.perez@example.com,Medica,Argentina
+Cinquini,Gino,DNI,1234567,,Consumidor Final,10/10/2002,Las 12,1905,,,3002,Parana,Entre Rios,Argentina,,,,Peru
+Cinquini,Gino,DNI,1234,,Consumidor Final,10/10/2002,BOCA,12,,,1234,Parana,Entre Rios,Argentina,,,,Japon

@@ -1,27 +1,18 @@
 package Persistencia;
 
 import Logica.Dominio.Huesped;
-
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Define el contrato para las operaciones de acceso a datos (DAO) de la entidad {@link Huesped}.
+ *
+ */
 public interface HuespedDAO {
 
-    void altaHuesped(Huesped huesped); //Agregar un Huesped al archivo
-
-    // Aca usa un tipo Optional que a chequear
+    void altaHuesped(Huesped huesped);
     Optional<Huesped> buscarHuesped(String tipoDocumento, String documento);
-
     void modificarHuesped(Huesped huesped);
-
-    void bajaHuesped(int documento);
-
-
-    /**
-     * Busca huéspedes cuyos nombres o apellidos comiencen con los criterios dados.
-     * @param apellido Criterio de búsqueda para el apellido (ignora si es nulo o vacío).
-     * @param nombre Criterio de búsqueda para el nombre (ignora si es nulo o vacío).
-     * @return Una lista de huéspedes que coinciden con los criterios.
-     */
+    void eliminarHuesped(String documento);
     List<Huesped> buscarPorCriterios(String apellido, String nombre, String tipoDocumento, String documento);
 }

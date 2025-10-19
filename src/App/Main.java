@@ -7,6 +7,8 @@ import Logica.Excepciones.CredencialesInvalidasException;
 import Logica.Excepciones.DocumentoDuplicadoException;
 import Logica.Gestores.GestorHuesped;
 import Logica.Gestores.GestorUsuario;
+import Persistencia.EstadiaDAO;
+import Persistencia.EstadiaDAOImpl;
 import Persistencia.HuespedDAO;
 import Persistencia.HuespedDAOImpl;
 
@@ -16,70 +18,76 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Clase principal de la aplicación de gestión hotelera.
+ * Contiene el punto de entrada (main) y se encarga de manejar el flujo de la aplicación,
+ * la interacción con el usuario a través de la consola y la orquestación de los casos de uso.
+ */
 public class Main {
 
+    /**
+     * Punto de entrada principal de la aplicación.
+     * Gestiona la autenticación inicial del usuario y muestra el menú principal de casos de uso.
+     *
+     * @param args Argumentos de la línea de comandos (no se utilizan).
+     */
     public static void main(String[] args) {
+        // --- 1. Inicialización de Componentes ---
         Scanner scanner = new Scanner(System.in);
         GestorUsuario gestorUsuario = new GestorUsuario();
         HuespedDAO huespedDAO = new HuespedDAOImpl();
-        GestorHuesped gestorHuesped = new GestorHuesped(huespedDAO);
+        EstadiaDAO estadiaDAO = new EstadiaDAOImpl();
+        GestorHuesped gestorHuesped = new GestorHuesped(huespedDAO, estadiaDAO); // Inyección de dependencias corregida
         boolean autenticado = false;
 
         System.out.println("========================================");
         System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA");
         System.out.println("========================================");
 
-
+        // --- 2. Bucle de Autenticación ---
         while (!autenticado) {
             try {
                 System.out.println("\nPor favor, inicie sesión:");
                 System.out.print("Usuario: ");
                 String id = scanner.nextLine();
-
-                System.out.print("Contraseña: "); // Debe ser oculta... Verlo para entrega
+                System.out.print("Contraseña: ");
                 String password = scanner.nextLine();
 
-                gestorUsuario.autenticar(id, password); // Si esto falla, capturamos la excepcion
+                gestorUsuario.autenticar(id, password);
                 autenticado = true;
                 System.out.println("\n¡Inicio de sesión exitoso! Bienvenido, " + id + ".");
-
             } catch (CredencialesInvalidasException e) {
                 System.err.println("Error: " + e.getMessage());
                 System.out.println("Por favor, intente de nuevo.");
             }
         }
 
+        // --- 3. Menú Principal ---
         int option;
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
             System.out.println("Seleccione el Caso de Uso que desea ejecutar:");
             System.out.println("1. CU01 - Autenticar Usuario");
-            System.out.println("2. CU02 - Buscar Huésped");
+            System.out.println("2. CU02 - Buscar Huésped (Permite Modificar y Eliminar)");
             System.out.println("9. CU09 - Dar de alta Huésped");
-            System.out.println("11. CU11 - Dar de baja Huésped");
             System.out.println("0. Salir");
             System.out.print("Opción: ");
 
             try {
                 option = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                option = -1; // Opción inválida si no es un número
+                option = -1;
             }
 
             switch (option) {
                 case 1:
-                    System.out.println("Ya se encuentra autenticado."); // Esto no estabamos seguros de si ponerlo o no, porque la autenticacion se hace al ingresar a la aplicacion.
+                    System.out.println("Ya se encuentra autenticado.");
                     break;
                 case 2:
-                    // Se llama al metodo que contiene la lógica del CU02
                     ejecutarBusquedaHuesped(scanner, gestorHuesped);
                     break;
                 case 9:
-                    // Se llama al metodo que contiene la lógica del CU09
                     ejecutarAltaHuesped(scanner, gestorHuesped);
-                    break;
-                case 11:
-                    System.out.println("Ejecutando CU11: Dar de baja Huésped (lógica no implementada)...");
                     break;
                 case 0:
                     System.out.println("Saliendo del sistema. ¡Hasta luego!");
@@ -94,24 +102,25 @@ public class Main {
     }
 
     /**
-     * Encapsula toda la lógica para el Caso de Uso 09: Dar de alta Huésped.
+     * Encapsula la lógica para el Caso de Uso 09: Dar de alta un nuevo Huésped.
+     * Solicita todos los datos al usuario por consola y maneja las validaciones y errores.
+     *
      * @param scanner El objeto Scanner para leer la entrada del usuario.
      * @param gestor El GestorHuesped que maneja la lógica de negocio.
      */
-    // faltan datos del huesped, ver el dominio
     private static void ejecutarAltaHuesped(Scanner scanner, GestorHuesped gestor) {
         boolean continuar = true;
         while (continuar) {
             System.out.println("\n--- ALTA DE NUEVO HUÉSPED (CU09) ---");
             System.out.println("Por favor, ingrese los datos solicitados. Los campos con (*) son obligatorios.");
             Huesped huespedParaAlta = new Huesped();
+            Direccion direccion = new Direccion();
 
             try {
                 System.out.print("(*) Apellido: ");
                 huespedParaAlta.setApellido(scanner.nextLine());
                 System.out.print("(*) Nombre: ");
                 huespedParaAlta.setNombre(scanner.nextLine());
-                // ver de usar ENUM
                 System.out.print("(*) Tipo de Documento (DNI, LE, LC, PASAPORTE, Otro): ");
                 huespedParaAlta.setTipoDocumento(scanner.nextLine());
                 System.out.print("(*) Número de Documento: ");
@@ -120,29 +129,34 @@ public class Main {
                 huespedParaAlta.setCuit(scanner.nextLine());
                 System.out.print("Posicion frente al IVA: ");
                 huespedParaAlta.setCategoriaIVA(scanner.nextLine());
+
                 DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 System.out.print("(*) Fecha de Nacimiento (formato dd/mm/aaaa): ");
                 String fechaTexto = scanner.nextLine();
-                LocalDate fechaNacimiento = LocalDate.parse(fechaTexto, formatoFecha);
-                huespedParaAlta.setFechaNacimiento(fechaNacimiento);
-                System.out.print("Direccion: \n");
-                huespedParaAlta.setDireccion(new Direccion());
+                huespedParaAlta.setFechaNacimiento(LocalDate.parse(fechaTexto, formatoFecha));
+
+                System.out.println("--- Dirección ---");
                 System.out.print("(*) Calle: ");
-                huespedParaAlta.getDireccion().setCalle(scanner.nextLine());
+                direccion.setCalle(scanner.nextLine());
                 System.out.print("(*) Numero: ");
-                huespedParaAlta.getDireccion().setNumero(Integer.parseInt(scanner.nextLine()));
+                direccion.setNumero(scanner.nextInt());
                 System.out.print("Departamento (Letra o Numero): ");
-                huespedParaAlta.getDireccion().setDepartamento(scanner.nextLine());
+                direccion.setDepartamento(scanner.nextLine());
                 System.out.print("Piso (Numero): ");
-                huespedParaAlta.getDireccion().setPiso(scanner.nextLine());
+                String pisoStr = scanner.nextLine();
+                if (pisoStr != null && !pisoStr.isEmpty()) {
+                    direccion.setPiso(pisoStr);
+                }
                 System.out.print("(*) Codigo Postal: ");
-                huespedParaAlta.getDireccion().setCodigoPostal(Integer.parseInt(scanner.nextLine()));
+                direccion.setCodigoPostal(scanner.nextLine());
                 System.out.print("(*) Localidad: ");
-                huespedParaAlta.getDireccion().setLocalidad(scanner.nextLine());
+                direccion.setLocalidad(scanner.nextLine());
                 System.out.print("(*) Provincia: ");
-                huespedParaAlta.getDireccion().setProvincia(scanner.nextLine());
+                direccion.setProvincia(scanner.nextLine());
                 System.out.print("(*) Pais: ");
-                huespedParaAlta.getDireccion().setPais(scanner.nextLine());
+                direccion.setPais(scanner.nextLine());
+                huespedParaAlta.setDireccion(direccion);
+
                 System.out.print("Teléfono: ");
                 huespedParaAlta.setTelefono(scanner.nextLine());
                 System.out.print("Email: ");
@@ -159,18 +173,17 @@ public class Main {
             } catch (DateTimeParseException e) {
                 System.err.println("\nERROR: El formato de la fecha es incorrecto. Debe ser dd/mm/aaaa.");
             } catch (NumberFormatException e) {
-                System.err.println("\nERROR: Uno de los campos numéricos (Número, Piso, CP, Teléfono) tiene un formato inválido.");
+                System.err.println("\nERROR: Uno de los campos numéricos (Número, Piso, CP) tiene un formato inválido.");
             } catch (CamposObligatoriosException e) {
                 System.err.println("\nERROR: " + e.getMessage() + " Por favor, intente de nuevo.");
             } catch (DocumentoDuplicadoException e) {
-                System.err.println("\n ADVERTENCIA: " + e.getMessage());
+                System.err.println("\nADVERTENCIA: " + e.getMessage());
                 System.out.print("¿Desea aceptarlo igualmente? [1] ACEPTAR IGUALMENTE / [2] CORREGIR: ");
                 String opcion = scanner.nextLine();
                 if ("1".equals(opcion)) {
                     gestor.registrarHuespedAceptandoDuplicado(huespedParaAlta);
                     System.out.println("ÉXITO: Se ha registrado el huésped duplicado.");
                 } else {
-                    //aca hay que volver a el ingresa con foco en tipo de documento
                     System.out.println("Operación cancelada. Por favor, ingrese los datos nuevamente.");
                 }
             }
@@ -182,6 +195,14 @@ public class Main {
         }
     }
 
+    /**
+     * Encapsula la lógica para el Caso de Uso 02: Buscar un Huésped.
+     * Permite buscar por múltiples criterios y, si se encuentra un resultado,
+     * deriva a los casos de uso de Modificación (CU10) o Alta (CU09).
+     *
+     * @param scanner El objeto Scanner para leer la entrada del usuario.
+     * @param gestor El GestorHuesped que maneja la lógica de negocio.
+     */
     private static void ejecutarBusquedaHuesped(Scanner scanner, GestorHuesped gestor) {
         System.out.println("\n--- BÚSQUEDA DE HUÉSPED (CU02) ---");
         System.out.println("Ingrese los criterios de búsqueda (deje en blanco para omitir).");
@@ -190,7 +211,7 @@ public class Main {
         String apellido = scanner.nextLine();
         System.out.print("Nombre: ");
         String nombre = scanner.nextLine();
-        System.out.print("Tipo de Documento (DNI, LE, LC, PASAPORTE, Otro): ");
+        System.out.print("Tipo de Documento: ");
         String tipoDocumento = scanner.nextLine();
         System.out.print("Numero de Documento: ");
         String documento = scanner.nextLine();
@@ -198,10 +219,12 @@ public class Main {
         List<Huesped> resultados = gestor.buscarHuespedes(apellido, nombre, tipoDocumento , documento);
 
         if (resultados.isEmpty()) {
-            // aca dar la opcion de poner 1 si queres agregarlo y 2 si no queres agregarlo
             System.out.println("\nNo se encontró ninguna concordancia.");
-            System.out.println("Redirigiendo al alta de huésped...");
-            ejecutarAltaHuesped(scanner, gestor);
+            System.out.print("¿Desea registrar un nuevo huésped? [SI/NO]: ");
+            if (scanner.nextLine().equalsIgnoreCase("SI")) {
+                System.out.println("Redirigiendo al alta de huésped...");
+                ejecutarAltaHuesped(scanner, gestor);
+            }
             return;
         }
 
@@ -211,31 +234,39 @@ public class Main {
             System.out.printf("%d. %s, %s - %s: %s\n", (i + 1), h.getApellido(), h.getNombre(), h.getTipoDocumento(), h.getDocumento());
         }
 
-        System.out.print("\nSi desea modificarlo, seleccione un huésped por su número o caso contrario presione [Enter] para crear uno nuevo: ");
-        String seleccion = scanner.nextLine();
+        while (true) {
+            System.out.print("\nSeleccione un huésped por su número para modificarlo, o presione [Enter] para crear uno nuevo: ");
+            String seleccion = scanner.nextLine();
 
-        if (seleccion.isEmpty()) {
-            System.out.println("\nNo se seleccionó un huésped existente.");
-            System.out.println("Redirigiendo al alta de huésped...");
-            ejecutarAltaHuesped(scanner, gestor);
-            return;
-        }
-// hacer un loop hasta que ingrese un numero valido
-        try {
-            int indice = Integer.parseInt(seleccion) - 1;
-            if (indice >= 0 && indice < resultados.size()) {
-                Huesped huespedSeleccionado = resultados.get(indice);
-                System.out.println("\nHuésped seleccionado: " + huespedSeleccionado.getNombre() + " " + huespedSeleccionado.getApellido());
-                System.out.println("Ejecutando CU10: Modificar Huésped");
-                ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
-            } else {
-                System.err.println("Número de selección inválido.");
+            if (seleccion.isEmpty()) {
+                System.out.println("Redirigiendo al alta de huésped...");
+                ejecutarAltaHuesped(scanner, gestor);
+                return;
             }
-        } catch (NumberFormatException e) {
-            System.err.println("Entrada inválida. Por favor, ingrese un número.");
+
+            try {
+                int indice = Integer.parseInt(seleccion) - 1;
+                if (indice >= 0 && indice < resultados.size()) {
+                    Huesped huespedSeleccionado = resultados.get(indice);
+                    ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
+                    return; // Sale del bucle y del metodo
+                } else {
+                    System.err.println("Número de selección inválido. Por favor, intente de nuevo.");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Entrada inválida. Por favor, ingrese un número o presione [Enter].");
+            }
         }
     }
 
+    /**
+     * Encapsula la lógica para el Caso de Uso 10: Modificar un Huésped existente.
+     * Muestra los datos actuales y permite al usuario actualizarlos, cancelarlos o eliminar el huésped.
+     *
+     * @param scanner El objeto Scanner para leer la entrada del usuario.
+     * @param gestor El GestorHuesped que maneja la lógica de negocio.
+     * @param huespedOriginal El objeto Huesped seleccionado en la búsqueda que se va a modificar.
+     */
     private static void ejecutarModificarHuesped(Scanner scanner, GestorHuesped gestor, Huesped huespedOriginal) {
         System.out.println("\n--- MODIFICACIÓN DE HUÉSPED (CU10) ---");
         System.out.println("Modifique los campos que desee. Presione [Enter] para conservar el valor actual.");
@@ -306,7 +337,7 @@ public class Main {
             String nuevoPisoStr = scanner.nextLine();
             if (!nuevoPisoStr.isEmpty()) {
                 direccionModificada.setPiso(nuevoPisoStr);
-            } else if (pisoOriginal.isEmpty() && nuevoPisoStr.isEmpty()) {
+            } else if (pisoOriginal.isEmpty()) {
                 // Si era null y sigue vacío, se mantiene null
                 direccionModificada.setPiso(null);
             }
@@ -314,7 +345,7 @@ public class Main {
 
             System.out.printf("Codigo Postal (*): [%d] > ", huespedOriginal.getDireccion().getCodigoPostal());
             String nuevoCpStr = scanner.nextLine();
-            if (!nuevoCpStr.isEmpty()) direccionModificada.setCodigoPostal(Integer.parseInt(nuevoCpStr));
+            if (!nuevoCpStr.isEmpty()) direccionModificada.setCodigoPostal(nuevoCpStr);
 
             System.out.printf("Localidad (*): [%s] > ", huespedOriginal.getDireccion().getLocalidad());
             String nuevaLocalidad = scanner.nextLine();
@@ -351,7 +382,7 @@ public class Main {
                     break;
                 case "3":
                     System.out.println("\nEjecutando CU11: Dar baja de Huésped ");
-                    // Aquí llamarías a: ejecutarBajaHuesped(scanner, gestor, huespedOriginal);
+                    ejecutarBajaHuesped(scanner, gestor, huespedOriginal);
                     break;
                 default:
                     System.out.println("Opción no válida. Cambios descartados.");
@@ -361,5 +392,37 @@ public class Main {
             System.err.println("\n ERROR: " + e.getMessage());
         }
     }
-}
 
+    /**
+     * Encapsula la lógica para el Caso de Uso 11: Dar de baja un Huésped.
+     * Verifica si el huésped puede ser eliminado y pide confirmación al usuario.
+     *
+     * @param scanner El objeto Scanner para leer la confirmación del usuario.
+     * @param gestor El GestorHuesped que maneja la lógica de negocio.
+     * @param huesped El huésped que se desea eliminar.
+     */
+    public static void ejecutarBajaHuesped(Scanner scanner, GestorHuesped gestor, Huesped huesped) {
+        System.out.println("\n--- BAJA DE HUÉSPED (CU11) ---");
+
+        if (!gestor.darDeBajaHuesped(huesped)) {
+            System.out.println("El huésped no puede ser eliminado pues se ha alojado en el Hotel en alguna oportunidad.");
+            System.out.print("PRESIONE [Enter] PARA CONTINUAR...");
+            scanner.nextLine();
+            return;
+        }
+
+        System.out.printf("Los datos del huésped '%s, %s' serán eliminados del sistema.\n",
+                huesped.getApellido(), huesped.getNombre());
+        System.out.print("¿Está seguro? [1] ELIMINAR / [2] CANCELAR > ");
+        String opcion = scanner.nextLine();
+
+        if (opcion.equals("1")) {
+            gestor.darDeBajaHuesped(huesped); // Se llama de nuevo para efectuar el borrado
+            System.out.println("\nEl huésped ha sido eliminado del sistema.");
+        } else {
+            System.out.println("\nOperación cancelada.");
+        }
+        System.out.print("PRESIONE [Enter] PARA CONTINUAR...");
+        scanner.nextLine();
+    }
+}
