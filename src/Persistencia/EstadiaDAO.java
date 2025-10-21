@@ -6,8 +6,6 @@ import Logica.Dominio.Huesped;
 /**
  * Define el contrato para las operaciones de acceso a datos (DAO) relacionadas con la entidad {@link Estadia}.
  *
- * @author TuNombre
- * @version 1.0
  */
 public interface EstadiaDAO {
 
