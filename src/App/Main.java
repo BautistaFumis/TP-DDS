@@ -32,7 +32,6 @@ public class Main {
      * @param args Argumentos de la línea de comandos (no se utilizan).
      */
     public static void main(String[] args) {
-        // --- 1. Inicialización de Componentes ---
         Scanner scanner = new Scanner(System.in);
         GestorUsuario gestorUsuario = new GestorUsuario();
         HuespedDAO huespedDAO = new HuespedDAOImpl();
