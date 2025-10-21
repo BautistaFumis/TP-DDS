@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,59 +111,87 @@ public class HuespedDAOImpl implements HuespedDAO {
 
     private String convertirHuespedEnCSV(Huesped huesped) {
         Direccion dir = huesped.getDireccion();
+        String cuitStr = huesped.getCuit() != null ? huesped.getCuit() : "";
+        String deptoStr = dir.getDepartamento() != null ? dir.getDepartamento() : "";
+        String pisoStr = (dir.getPiso() == null) ? "" : String.valueOf(dir.getPiso());
+        String telefonoStr = huesped.getTelefono() != null ? huesped.getTelefono() : "";
+        String emailStr = huesped.getEmail() != null ? huesped.getEmail() : "";
+        String ocupacionStr = huesped.getOcupacion() != null ? huesped.getOcupacion() : "";
+        String nacionalidadStr = huesped.getNacionalidad() != null ? huesped.getNacionalidad() : "";
+
+
         return String.join(",",
                 huesped.getApellido(),
                 huesped.getNombre(),
                 huesped.getTipoDocumento(),
                 huesped.getDocumento(),
-                huesped.getCuit(),
+                cuitStr,
                 huesped.getCategoriaIVA(),
-                huesped.getFechaNacimiento().format(FORMATO_FECHA), // Formatea la fecha a texto
-                huesped.getDireccion().getCalle(),
-                String.valueOf(huesped.getDireccion().getNumero()),
-                huesped.getDireccion().getDepartamento(),
-                String.valueOf(huesped.getDireccion().getPiso()),
-                String.valueOf(huesped.getDireccion().getCodigoPostal()),
-                huesped.getDireccion().getLocalidad(),
-                huesped.getDireccion().getProvincia(),
-                huesped.getDireccion().getPais(),
-                String.valueOf(huesped.getTelefono()),
-                huesped.getEmail(),
-                huesped.getOcupacion(),
-                huesped.getNacionalidad()
+                huesped.getFechaNacimiento() != null ? huesped.getFechaNacimiento().format(FORMATO_FECHA) : "",
+                dir.getCalle(),
+                (dir.getNumero() == null) ? "" : String.valueOf(dir.getNumero()),
+                deptoStr,
+                pisoStr,
+                (dir.getCodigoPostal() == null) ? "" : String.valueOf(dir.getCodigoPostal()),
+                dir.getLocalidad(),
+                dir.getProvincia(),
+                dir.getPais(),
+                telefonoStr,
+                emailStr,
+                ocupacionStr,
+                nacionalidadStr
         );
     }
 
     private Huesped convertirCSVAHuesped(String[] datos) {
+        // Verifica el número correcto de campos esperado
         if (datos == null || datos.length < 19) {
+            System.err.println("Advertencia: Se ignoró una línea CSV con longitud incorrecta: " + (datos != null ? datos.length : "null"));
             return null;
         }
         try {
             Huesped huesped = new Huesped();
             Direccion direccion = new Direccion();
+
             huesped.setApellido(datos[0]);
             huesped.setNombre(datos[1]);
             huesped.setTipoDocumento(datos[2]);
             huesped.setDocumento(datos[3]);
             huesped.setCuit(datos[4]);
             huesped.setCategoriaIVA(datos[5]);
-            huesped.setFechaNacimiento(LocalDate.parse(datos[6], FORMATO_FECHA));
+            // Maneja fecha vacía
+            if (datos[6] != null && !datos[6].isEmpty()) {
+                huesped.setFechaNacimiento(LocalDate.parse(datos[6], FORMATO_FECHA));
+            } else {
+                huesped.setFechaNacimiento(null);
+            }
+
             direccion.setCalle(datos[7]);
-            if(datos[8] != null && !datos[8].isEmpty()) direccion.setNumero(Integer.parseInt(datos[8]));
+            // Convierte a Integer, manejando vacío
+            if (datos[8] != null && !datos[8].isEmpty()) direccion.setNumero(Integer.parseInt(datos[8]));
             direccion.setDepartamento(datos[9]);
-            if(datos[10] != null && !datos[10].isEmpty()) direccion.setPiso(datos[10]);
-            if(datos[11] != null && !datos[11].isEmpty()) direccion.setCodigoPostal(datos[11]);
+            // Convierte a Integer, manejando vacío
+            if (datos[10] != null && !datos[10].isEmpty()) direccion.setPiso(Integer.parseInt(datos[10]));
+            direccion.setCodigoPostal(datos[11]);
             direccion.setLocalidad(datos[12]);
             direccion.setProvincia(datos[13]);
             direccion.setPais(datos[14]);
             huesped.setDireccion(direccion);
+
             huesped.setTelefono(datos[15]);
             huesped.setEmail(datos[16]);
             huesped.setOcupacion(datos[17]);
             huesped.setNacionalidad(datos[18]);
+
             return huesped;
+        } catch (DateTimeParseException e) {
+            System.err.println("Advertencia: Se ignoró una línea con formato de fecha incorrecto en huespedes.csv.");
+            return null;
+        } catch (NumberFormatException e) {
+            System.err.println("Advertencia: Se ignoró una línea con formato de número incorrecto (Numero, Piso o CP) en huespedes.csv.");
+            return null;
         } catch (Exception e) {
-            System.err.println("Advertencia: Se ignoró una línea con formato incorrecto en huespedes.csv.");
+            System.err.println("Advertencia: Se ignoró una línea con formato incorrecto general en huespedes.csv. Error: " + e.getMessage());
             return null;
         }
     }

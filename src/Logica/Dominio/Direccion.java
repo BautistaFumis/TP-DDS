@@ -9,9 +9,9 @@ public class Direccion {
     private String localidad;
     private String codigoPostal; // Hay ciudades que el CP tiene letra
     private String calle;
-    private int numero;
+    private Integer numero;
     private String departamento;
-    private String piso;
+    private Integer piso;
 
     /**
      * Constructor por defecto.
@@ -32,7 +32,7 @@ public class Direccion {
      * @param departamento El identificador del departamento (puede ser número o letra).
      * @param piso El número del piso.
      */
-    public Direccion(String pais, String provincia, String localidad, String codigoPostal, String calle, int numero, String departamento, String piso) {
+    public Direccion(String pais, String provincia, String localidad, String codigoPostal, String calle, Integer numero, String departamento, Integer piso) {
         this.pais = pais;
         this.provincia = provincia;
         this.localidad = localidad;
@@ -146,7 +146,7 @@ public class Direccion {
      * Obtiene el número de la dirección.
      * @return El número de la dirección.
      */
-    public int getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 
@@ -154,7 +154,7 @@ public class Direccion {
      * Establece el número de la dirección.
      * @param numero El nuevo número de la dirección.
      */
-    public void setNumero(int numero) {
+    public void setNumero(Integer numero) {
         this.numero = numero;
     }
 
@@ -178,7 +178,7 @@ public class Direccion {
      * Obtiene el piso.
      * @return El número del piso.
      */
-    public String getPiso() {
+    public Integer getPiso() {
         return piso;
     }
 
@@ -186,7 +186,7 @@ public class Direccion {
      * Establece el piso.
      * @param piso El nuevo número del piso.
      */
-    public void setPiso(String piso) {
+    public void setPiso(Integer piso) {
         this.piso = piso;
     }
 }

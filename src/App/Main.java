@@ -133,19 +133,32 @@ public class Main {
                 DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 System.out.print("(*) Fecha de Nacimiento (formato dd/mm/aaaa): ");
                 String fechaTexto = scanner.nextLine();
-                huespedParaAlta.setFechaNacimiento(LocalDate.parse(fechaTexto, formatoFecha));
+                if(fechaTexto != null && !fechaTexto.trim().isEmpty()) { // Validar fecha no vacía
+                    huespedParaAlta.setFechaNacimiento(LocalDate.parse(fechaTexto, formatoFecha));
+                } else {
+                    huespedParaAlta.setFechaNacimiento(null); // O lanzar error si es obligatorio
+                }
+
 
                 System.out.println("--- Dirección ---");
                 System.out.print("(*) Calle: ");
                 direccion.setCalle(scanner.nextLine());
                 System.out.print("(*) Numero: ");
-                direccion.setNumero(scanner.nextInt());
+                String numeroStr = scanner.nextLine();
+                if(numeroStr != null && !numeroStr.trim().isEmpty()) {
+                    direccion.setNumero(Integer.parseInt(numeroStr.trim()));
+                } else {
+                    direccion.setNumero(null);
+                }
+
                 System.out.print("Departamento (Letra o Numero): ");
                 direccion.setDepartamento(scanner.nextLine());
                 System.out.print("Piso (Numero): ");
                 String pisoStr = scanner.nextLine();
-                if (pisoStr != null && !pisoStr.isEmpty()) {
-                    direccion.setPiso(pisoStr);
+                if (pisoStr != null && !pisoStr.trim().isEmpty()) {
+                    direccion.setPiso(Integer.parseInt(pisoStr.trim()));
+                } else {
+                    direccion.setPiso(null);
                 }
                 System.out.print("(*) Codigo Postal: ");
                 direccion.setCodigoPostal(scanner.nextLine());
@@ -168,21 +181,21 @@ public class Main {
 
                 gestor.registrarNuevoHuesped(huespedParaAlta);
 
-                System.out.println("\nÉXITO: El huésped '" + huespedParaAlta.getNombre() + " " + huespedParaAlta.getApellido() + "' ha sido satisfactoriamente cargado al sistema.");
+                System.out.println("\n ÉXITO: El huésped '" + huespedParaAlta.getNombre() + " " + huespedParaAlta.getApellido() + "' ha sido satisfactoriamente cargado al sistema.");
 
             } catch (DateTimeParseException e) {
-                System.err.println("\nERROR: El formato de la fecha es incorrecto. Debe ser dd/mm/aaaa.");
+                System.err.println("\n ERROR: El formato de la fecha es incorrecto. Debe ser dd/mm/aaaa.");
             } catch (NumberFormatException e) {
-                System.err.println("\nERROR: Uno de los campos numéricos (Número, Piso, CP) tiene un formato inválido.");
+                System.err.println("\n ERROR: Uno de los campos numéricos (Número, Piso, CP) tiene un formato inválido.");
             } catch (CamposObligatoriosException e) {
-                System.err.println("\nERROR: " + e.getMessage() + " Por favor, intente de nuevo.");
+                System.err.println("\n ERROR: " + e.getMessage() + " Por favor, intente de nuevo.");
             } catch (DocumentoDuplicadoException e) {
-                System.err.println("\nADVERTENCIA: " + e.getMessage());
+                System.err.println("\n ADVERTENCIA: " + e.getMessage());
                 System.out.print("¿Desea aceptarlo igualmente? [1] ACEPTAR IGUALMENTE / [2] CORREGIR: ");
                 String opcion = scanner.nextLine();
                 if ("1".equals(opcion)) {
                     gestor.registrarHuespedAceptandoDuplicado(huespedParaAlta);
-                    System.out.println("ÉXITO: Se ha registrado el huésped duplicado.");
+                    System.out.println(" ÉXITO: Se ha registrado el huésped duplicado.");
                 } else {
                     System.out.println("Operación cancelada. Por favor, ingrese los datos nuevamente.");
                 }
@@ -276,7 +289,6 @@ public class Main {
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         try {
-            // --- Datos Personales ---
             System.out.printf("Apellido (*): [%s] > ", huespedOriginal.getApellido());
             String nuevoApellido = scanner.nextLine();
             if (!nuevoApellido.isEmpty()) huespedModificado.setApellido(nuevoApellido);
@@ -299,7 +311,6 @@ public class Main {
                 huespedModificado.setFechaNacimiento(LocalDate.parse(nuevaFechaStr, formatoFecha));
             }
 
-            // --- Datos Fiscales y de Contacto ---
             System.out.printf("CUIT: [%s] > ", huespedOriginal.getCuit());
             String nuevoCuit = scanner.nextLine();
             if (!nuevoCuit.isEmpty()) huespedModificado.setCuit(nuevoCuit);
@@ -316,7 +327,6 @@ public class Main {
             String nuevoEmail = scanner.nextLine();
             if (!nuevoEmail.isEmpty()) huespedModificado.setEmail(nuevoEmail);
 
-            // --- Dirección ---
             System.out.println("--- Dirección ---");
             System.out.printf("Calle (*): [%s] > ", huespedOriginal.getDireccion().getCalle());
             String nuevaCalle = scanner.nextLine();
@@ -326,24 +336,19 @@ public class Main {
             String nuevoNumeroStr = scanner.nextLine();
             if (!nuevoNumeroStr.isEmpty()) direccionModificada.setNumero(Integer.parseInt(nuevoNumeroStr));
 
-            // Maneja el caso de que el depto/piso sean null en el original
             String deptoOriginal = huespedOriginal.getDireccion().getDepartamento() != null ? huespedOriginal.getDireccion().getDepartamento() : "";
             System.out.printf("Departamento: [%s] > ", deptoOriginal);
             String nuevoDepto = scanner.nextLine();
             if (!nuevoDepto.isEmpty()) direccionModificada.setDepartamento(nuevoDepto);
 
-            String pisoOriginal = huespedOriginal.getDireccion().getPiso() != null ? huespedOriginal.getDireccion().getPiso() : "";
-            System.out.printf("Piso: [%s] > ", pisoOriginal);
-            String nuevoPisoStr = scanner.nextLine();
-            if (!nuevoPisoStr.isEmpty()) {
-                direccionModificada.setPiso(nuevoPisoStr);
-            } else if (pisoOriginal.isEmpty()) {
-                // Si era null y sigue vacío, se mantiene null
-                direccionModificada.setPiso(null);
+            if (huespedOriginal.getDireccion().getPiso() == null)  System.out.print("Piso : [] > ");
+            else {
+            System.out.printf("Piso : [%d] > ", huespedOriginal.getDireccion().getPiso());
             }
+            String nuevoPisoStr = scanner.nextLine();
+            if (!nuevoPisoStr.isEmpty()) direccionModificada.setPiso(Integer.parseInt(nuevoPisoStr));
 
-
-            System.out.printf("Codigo Postal (*): [%d] > ", huespedOriginal.getDireccion().getCodigoPostal());
+            System.out.printf("Codigo Postal (*): [%s] > ", huespedOriginal.getDireccion().getCodigoPostal());
             String nuevoCpStr = scanner.nextLine();
             if (!nuevoCpStr.isEmpty()) direccionModificada.setCodigoPostal(nuevoCpStr);
 
@@ -359,7 +364,6 @@ public class Main {
             String nuevoPais = scanner.nextLine();
             if (!nuevoPais.isEmpty()) direccionModificada.setPais(nuevoPais);
 
-            // --- Otros Datos ---
             System.out.printf("Ocupacion: [%s] > ", huespedOriginal.getOcupacion());
             String nuevaOcupacion = scanner.nextLine();
             if (!nuevaOcupacion.isEmpty()) huespedModificado.setOcupacion(nuevaOcupacion);
@@ -368,7 +372,6 @@ public class Main {
             String nuevaNacionalidad = scanner.nextLine();
             if (!nuevaNacionalidad.isEmpty()) huespedModificado.setNacionalidad(nuevaNacionalidad);
 
-            // Al final, presenta las opciones al usuario
             System.out.print("\nAcciones: [1] GUARDAR CAMBIOS / [2] CANCELAR / [3] BORRAR HUÉSPED > ");
             String opcion = scanner.nextLine();
 
