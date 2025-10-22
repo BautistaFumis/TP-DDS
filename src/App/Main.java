@@ -369,25 +369,34 @@ public class Main {
             System.out.printf("Nacionalidad: [%s] > ", huespedOriginal.getNacionalidad());
             String nuevaNacionalidad = scanner.nextLine();
             if (!nuevaNacionalidad.isEmpty()) huespedModificado.setNacionalidad(nuevaNacionalidad);
-
-            System.out.print("\nAcciones: [1] GUARDAR CAMBIOS / [2] CANCELAR / [3] BORRAR HUÉSPED > ");
+            boolean valorincorrecto = true;
+            while(valorincorrecto) {
+            System.out.print("\nAcciones: [1] GUARDAR CAMBIOS / [2] CANCELAR / [3] BORRAR HUÉSPED / [4] DESCARTAR CAMBIOS > ");
             String opcion = scanner.nextLine();
 
             switch (opcion) {
                 case "1":
                     gestor.modificarHuesped(huespedModificado);
                     System.out.println("\n ÉXITO: Los datos del huésped han sido actualizados.");
+                    valorincorrecto = false;
                     break;
                 case "2":
                     System.out.println("\nOperación cancelada. No se guardaron los cambios.");
+                    valorincorrecto = false;
                     break;
                 case "3":
                     System.out.println("\nEjecutando CU11: Dar baja de Huésped ");
                     ejecutarBajaHuesped(scanner, gestor, huespedOriginal);
+                    valorincorrecto = false;
+                    break;
+                case "4":
+                    System.out.println("Cambios descartados.");
+                    valorincorrecto = false;
                     break;
                 default:
-                    System.out.println("Opción no válida. Cambios descartados.");
+                    System.out.println("Opción no válida. Ingrese de nuevo.");
                     break;
+            }
             }
         } catch (Exception e) {
             System.err.println("\n ERROR: " + e.getMessage());
