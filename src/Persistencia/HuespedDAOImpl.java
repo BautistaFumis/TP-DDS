@@ -18,9 +18,16 @@ import java.util.stream.Collectors;
  * Implementación de {@link HuespedDAO} que maneja la persistencia de los datos de huéspedes en un archivo CSV.
  *
  */
+
 public class HuespedDAOImpl implements HuespedDAO {
     private final String RUTA_ARCHIVO = "huespedes.csv";
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    /**
+     * Persiste un nuevo huésped en la fuente de datos.
+     *
+     * @param huesped El objeto {@link Huesped} que se va a agregar. Debe contener todos los datos necesarios.
+     */
 
     @Override
     public void altaHuesped(Huesped huesped) {
@@ -30,6 +37,17 @@ public class HuespedDAOImpl implements HuespedDAO {
             System.err.println("Error al escribir en el archivo: " + e.getMessage());
         }
     }
+
+    /**
+     * Busca un único huésped por su tipo y número de documento.
+     * El uso de {@link Optional} es para manejar de forma segura el caso en que
+     * no se encuentre ningún huésped con los datos proporcionados, evitando NullPointerExceptions.
+     *
+     * @param tipoDocumento El tipo de documento del huésped a buscar (ej: "DNI").
+     * @param documento El número de documento del huésped a buscar.
+     * @return Un {@link Optional} que contiene el objeto {@link Huesped} si se encuentra,
+     * o un Optional vacío si no hay coincidencias.
+     */
 
     @Override
     public Optional<Huesped> buscarHuesped(String tipoDocumento, String documento) {
@@ -46,6 +64,19 @@ public class HuespedDAOImpl implements HuespedDAO {
         }
         return Optional.empty();
     }
+
+    /**
+     * Busca una lista de huéspedes que coincidan con múltiples criterios de búsqueda.
+     * Si un criterio se proporciona como nulo o vacío, se ignora en el filtro.
+     * La búsqueda por apellido y nombre es sensible a mayúsculas/minúsculas y busca por prefijo ("empieza con").
+     *
+     * @param apellido Criterio de búsqueda para el apellido.
+     * @param nombre Criterio de búsqueda para el nombre.
+     * @param tipoDocumento Criterio de búsqueda para el tipo de documento (comparación exacta, ignorando mayúsculas/minúsculas).
+     * @param numeroDocumento Criterio de búsqueda para el número de documento (comparación exacta).
+     * @return Una {@link List} de objetos {@link Huesped} que coinciden con los criterios.
+     * Si no se encuentran coincidencias, devuelve una lista vacía.
+     */
 
     @Override
     public List<Huesped> buscarPorCriterios(String apellido, String nombre, String tipoDocumento, String numeroDocumento) {
@@ -74,6 +105,14 @@ public class HuespedDAOImpl implements HuespedDAO {
         return huespedesEncontrados;
     }
 
+    /**
+     * Actualiza la información de un huésped existente en la fuente de datos.
+     * La implementación buscará al huésped basándose en su tipo y número de documento
+     * y reemplazará sus datos con los del objeto proporcionado.
+     *
+     * @param huespedModificado El objeto {@link Huesped} con los datos ya modificados.
+     */
+
     @Override
     public void modificarHuesped(Huesped huespedModificado) {
         try {
@@ -93,6 +132,12 @@ public class HuespedDAOImpl implements HuespedDAO {
         }
     }
 
+    /**
+     * Elimina un huésped de la fuente de datos utilizando su número de documento como identificador único.
+     *
+     * @param documento El número de documento del huésped que se desea eliminar.
+     */
+
     @Override
     public void eliminarHuesped(String documento) {
         try {
@@ -108,6 +153,14 @@ public class HuespedDAOImpl implements HuespedDAO {
             System.err.println("Error al eliminar el huésped: " + e.getMessage());
         }
     }
+
+    /**
+     * Convierte un objeto {@link Huesped} a su representación en formato CSV.
+     * Maneja los valores nulos para campos opcionales, representándolos como cadenas vacías.
+     *
+     * @param huesped El objeto Huesped a convertir.
+     * @return Una cadena de texto formateada como una línea CSV.
+     */
 
     private String convertirHuespedEnCSV(Huesped huesped) {
         Direccion dir = huesped.getDireccion();
@@ -143,8 +196,16 @@ public class HuespedDAOImpl implements HuespedDAO {
         );
     }
 
+    /**
+     * Convierte un array de strings (una línea CSV) en un objeto {@link Huesped}.
+     * Es robusto frente a líneas malformadas o con datos incorrectos, retornando {@code null}
+     * en esos casos y registrando una advertencia.
+     *
+     * @param datos El array de strings obtenido al dividir una línea del CSV.
+     * @return Un objeto {@link Huesped} si la conversión es exitosa, o {@code null} si falla.
+     */
+
     private Huesped convertirCSVAHuesped(String[] datos) {
-        // Verifica el número correcto de campos esperado
         if (datos == null || datos.length < 19) {
             System.err.println("Advertencia: Se ignoró una línea CSV con longitud incorrecta: " + (datos != null ? datos.length : "null"));
             return null;
@@ -152,37 +213,30 @@ public class HuespedDAOImpl implements HuespedDAO {
         try {
             Huesped huesped = new Huesped();
             Direccion direccion = new Direccion();
-
             huesped.setApellido(datos[0]);
             huesped.setNombre(datos[1]);
             huesped.setTipoDocumento(datos[2]);
             huesped.setDocumento(datos[3]);
             huesped.setCuit(datos[4]);
             huesped.setCategoriaIVA(datos[5]);
-            // Maneja fecha vacía
             if (datos[6] != null && !datos[6].isEmpty()) {
                 huesped.setFechaNacimiento(LocalDate.parse(datos[6], FORMATO_FECHA));
             } else {
                 huesped.setFechaNacimiento(null);
             }
-
             direccion.setCalle(datos[7]);
-            // Convierte a Integer, manejando vacío
             if (datos[8] != null && !datos[8].isEmpty()) direccion.setNumero(Integer.parseInt(datos[8]));
             direccion.setDepartamento(datos[9]);
-            // Convierte a Integer, manejando vacío
             if (datos[10] != null && !datos[10].isEmpty()) direccion.setPiso(Integer.parseInt(datos[10]));
             direccion.setCodigoPostal(datos[11]);
             direccion.setLocalidad(datos[12]);
             direccion.setProvincia(datos[13]);
             direccion.setPais(datos[14]);
             huesped.setDireccion(direccion);
-
             huesped.setTelefono(datos[15]);
             huesped.setEmail(datos[16]);
             huesped.setOcupacion(datos[17]);
             huesped.setNacionalidad(datos[18]);
-
             return huesped;
         } catch (DateTimeParseException e) {
             System.err.println("Advertencia: Se ignoró una línea con formato de fecha incorrecto en huespedes.csv.");

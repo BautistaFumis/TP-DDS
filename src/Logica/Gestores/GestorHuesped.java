@@ -48,7 +48,6 @@ public class GestorHuesped {
                 huesped.getDireccion().getLocalidad() == null || huesped.getDireccion().getLocalidad().trim().isEmpty() ||
                 huesped.getDireccion().getProvincia() == null || huesped.getDireccion().getProvincia().trim().isEmpty() ||
                 huesped.getDireccion().getPais() == null || huesped.getDireccion().getPais().trim().isEmpty()) {
-
             throw new CamposObligatoriosException("Debe completar todos los campos obligatorios (*).");
         }
         if (huespedDAO.buscarHuesped(huesped.getTipoDocumento(), huesped.getDocumento()).isPresent()) {

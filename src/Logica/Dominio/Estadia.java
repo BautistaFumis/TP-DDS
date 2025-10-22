@@ -12,7 +12,7 @@ public class Estadia {
     private LocalDate fechaCheckin;
     private LocalDate fechaCheckout;
     private Huesped huespedPrincipal;
-    private List<Huesped> acompanantes;
+    private List<Huesped> acompanantes; // no esta implementada la logica para cargar acompanantes por el momento, por lo que solo se trabaja con un solo huesped
 
     /**
      * Constructor para crear una nueva instancia de Estadia.

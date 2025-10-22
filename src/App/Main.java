@@ -419,7 +419,7 @@ public class Main {
         String opcion = scanner.nextLine();
 
         if (opcion.equals("1")) {
-            gestor.darDeBajaHuesped(huesped); // Se llama de nuevo para efectuar el borrado
+            gestor.darDeBajaHuesped(huesped);
             System.out.println("\nEl huésped ha sido eliminado del sistema.");
         } else {
             System.out.println("\nOperación cancelada.");
