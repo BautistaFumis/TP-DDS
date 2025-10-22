@@ -5,8 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+
 
 /**
  * Implementación de {@link EstadiaDAO} que maneja la persistencia en un archivo CSV.
@@ -39,7 +38,7 @@ public class EstadiaDAOImpl implements EstadiaDAO {
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
-                String[] campos = linea.split(",", -1); // Usa -1 para no descartar campos vacíos al final
+                String[] campos = linea.split(",", -1); // Usamos -1 para no descartar campos vacíos al final
                 if (campos.length < 22) {
                     System.err.println("Advertencia: Se ignoró una línea con error en formato en estadias.csv");
                     continue;
