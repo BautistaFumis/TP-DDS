@@ -17,7 +17,7 @@ public class Direccion {
      * Constructor por defecto.
      * Crea una instancia de Direccion con todos sus campos inicializados a sus valores por defecto.
      */
-    public Direccion(){};
+    public Direccion(){}
 
     /**
      * Constructor con todos los parámetros.

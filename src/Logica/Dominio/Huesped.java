@@ -25,7 +25,7 @@ public class Huesped {
      * Constructor por defecto.
      * Crea una instancia de Huesped con todos sus campos nulos o con valores por defecto.
      */
-    public Huesped(){};
+    public Huesped(){}
 
     /**
      * Constructor con todos los parámetros para crear un huésped completo.
