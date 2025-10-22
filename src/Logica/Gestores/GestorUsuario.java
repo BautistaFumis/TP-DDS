@@ -12,6 +12,7 @@ import java.util.Optional;
  * Esta clase se encarga de verificar las credenciales proporcionadas por la interfaz de usuario
  * contra la capa de persistencia.
  */
+
 public class GestorUsuario {
 
     private final UsuarioDAO usuarioDAO;

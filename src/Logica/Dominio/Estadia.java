@@ -20,11 +20,12 @@ public class Estadia {
      * @param fechaCheckout La fecha de fin de la estadía.
      * @param huespedPrincipal El huésped responsable de la estadía.
      */
+
     public Estadia(LocalDate fechaCheckin, LocalDate fechaCheckout, Huesped huespedPrincipal) {
         this.fechaCheckin = fechaCheckin;
         this.fechaCheckout = fechaCheckout;
         this.huespedPrincipal = huespedPrincipal;
-        this.acompanantes = new ArrayList<>();
+        this.acompanantes = new ArrayList<>(); //no vamos a tener en cuenta en esta entrega para eliminar los acompanantes, ya que no nos lo pide explicitamente
     }
 
     /**
@@ -34,13 +35,61 @@ public class Estadia {
     public void agregarAcompanante(Huesped huesped) {
         this.acompanantes.add(huesped);
     }
-
+    /**
+     * Obtiene la fecha de check-in de la estadía.
+     *
+     * @return La fecha en la que comenzó la estadía.
+     */
     public LocalDate getFechaCheckin() { return fechaCheckin; }
+
+    /**
+     * Establece la fecha de check-in de la estadía.
+     *
+     * @param fechaCheckin La nueva fecha de inicio de la estadía.
+     */
     public void setFechaCheckin(LocalDate fechaCheckin) { this.fechaCheckin = fechaCheckin; }
+
+    /**
+     * Obtiene la fecha de check-out de la estadía.
+     *
+     * @return La fecha en la que finalizó o finalizará la estadía.
+     */
     public LocalDate getFechaCheckout() { return fechaCheckout; }
+
+    /**
+     * Establece la fecha de check-out de la estadía.
+     *
+     * @param fechaCheckout La nueva fecha de fin de la estadía.
+     */
     public void setFechaCheckout(LocalDate fechaCheckout) { this.fechaCheckout = fechaCheckout; }
+
+    /**
+     * Obtiene el huésped principal responsable de la estadía.
+     *
+     * @return El objeto {@link Huesped} que figura como principal.
+     */
     public Huesped getHuespedPrincipal() { return huespedPrincipal; }
+
+    /**
+     * Establece o cambia el huésped principal de la estadía.
+     *
+     * @param huespedPrincipal El nuevo objeto {@link Huesped} que será el principal.
+     */
     public void setHuespedPrincipal(Huesped huespedPrincipal) { this.huespedPrincipal = huespedPrincipal; }
+
+    /**
+     * Obtiene la lista de huéspedes acompañantes de la estadía.
+     *
+     * @return Una {@link List} que contiene los objetos {@link Huesped} de los acompañantes.
+     * Puede ser una lista vacía si no hay acompañantes.
+     */
     public List<Huesped> getAcompanantes() { return acompanantes; }
+
+    /**
+     * Establece la lista completa de huéspedes acompañantes.
+     * Reemplaza cualquier lista de acompañantes existente.
+     *
+     * @param acompanantes La nueva {@link List} de objetos {@link Huesped} acompañantes.
+     */
     public void setAcompanantes(List<Huesped> acompanantes) { this.acompanantes = acompanantes; }
 }

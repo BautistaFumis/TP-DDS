@@ -16,5 +16,6 @@ public interface EstadiaDAO {
      * @param huesped El objeto {@link Huesped} que se desea consultar.
      * @return {@code true} si el huésped tiene una o más estadías registradas, {@code false} en caso contrario.
      */
+
     boolean tieneEstadias(Huesped huesped);
 }

@@ -171,8 +171,7 @@ public class HuespedDAOImpl implements HuespedDAO {
         String emailStr = huesped.getEmail() != null ? huesped.getEmail() : "";
         String ocupacionStr = huesped.getOcupacion() != null ? huesped.getOcupacion() : "";
         String nacionalidadStr = huesped.getNacionalidad() != null ? huesped.getNacionalidad() : "";
-
-
+        
         return String.join(",",
                 huesped.getApellido(),
                 huesped.getNombre(),
@@ -211,32 +210,7 @@ public class HuespedDAOImpl implements HuespedDAO {
             return null;
         }
         try {
-            Huesped huesped = new Huesped();
-            Direccion direccion = new Direccion();
-            huesped.setApellido(datos[0]);
-            huesped.setNombre(datos[1]);
-            huesped.setTipoDocumento(datos[2]);
-            huesped.setDocumento(datos[3]);
-            huesped.setCuit(datos[4]);
-            huesped.setCategoriaIVA(datos[5]);
-            if (datos[6] != null && !datos[6].isEmpty()) {
-                huesped.setFechaNacimiento(LocalDate.parse(datos[6], FORMATO_FECHA));
-            } else {
-                huesped.setFechaNacimiento(null);
-            }
-            direccion.setCalle(datos[7]);
-            if (datos[8] != null && !datos[8].isEmpty()) direccion.setNumero(Integer.parseInt(datos[8]));
-            direccion.setDepartamento(datos[9]);
-            if (datos[10] != null && !datos[10].isEmpty()) direccion.setPiso(Integer.parseInt(datos[10]));
-            direccion.setCodigoPostal(datos[11]);
-            direccion.setLocalidad(datos[12]);
-            direccion.setProvincia(datos[13]);
-            direccion.setPais(datos[14]);
-            huesped.setDireccion(direccion);
-            huesped.setTelefono(datos[15]);
-            huesped.setEmail(datos[16]);
-            huesped.setOcupacion(datos[17]);
-            huesped.setNacionalidad(datos[18]);
+            Huesped huesped = getHuesped(datos);
             return huesped;
         } catch (DateTimeParseException e) {
             System.err.println("Advertencia: Se ignoró una línea con formato de fecha incorrecto en huespedes.csv.");
@@ -248,5 +222,35 @@ public class HuespedDAOImpl implements HuespedDAO {
             System.err.println("Advertencia: Se ignoró una línea con formato incorrecto general en huespedes.csv. Error: " + e.getMessage());
             return null;
         }
+    }
+
+    private Huesped getHuesped(String[] datos) {
+        Huesped huesped = new Huesped();
+        Direccion direccion = new Direccion();
+        huesped.setApellido(datos[0]);
+        huesped.setNombre(datos[1]);
+        huesped.setTipoDocumento(datos[2]);
+        huesped.setDocumento(datos[3]);
+        huesped.setCuit(datos[4]);
+        huesped.setCategoriaIVA(datos[5]);
+        if (datos[6] != null && !datos[6].isEmpty()) {
+            huesped.setFechaNacimiento(LocalDate.parse(datos[6], FORMATO_FECHA));
+        } else {
+            huesped.setFechaNacimiento(null);
+        }
+        direccion.setCalle(datos[7]);
+        if (datos[8] != null && !datos[8].isEmpty()) direccion.setNumero(Integer.parseInt(datos[8]));
+        direccion.setDepartamento(datos[9]);
+        if (datos[10] != null && !datos[10].isEmpty()) direccion.setPiso(Integer.parseInt(datos[10]));
+        direccion.setCodigoPostal(datos[11]);
+        direccion.setLocalidad(datos[12]);
+        direccion.setProvincia(datos[13]);
+        direccion.setPais(datos[14]);
+        huesped.setDireccion(direccion);
+        huesped.setTelefono(datos[15]);
+        huesped.setEmail(datos[16]);
+        huesped.setOcupacion(datos[17]);
+        huesped.setNacionalidad(datos[18]);
+        return huesped;
     }
 }

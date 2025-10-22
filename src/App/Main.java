@@ -61,7 +61,6 @@ public class Main {
             }
         }
 
-        // --- 3. Menú Principal ---
         int option;
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
@@ -261,7 +260,7 @@ public class Main {
                 if (indice >= 0 && indice < resultados.size()) {
                     Huesped huespedSeleccionado = resultados.get(indice);
                     ejecutarModificarHuesped(scanner, gestor, huespedSeleccionado);
-                    return; // Sale del bucle y del metodo
+                    return;
                 } else {
                     System.err.println("Número de selección inválido. Por favor, intente de nuevo.");
                 }
