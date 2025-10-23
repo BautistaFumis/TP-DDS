@@ -66,8 +66,7 @@ public class Main {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
             System.out.println("Seleccione el Caso de Uso que desea ejecutar:");
             System.out.println("1. CU01 - Autenticar Usuario");
-            System.out.println("2. CU02 - Buscar Huésped (Permite Modificar y Eliminar)");
-            System.out.println("9. CU09 - Dar de alta Huésped");
+            System.out.println("2. CU02 - Buscar Huésped - Permite DarAlta - Modificar - Eliminar)");
             System.out.println("0. Salir");
             System.out.print("Opción: ");
 
@@ -83,9 +82,6 @@ public class Main {
                     break;
                 case 2:
                     ejecutarBusquedaHuesped(scanner, gestorHuesped);
-                    break;
-                case 9:
-                    ejecutarAltaHuesped(scanner, gestorHuesped);
                     break;
                 case 0:
                     System.out.println("Saliendo del sistema. ¡Hasta luego!");

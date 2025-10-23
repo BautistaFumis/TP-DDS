@@ -13,19 +13,52 @@ public class Estadia {
     private LocalDate fechaCheckout;
     private Huesped huespedPrincipal;
     private List<Huesped> acompanantes; // no esta implementada la logica para cargar acompanantes por el momento, por lo que solo se trabaja con un solo huesped
+    private EstadoEstadia estado;
 
     /**
      * Constructor para crear una nueva instancia de Estadia.
      * @param fechaCheckin La fecha de inicio de la estadía.
-     * @param fechaCheckout La fecha de fin de la estadía.
      * @param huespedPrincipal El huésped responsable de la estadía.
      */
 
-    public Estadia(LocalDate fechaCheckin, LocalDate fechaCheckout, Huesped huespedPrincipal) {
+    public Estadia(LocalDate fechaCheckin, Huesped huespedPrincipal) {
         this.fechaCheckin = fechaCheckin;
-        this.fechaCheckout = fechaCheckout;
+        this.fechaCheckout = null;
         this.huespedPrincipal = huespedPrincipal;
         this.acompanantes = new ArrayList<>(); //no vamos a tener en cuenta en esta entrega para eliminar los acompanantes, ya que no nos lo pide explicitamente
+        setEstadoInterno(new EstadoActiva());
+    }
+
+    /**
+     * Intenta cerrar la estadía. El comportamiento depende del estado actual.
+     */
+    public void cerrar() {
+        this.estado.cerrarEstadia(this);
+    }
+
+    /**
+     * Intenta reabrir la estadía. El comportamiento depende del estado actual.
+     */
+    public void reabrir() {
+        this.estado.reabrirEstadia(this);
+    }
+
+
+    /**
+     * Solo las clases de estado deberían llamarlo.
+     * @param nuevoEstado El nuevo objeto de estado.
+     */
+    void setEstadoInterno(EstadoEstadia nuevoEstado) {
+        this.estado = nuevoEstado;
+        System.out.println("--> Nuevo estado de la estadía: " + nuevoEstado.getClass().getSimpleName());
+    }
+
+    /**
+     * Obtiene el tipo de estado actual de la estadía.
+     * @return El valor Enum {@link TipoEstadoEstadia} correspondiente.
+     */
+    public TipoEstadoEstadia getTipoEstado() {
+        return this.estado.getTipoEstado();
     }
 
     /**
