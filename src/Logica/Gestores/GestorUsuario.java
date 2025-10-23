@@ -2,8 +2,8 @@ package Logica.Gestores;
 
 import Logica.Dominio.Usuario;
 import Logica.Excepciones.CredencialesInvalidasException;
+import Persistencia.DAOFactory;
 import Persistencia.UsuarioDAO;
-import Persistencia.UsuarioDAOImpl;
 
 import java.util.Optional;
 
@@ -22,8 +22,8 @@ public class GestorUsuario {
      * Inicializa el gestor y crea una instancia concreta del DAO de usuarios (`UsuarioDAOImpl`).
      */
 
-    public GestorUsuario() {
-        this.usuarioDAO = new UsuarioDAOImpl();
+    public GestorUsuario(DAOFactory factory) {
+        this.usuarioDAO = factory.crearUsuarioDAO();
     }
 
     /**

@@ -3,6 +3,7 @@ package Logica.Gestores;
 import Logica.Dominio.Huesped;
 import Logica.Excepciones.CamposObligatoriosException;
 import Logica.Excepciones.DocumentoDuplicadoException;
+import Persistencia.DAOFactory;
 import Persistencia.EstadiaDAO;
 import Persistencia.HuespedDAO;
 import java.util.List;
@@ -18,12 +19,12 @@ public class GestorHuesped {
     /**
      * Constructor que inyecta las dependencias de los DAO de Huésped y Estadía.
      *
-     * @param huespedDAO El DAO para operaciones de huésped.
-     * @param estadiaDAO El DAO para consultar estadías.
+     *
+     * @param factory La fábrica de DAOs que provee las implementaciones concretas.
      */
-    public GestorHuesped(HuespedDAO huespedDAO, EstadiaDAO estadiaDAO) {
-        this.huespedDAO = huespedDAO;
-        this.estadiaDAO = estadiaDAO;
+    public GestorHuesped(DAOFactory factory) {
+        this.huespedDAO = factory.crearHuespedDAO();
+        this.estadiaDAO = factory.crearEstadiaDAO();
     }
 
     /**

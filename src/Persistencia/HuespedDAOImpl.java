@@ -204,6 +204,7 @@ public class HuespedDAOImpl implements HuespedDAO {
      * @return Un objeto {@link Huesped} si la conversión es exitosa, o {@code null} si falla.
      */
 
+
     private Huesped convertirCSVAHuesped(String[] datos) {
         if (datos == null || datos.length < 19) {
             System.err.println("Advertencia: Se ignoró una línea CSV con longitud incorrecta: " + (datos != null ? datos.length : "null"));

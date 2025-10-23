@@ -7,10 +7,7 @@ import Logica.Excepciones.CredencialesInvalidasException;
 import Logica.Excepciones.DocumentoDuplicadoException;
 import Logica.Gestores.GestorHuesped;
 import Logica.Gestores.GestorUsuario;
-import Persistencia.EstadiaDAO;
-import Persistencia.EstadiaDAOImpl;
-import Persistencia.HuespedDAO;
-import Persistencia.HuespedDAOImpl;
+import Persistencia.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -33,10 +30,10 @@ public class Main {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        GestorUsuario gestorUsuario = new GestorUsuario();
-        HuespedDAO huespedDAO = new HuespedDAOImpl();
-        EstadiaDAO estadiaDAO = new EstadiaDAOImpl();
-        GestorHuesped gestorHuesped = new GestorHuesped(huespedDAO, estadiaDAO); // Inyección de dependencias corregida
+        DAOFactory factory = new FactoryDAOImpl(); // elegís el tipo de persistencia
+
+        GestorUsuario gestorUsuario = new GestorUsuario(factory);
+        GestorHuesped gestorHuesped = new GestorHuesped(factory);
         boolean autenticado = false;
 
         System.out.println("========================================");
