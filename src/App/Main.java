@@ -299,7 +299,7 @@ public class Main {
             String nuevoNumDoc = scanner.nextLine();
             if (!nuevoNumDoc.isEmpty()) huespedModificado.setDocumento(nuevoNumDoc);
 
-            System.out.printf("Fecha de Nacimiento (*, dd/mm/aaaa): [%s] > ", huespedOriginal.getFechaNacimiento().format(formatoFecha));
+            System.out.printf("Fecha de Nacimiento (*): dd/mm/aaaa): [%s] > ", huespedOriginal.getFechaNacimiento().format(formatoFecha));
             String nuevaFechaStr = scanner.nextLine();
             if (!nuevaFechaStr.isEmpty()) {
                 huespedModificado.setFechaNacimiento(LocalDate.parse(nuevaFechaStr, formatoFecha));
