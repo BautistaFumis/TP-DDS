@@ -7,6 +7,7 @@ import Persistencia.DAOFactory;
 import Persistencia.EstadiaDAO;
 import Persistencia.HuespedDAO;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Gestiona la lógica de negocio para las operaciones relacionadas con los huéspedes.
@@ -69,14 +70,44 @@ public class GestorHuesped {
      * @throws CamposObligatoriosException Si alguno de los campos requeridos se deja en blanco.
      */
 
-    public void modificarHuesped(Huesped huesped) throws CamposObligatoriosException {
-            completarCampos(huesped);
-            if (huesped.getCategoriaIVA() == null || huesped.getCategoriaIVA().trim().isEmpty()) {
-                huesped.setCategoriaIVA("Consumidor Final"); //Si modificamos a vacio la categoria del IVA, la asignamos como CF
-            }
-            huespedDAO.modificarHuesped(huesped);
+    /**
+     * Valida los datos modificados de un huésped y solicita su actualización,
+     * pasando los identificadores originales al DAO y validando duplicados.
+     *
+     * @param tipoDocumentoOriginal El tipo de documento ANTES de la modificación.
+     * @param documentoOriginal El número de documento ANTES de la modificación.
+     * @param huespedConNuevosDatos El objeto Huesped con la información ya actualizada.
+     * @throws CamposObligatoriosException Si faltan campos obligatorios en los nuevos datos.
+     * @throws DocumentoDuplicadoException Si los nuevos datos de documento ya pertenecen a OTRO huésped.
+     */
+    public void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos)
+            throws CamposObligatoriosException, DocumentoDuplicadoException { // <-- Firma modificada y añade DocumentoDuplicadoException
+
+        // 1. Valida campos obligatorios de los NUEVOS datos
+        completarCampos(huespedConNuevosDatos);
+        if (huespedConNuevosDatos.getCategoriaIVA() == null || huespedConNuevosDatos.getCategoriaIVA().trim().isEmpty()) {
+            huespedConNuevosDatos.setCategoriaIVA("Consumidor Final");
         }
 
+        // 2. ***VALIDACIÓN ADICIONAL***: Verifica si el NUEVO documento ya existe para OTRO huésped
+        //    (Solo si el documento fue efectivamente modificado)
+        boolean documentoModificado = !huespedConNuevosDatos.getTipoDocumento().equalsIgnoreCase(tipoDocumentoOriginal) ||
+                !huespedConNuevosDatos.getDocumento().equals(documentoOriginal);
+
+        if (documentoModificado) {
+            Optional<Huesped> otroHuespedConEseDoc = huespedDAO.buscarHuesped(
+                    huespedConNuevosDatos.getTipoDocumento(),
+                    huespedConNuevosDatos.getDocumento());
+
+            // Si se encontró OTRO huésped (Optional no está vacío), lanza la excepción
+            if (otroHuespedConEseDoc.isPresent()) {
+                throw new DocumentoDuplicadoException("¡CUIDADO! El nuevo tipo y número de documento ya pertenecen a otro huésped existente.");
+            }
+        }
+
+        // 3. Llama al DAO pasando los IDs ORIGINALES y los NUEVOS datos
+        huespedDAO.modificarHuesped(tipoDocumentoOriginal, documentoOriginal, huespedConNuevosDatos);
+    }
     /**
      * Gestiona la eliminación de un huésped, verificando primero si tiene estadías asociadas.
      * @param huesped El huésped que se desea eliminar.

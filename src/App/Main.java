@@ -362,7 +362,7 @@ public class Main {
 
             switch (opcion) {
                 case "1":
-                    gestor.modificarHuesped(huespedModificado);
+                    gestor.modificarHuesped(huespedOriginal.getTipoDocumento(), huespedOriginal.getDocumento(), huespedModificado);
                     System.out.println("\n ÉXITO: Los datos del huésped han sido actualizados.");
                     valorincorrecto = false;
                     break;

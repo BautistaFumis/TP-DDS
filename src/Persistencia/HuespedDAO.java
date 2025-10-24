@@ -32,14 +32,13 @@ public interface HuespedDAO {
     Optional<Huesped> buscarHuesped(String tipoDocumento, String documento);
 
     /**
-     * Actualiza la información de un huésped existente en la fuente de datos.
-     * La implementación buscará al huésped basándose en su tipo y número de documento
-     * y reemplazará sus datos con los del objeto proporcionado.
-     *
-     * @param huesped El objeto {@link Huesped} con los datos ya modificados.
+     * Actualiza la información de un huésped existente.
+     * Busca al huésped usando los identificadores originales y reemplaza sus datos.
+     * @param tipoDocumentoOriginal El tipo de documento ANTES de la modificación.
+     * @param documentoOriginal El número de documento ANTES de la modificación.
+     * @param huespedConNuevosDatos El objeto {@link Huesped} con todos los datos actualizados.
      */
-    void modificarHuesped(Huesped huesped);
-
+    void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos); // <-- Firma modificada
     /**
      * Elimina un huésped de la fuente de datos utilizando su número de documento como identificador único.
      *

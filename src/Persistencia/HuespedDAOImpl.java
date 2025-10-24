@@ -110,22 +110,27 @@ public class HuespedDAOImpl implements HuespedDAO {
      * La implementación buscará al huésped basándose en su tipo y número de documento
      * y reemplazará sus datos con los del objeto proporcionado.
      *
-     * @param huespedModificado El objeto {@link Huesped} con los datos ya modificados.
      */
 
     @Override
-    public void modificarHuesped(Huesped huespedModificado) {
+    public void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos) {
         try {
             List<String> lineas = Files.readAllLines(Paths.get(RUTA_ARCHIVO));
             List<String> lineasActualizadas = lineas.stream()
                     .map(linea -> {
                         String[] datos = linea.split(",", -1);
-                        if (datos.length > 3 && datos[2].equals(huespedModificado.getTipoDocumento()) && datos[3].equals(huespedModificado.getDocumento())) {
-                            return convertirHuespedEnCSV(huespedModificado);
+                        // --- CORRECCIÓN: Compara con los identificadores ORIGINALES ---
+                        if (datos.length > 3 &&
+                                datos[2].equalsIgnoreCase(tipoDocumentoOriginal) && // Compara con TIPO original
+                                datos[3].equals(documentoOriginal)) {              // Compara con NUMERO original
+                            // Si encuentra la línea, la reemplaza con los NUEVOS datos formateados
+                            return convertirHuespedEnCSV(huespedConNuevosDatos);
                         }
+                        // Si no es la línea, la devuelve sin cambios
                         return linea;
                     })
                     .collect(Collectors.toList());
+            // Sobrescribe el archivo completo con la lista actualizada
             Files.write(Paths.get(RUTA_ARCHIVO), lineasActualizadas, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             System.err.println("Error al modificar el archivo de huéspedes: " + e.getMessage());
