@@ -170,7 +170,7 @@ public class Main {
                     gestor.registrarHuespedAceptandoDuplicado(huespedParaAlta);
                     System.out.println(" ÉXITO: Se ha registrado el huésped duplicado.");
                 } else {
-                    System.out.println("Operación cancelada. Por favor, ingrese los datos nuevamente.");
+                    System.out.println("Operación cancelada. Por favor, ingrese los datos nuevamente. ");
                 }
             }
 
