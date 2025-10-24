@@ -80,17 +80,13 @@ public class GestorHuesped {
      * @throws CamposObligatoriosException Si faltan campos obligatorios en los nuevos datos.
      * @throws DocumentoDuplicadoException Si los nuevos datos de documento ya pertenecen a OTRO huésped.
      */
-    public void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos)
-            throws CamposObligatoriosException, DocumentoDuplicadoException { // <-- Firma modificada y añade DocumentoDuplicadoException
+    public void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos)  throws CamposObligatoriosException, DocumentoDuplicadoException {
 
-        // 1. Valida campos obligatorios de los NUEVOS datos
         completarCampos(huespedConNuevosDatos);
         if (huespedConNuevosDatos.getCategoriaIVA() == null || huespedConNuevosDatos.getCategoriaIVA().trim().isEmpty()) {
             huespedConNuevosDatos.setCategoriaIVA("Consumidor Final");
         }
 
-        // 2. ***VALIDACIÓN ADICIONAL***: Verifica si el NUEVO documento ya existe para OTRO huésped
-        //    (Solo si el documento fue efectivamente modificado)
         boolean documentoModificado = !huespedConNuevosDatos.getTipoDocumento().equalsIgnoreCase(tipoDocumentoOriginal) ||
                 !huespedConNuevosDatos.getDocumento().equals(documentoOriginal);
 
@@ -99,15 +95,18 @@ public class GestorHuesped {
                     huespedConNuevosDatos.getTipoDocumento(),
                     huespedConNuevosDatos.getDocumento());
 
-            // Si se encontró OTRO huésped (Optional no está vacío), lanza la excepción
             if (otroHuespedConEseDoc.isPresent()) {
-                throw new DocumentoDuplicadoException("¡CUIDADO! El nuevo tipo y número de documento ya pertenecen a otro huésped existente.");
+                throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
             }
         }
 
-        // 3. Llama al DAO pasando los IDs ORIGINALES y los NUEVOS datos
         huespedDAO.modificarHuesped(tipoDocumentoOriginal, documentoOriginal, huespedConNuevosDatos);
     }
+
+    public void modificarHuespedAceptandoDuplicado(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos){
+        huespedDAO.modificarHuesped(tipoDocumentoOriginal, documentoOriginal, huespedConNuevosDatos);
+    }
+
     /**
      * Gestiona la eliminación de un huésped, verificando primero si tiene estadías asociadas.
      * @param huesped El huésped que se desea eliminar.

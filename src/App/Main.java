@@ -117,10 +117,10 @@ public class Main {
                 DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 System.out.print("(*) Fecha de Nacimiento (formato dd/mm/aaaa): ");
                 String fechaTexto = scanner.nextLine();
-                if(fechaTexto != null && !fechaTexto.trim().isEmpty()) { // Validar fecha no vacía
+                if(fechaTexto != null && !fechaTexto.trim().isEmpty()) {
                     huespedParaAlta.setFechaNacimiento(LocalDate.parse(fechaTexto, formatoFecha));
                 } else {
-                    huespedParaAlta.setFechaNacimiento(null); // O lanzar error si es obligatorio
+                    huespedParaAlta.setFechaNacimiento(null);
                 }
 
 
@@ -153,7 +153,6 @@ public class Main {
                 System.out.print("(*) Pais: ");
                 direccion.setPais(scanner.nextLine());
                 huespedParaAlta.setDireccion(direccion);
-
                 System.out.print("Teléfono: ");
                 huespedParaAlta.setTelefono(scanner.nextLine());
                 System.out.print("Email: ");
@@ -357,7 +356,7 @@ public class Main {
             if (!nuevaNacionalidad.isEmpty()) huespedModificado.setNacionalidad(nuevaNacionalidad);
             boolean valorincorrecto = true;
             while(valorincorrecto) {
-            System.out.print("\nAcciones: [1] GUARDAR CAMBIOS / [2] CANCELAR / [3] BORRAR HUÉSPED / [4] DESCARTAR CAMBIOS > ");
+            System.out.print("\nAcciones: [1] GUARDAR CAMBIOS / [2] CANCELAR / [3] BORRAR HUÉSPED > ");
             String opcion = scanner.nextLine();
 
             switch (opcion) {
@@ -375,14 +374,20 @@ public class Main {
                     ejecutarBajaHuesped(scanner, gestor, huespedOriginal);
                     valorincorrecto = false;
                     break;
-                case "4":
-                    System.out.println("Cambios descartados.");
-                    valorincorrecto = false;
-                    break;
                 default:
                     System.out.println("Opción no válida. Ingrese de nuevo.");
                     break;
             }
+            }
+        } catch (DocumentoDuplicadoException e) {
+            System.err.println("\n ADVERTENCIA: " + e.getMessage());
+            System.out.print("¿Desea aceptarlo igualmente? [1] ACEPTAR IGUALMENTE / [2] CORREGIR: ");
+            String opcion = scanner.nextLine();
+            if ("1".equals(opcion)) {
+                gestor.modificarHuespedAceptandoDuplicado(huespedOriginal.getTipoDocumento(), huespedOriginal.getDocumento(), huespedModificado);
+                System.out.println(" ÉXITO: Se ha modificado el huésped duplicado.");
+            } else {
+                System.out.println("Operación cancelada. Por favor, ingrese los datos nuevamente.");
             }
         } catch (Exception e) {
             System.err.println("\n ERROR: " + e.getMessage());
