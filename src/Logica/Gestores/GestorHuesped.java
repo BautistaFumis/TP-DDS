@@ -64,13 +64,6 @@ public class GestorHuesped {
     }
 
     /**
-     * Valida los datos modificados de un huésped y solicita su actualización, teniendo en cuenta campos obligatorios.
-     *
-     * @param huesped El objeto Huesped con la información ya actualizada.
-     * @throws CamposObligatoriosException Si alguno de los campos requeridos se deja en blanco.
-     */
-
-    /**
      * Valida los datos modificados de un huésped y solicita su actualización,
      * pasando los identificadores originales al DAO y validando duplicados.
      *
@@ -102,6 +95,14 @@ public class GestorHuesped {
 
         huespedDAO.modificarHuesped(tipoDocumentoOriginal, documentoOriginal, huespedConNuevosDatos);
     }
+
+    /**
+     * Modifica un huésped sin realizar la validación de documento duplicado.
+     *
+     * @param tipoDocumentoOriginal El tipo de documento ANTES de la modificación.
+     * @param documentoOriginal El número de documento ANTES de la modificación.
+     * @param huespedConNuevosDatos El objeto Huesped con la información ya actualizada.
+     */
 
     public void modificarHuespedAceptandoDuplicado(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos){
         huespedDAO.modificarHuesped(tipoDocumentoOriginal, documentoOriginal, huespedConNuevosDatos);

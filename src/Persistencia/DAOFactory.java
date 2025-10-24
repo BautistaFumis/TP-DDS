@@ -4,7 +4,7 @@ package Persistencia;
  * Define el contrato para una fábrica abstracta de objetos DAO (Data Access Objects).
  * Esta interfaz desacopla la creación de instancias DAO de las clases cliente (como los Gestores),
  * permitiendo cambiar fácilmente la implementación de persistencia (ej: de CSV a base de datos)
- * sin modificar el código que utiliza los DAOs.
+ * sin modificar el código que utiliza los DAOs, por lo que creemos que el patron es muy acorde para su utilizacion posterior.
  */
 
 public interface DAOFactory {

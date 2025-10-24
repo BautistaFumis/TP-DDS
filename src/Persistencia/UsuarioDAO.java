@@ -19,6 +19,7 @@ public interface UsuarioDAO {
      * @return Un {@link Optional} que contiene el objeto {@link Usuario} si se encuentra,
      * o un Optional vacío si no existe un usuario con ese ID.
      */
+
     Optional<Usuario> buscarPorId(String id);
 
     // ABM (Alta, Baja, Modificación) de Usuario no implementado por el momento,

@@ -14,19 +14,13 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-/** hola
+/**
  * Clase principal de la aplicación de gestión hotelera.
  * Contiene el punto de entrada (main) y se encarga de manejar el flujo de la aplicación,
  * la interacción con el usuario a través de la consola y la orquestación de los casos de uso.
  */
 public class Main {
 
-    /**
-     * Punto de entrada principal de la aplicación.
-     * Gestiona la autenticación inicial del usuario y muestra el menú principal de casos de uso.
-     *
-     * @param args Argumentos de la línea de comandos (no se utilizan).
-     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         DAOFactory factory = new FactoryDAOImpl();
@@ -48,7 +42,7 @@ public class Main {
                 String password = scanner.nextLine();
                 gestorUsuario.autenticar(id, password);
                 autenticado = true;
-                System.out.println("\n¡Inicio de sesión exitoso! Bienvenido, " + id + ".");
+                System.out.println("\n¡Usuario Autenticado! Bienvenido, " + id + ".");
             } catch (CredencialesInvalidasException e) {
                 System.err.println("Error: " + e.getMessage());
                 System.out.println("Por favor, intente de nuevo.");
@@ -59,7 +53,7 @@ public class Main {
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
             System.out.println("Seleccione el Caso de Uso que desea ejecutar:");
-            System.out.println("2. CU02 - Buscar Huésped - Permite DarAlta - Modificar - Eliminar");
+            System.out.println("2. (CU02) - Buscar Huésped - Permite DarAlta - Modificar - Eliminar");
             System.out.println("0. Salir");
             System.out.print("Opción: ");
 
@@ -86,12 +80,13 @@ public class Main {
     }
 
     /**
-     * Encapsula la lógica para el Caso de Uso 09: Dar de alta un nuevo Huésped.
+     * Encapsula la lógica para el Caso de Uso 09 - Dar de alta un nuevo Huésped.
      * Solicita todos los datos al usuario por consola y maneja las validaciones y errores.
      *
      * @param scanner El objeto Scanner para leer la entrada del usuario.
      * @param gestor El GestorHuesped que maneja la lógica de negocio.
      */
+
     private static void ejecutarAltaHuesped(Scanner scanner, GestorHuesped gestor) {
         boolean continuar = true;
         while (continuar) {
@@ -113,7 +108,6 @@ public class Main {
                 huespedParaAlta.setCuit(scanner.nextLine());
                 System.out.print("Posicion frente al IVA: ");
                 huespedParaAlta.setCategoriaIVA(scanner.nextLine());
-
                 DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 System.out.print("(*) Fecha de Nacimiento (formato dd/mm/aaaa): ");
                 String fechaTexto = scanner.nextLine();
@@ -122,8 +116,6 @@ public class Main {
                 } else {
                     huespedParaAlta.setFechaNacimiento(null);
                 }
-
-
                 System.out.println("--- Dirección ---");
                 System.out.print("(*) Calle: ");
                 direccion.setCalle(scanner.nextLine());
@@ -134,7 +126,6 @@ public class Main {
                 } else {
                     direccion.setNumero(null);
                 }
-
                 System.out.print("Departamento (Letra o Numero): ");
                 direccion.setDepartamento(scanner.nextLine());
                 System.out.print("Piso (Numero): ");
@@ -161,7 +152,6 @@ public class Main {
                 huespedParaAlta.setOcupacion(scanner.nextLine());
                 System.out.print("Nacionalidad: ");
                 huespedParaAlta.setNacionalidad(scanner.nextLine());
-
                 gestor.registrarNuevoHuesped(huespedParaAlta);
 
                 System.out.println("\n ÉXITO: El huésped '" + huespedParaAlta.getNombre() + " " + huespedParaAlta.getApellido() + "' ha sido satisfactoriamente cargado al sistema.");
@@ -192,7 +182,7 @@ public class Main {
     }
 
     /**
-     * Encapsula la lógica para el Caso de Uso 02: Buscar un Huésped.
+     * Encapsula la lógica para el Caso de Uso 02 - Buscar un Huésped.
      * Permite buscar por múltiples criterios y, si se encuentra un resultado,
      * deriva a los casos de uso de Modificación (CU10) o Alta (CU09).
      *
@@ -256,7 +246,7 @@ public class Main {
     }
 
     /**
-     * Encapsula la lógica para el Caso de Uso 10: Modificar un Huésped existente.
+     * Encapsula la lógica para el Caso de Uso 10 - Modificar un Huésped existente.
      * Muestra los datos actuales y permite al usuario actualizarlos, cancelarlos o eliminar el huésped.
      *
      * @param scanner El objeto Scanner para leer la entrada del usuario.
@@ -288,7 +278,7 @@ public class Main {
             String nuevoNumDoc = scanner.nextLine();
             if (!nuevoNumDoc.isEmpty()) huespedModificado.setDocumento(nuevoNumDoc);
 
-            System.out.printf("Fecha de Nacimiento (*): dd/mm/aaaa): [%s] > ", huespedOriginal.getFechaNacimiento().format(formatoFecha));
+            System.out.printf("Fecha de Nacimiento (*): [dd/mm/aaaa]: [%s] > ", huespedOriginal.getFechaNacimiento().format(formatoFecha));
             String nuevaFechaStr = scanner.nextLine();
             if (!nuevaFechaStr.isEmpty()) {
                 huespedModificado.setFechaNacimiento(LocalDate.parse(nuevaFechaStr, formatoFecha));
@@ -395,7 +385,7 @@ public class Main {
     }
 
     /**
-     * Encapsula la lógica para el Caso de Uso 11: Dar de baja un Huésped.
+     * Encapsula la lógica para el Caso de Uso 11 - Dar de baja un Huésped.
      * Verifica si el huésped puede ser eliminado y pide confirmación al usuario.
      *
      * @param scanner El objeto Scanner para leer la confirmación del usuario.

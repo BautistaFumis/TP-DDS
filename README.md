@@ -8,6 +8,13 @@ Integrantes:
     - Locatelli Cristian
     - Soto Payva Juana
 
-Comentarios: 
+Comentarios:
 
-1. 
+1- Para acceder, el usuario correcto se encuentra en usuarios.csv
+
+2- Los huespedes se encuentran en huespedes.csv y aquellos que tuvieron una estadia en Estadia.csv
+
+
+3- Los patrones utilizados fueron STATE, Factory y parcialmente aplicado el patron DAO.
+
+4- Hay algunas diferencias con respecto al diagrama de clases de la materia Diseno de Sistemas ya que fuimos modificando cosas sobre la marcha. 
