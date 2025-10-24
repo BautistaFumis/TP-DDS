@@ -54,7 +54,7 @@ public class Main {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
             System.out.println("Seleccione el Caso de Uso que desea ejecutar:");
             System.out.println("2. (CU02) - Buscar Huésped - Permite DarAlta - Modificar - Eliminar");
-            System.out.println("0. Salir");
+            System.out.println("0. Salir ");
             System.out.print("Opción: ");
 
             try {
