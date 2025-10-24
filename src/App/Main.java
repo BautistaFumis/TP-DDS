@@ -14,7 +14,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-/**
+/** hola
  * Clase principal de la aplicación de gestión hotelera.
  * Contiene el punto de entrada (main) y se encarga de manejar el flujo de la aplicación,
  * la interacción con el usuario a través de la consola y la orquestación de los casos de uso.
