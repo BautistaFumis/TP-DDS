@@ -107,7 +107,7 @@ public class GestorHuesped {
                 huesped.getFechaNacimiento() == null ||
                 huesped.getDireccion() == null ||
                 huesped.getDireccion().getCalle() == null || huesped.getDireccion().getCalle().trim().isEmpty() ||
-                huesped.getDireccion().getNumero() <= 0 ||
+                huesped.getDireccion().getNumero() == null || huesped.getDireccion().getNumero() <= 0 ||
                 huesped.getDireccion().getCodigoPostal() == null || huesped.getDireccion().getCodigoPostal().trim().isEmpty() ||
                 huesped.getDireccion().getLocalidad() == null || huesped.getDireccion().getLocalidad().trim().isEmpty() ||
                 huesped.getDireccion().getProvincia() == null || huesped.getDireccion().getProvincia().trim().isEmpty() ||

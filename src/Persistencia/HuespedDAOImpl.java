@@ -211,8 +211,7 @@ public class HuespedDAOImpl implements HuespedDAO {
             return null;
         }
         try {
-            Huesped huesped = getHuesped(datos);
-            return huesped;
+            return getHuesped(datos);
         } catch (DateTimeParseException e) {
             System.err.println("Advertencia: Se ignoró una línea con formato de fecha incorrecto en huespedes.csv.");
             return null;

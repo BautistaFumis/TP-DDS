@@ -8,7 +8,6 @@ import Logica.Excepciones.DocumentoDuplicadoException;
 import Logica.Gestores.GestorHuesped;
 import Logica.Gestores.GestorUsuario;
 import Persistencia.*;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -30,7 +29,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        DAOFactory factory = new FactoryDAOImpl(); // elegís el tipo de persistencia
+        DAOFactory factory = new FactoryDAOImpl();
 
         GestorUsuario gestorUsuario = new GestorUsuario(factory);
         GestorHuesped gestorHuesped = new GestorHuesped(factory);
@@ -40,7 +39,6 @@ public class Main {
         System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA");
         System.out.println("========================================");
 
-        // --- 2. Bucle de Autenticación ---
         while (!autenticado) {
             try {
                 System.out.println("\nPor favor, inicie sesión:");
@@ -48,7 +46,6 @@ public class Main {
                 String id = scanner.nextLine();
                 System.out.print("Contraseña: ");
                 String password = scanner.nextLine();
-
                 gestorUsuario.autenticar(id, password);
                 autenticado = true;
                 System.out.println("\n¡Inicio de sesión exitoso! Bienvenido, " + id + ".");
@@ -62,8 +59,7 @@ public class Main {
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
             System.out.println("Seleccione el Caso de Uso que desea ejecutar:");
-            System.out.println("1. CU01 - Autenticar Usuario");
-            System.out.println("2. CU02 - Buscar Huésped - Permite DarAlta - Modificar - Eliminar)");
+            System.out.println("2. CU02 - Buscar Huésped - Permite DarAlta - Modificar - Eliminar");
             System.out.println("0. Salir");
             System.out.print("Opción: ");
 
@@ -74,9 +70,6 @@ public class Main {
             }
 
             switch (option) {
-                case 1:
-                    System.out.println("Ya se encuentra autenticado.");
-                    break;
                 case 2:
                     ejecutarBusquedaHuesped(scanner, gestorHuesped);
                     break;

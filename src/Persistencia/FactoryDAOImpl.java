@@ -5,7 +5,6 @@ public class FactoryDAOImpl implements DAOFactory {
     public UsuarioDAO crearUsuarioDAO() {
         return new UsuarioDAOImpl();
     }
-
     @Override
     public HuespedDAO crearHuespedDAO() {
         return new HuespedDAOImpl();
