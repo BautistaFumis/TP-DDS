@@ -21,6 +21,7 @@ public class Factura {
         this.estado = estado;
         this.descuento = descuento;
     }
+    //Funciones
     public String getNumeroFactura(){
         return numeroFactura;
     }

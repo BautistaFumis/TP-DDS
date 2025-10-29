@@ -23,6 +23,7 @@ public interface DAOFactory {
      * La implementación específica (ej: {@code HuespedDAOImpl}) será determinada
      * por la subclase concreta de DAOFactory.
      *
+     *
      * @return Una implementación de la interfaz HuespedDAO.
      */
     HuespedDAO crearHuespedDAO();

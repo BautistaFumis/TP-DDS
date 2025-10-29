@@ -27,9 +27,10 @@ public class FactoryDAOImpl implements DAOFactory {
     }
 
     /**
+     *
      * Devuelve una nueva instancia de {@link EstadiaDAOImpl}, que trabaja con {@code estadias.csv}.
      */
-    
+
     @Override
     public EstadiaDAO crearEstadiaDAO() {
         return new EstadiaDAOImpl();

@@ -6,7 +6,7 @@ import Logica.Dominio.NotaDeCredito;
 public class NotaDeCreditoDAOImpl implements NotaDeCreditoDAO{
     // Método para crear una nota de crédito
     public void crearNotaDeCredito(NotaDeCredito nota) {
-        //Implementar
+        //Implementar funcion
     }
 
     // Método para modificar una nota de crédito existente

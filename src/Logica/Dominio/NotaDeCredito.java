@@ -18,7 +18,7 @@ public class NotaDeCredito {
     public String getNumero() {
         return numero;
     }
-
+    //Funciones
     public Date getFecha() {
         return fecha;
     }
