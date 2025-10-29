@@ -58,7 +58,6 @@ public class FactoryDAOImpl implements DAOFactory {
 
     @Override
     public ResponsableDePagoDAO crearResponsableDePagoDAO() {
-        return new ResponsableDePagoDAOImpl() {
-        };
+        return new ResponsableDePagoDAOImpl();
     }
 }
