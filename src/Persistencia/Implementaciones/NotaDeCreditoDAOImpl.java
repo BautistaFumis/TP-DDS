@@ -1,9 +1,10 @@
-package Persistencia;
+package Persistencia.Implementaciones;
 
 
 import Logica.Dominio.NotaDeCredito;
+import Persistencia.NotaDeCreditoDAO;
 
-public class NotaDeCreditoDAOImpl implements NotaDeCreditoDAO{
+public class NotaDeCreditoDAOImpl implements NotaDeCreditoDAO {
     // Método para crear una nota de crédito
     public void crearNotaDeCredito(NotaDeCredito nota) {
         //Implementar funcion

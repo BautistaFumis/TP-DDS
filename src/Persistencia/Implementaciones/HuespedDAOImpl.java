@@ -1,7 +1,9 @@
-package Persistencia;
+package Persistencia.Implementaciones;
 
 import Logica.Dominio.Direccion;
 import Logica.Dominio.Huesped;
+import Persistencia.HuespedDAO;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;

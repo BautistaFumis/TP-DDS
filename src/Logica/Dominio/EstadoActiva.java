@@ -1,5 +1,7 @@
 package Logica.Dominio;
 
+import Logica.Dominio.Enum.TipoEstadoEstadia;
+
 import java.time.LocalDate;
 
 /**

@@ -1,8 +1,9 @@
-package Persistencia;
+package Persistencia.Implementaciones;
 
 import Logica.Dominio.Factura;
+import Persistencia.FacturaDAO;
 
-public class FacturaDAOImpl implements FacturaDAO{
+public class FacturaDAOImpl implements FacturaDAO {
 
     public void modificarFactura(Factura factura){
         //Implementar

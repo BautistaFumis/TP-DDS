@@ -1,4 +1,4 @@
-package Logica.Dominio;
+package Logica.Dominio.Enum;
 
 /**
  * Enumeración para representar los posibles tipos de estado de una Estadia.

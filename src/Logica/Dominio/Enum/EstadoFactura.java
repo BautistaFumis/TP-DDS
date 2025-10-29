@@ -1,4 +1,4 @@
-package Logica.Dominio;
+package Logica.Dominio.Enum;
 
 public enum EstadoFactura {
     VIGENTE,

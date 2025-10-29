@@ -1,5 +1,8 @@
 package Logica.Dominio;
 
+import Logica.Dominio.Enum.EstadoFactura;
+import Logica.Dominio.Enum.TipoFactura;
+
 import java.util.Date;
 
 public class Factura {

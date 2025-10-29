@@ -1,5 +1,7 @@
 package Logica.Dominio;
 
+import Logica.Dominio.Enum.EstadoHabitacion;
+
 public class Habitacion {
     private EstadoHabitacion estado;
     private Float costo_noche;

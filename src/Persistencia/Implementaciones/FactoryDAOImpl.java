@@ -1,4 +1,6 @@
-package Persistencia;
+package Persistencia.Implementaciones;
+
+import Persistencia.*;
 
 /**
  * Implementación concreta de la interfaz {@link DAOFactory}.

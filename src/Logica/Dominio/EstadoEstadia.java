@@ -1,5 +1,7 @@
 package Logica.Dominio;
 
+import Logica.Dominio.Enum.TipoEstadoEstadia;
+
 /**
  * Interfaz que define el comportamiento de una Estadia según su estado.
  * Las clases concretas implementarán las acciones específicas para cada estado.

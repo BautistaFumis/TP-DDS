@@ -36,6 +36,9 @@ public interface DAOFactory {
      * @return Una implementación de la interfaz EstadiaDAO.
      */
     EstadiaDAO crearEstadiaDAO();
+    HabitacionDAO crearHabitacionDAO();
+    ServicioDAO crearServicioDAO();
+    ResponsableDePagoDAO crearResponsableDePagoDAO();
     NotaDeCreditoDAO crearNotaDeCreditoDAO();
     FacturaDAO crearFacturaDAO();
 }

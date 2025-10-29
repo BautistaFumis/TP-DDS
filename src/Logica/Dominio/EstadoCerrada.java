@@ -1,5 +1,7 @@
 package Logica.Dominio;
 
+import Logica.Dominio.Enum.TipoEstadoEstadia;
+
 /**
  * Representa el estado de una estadía que ya ha finalizado (Cerrada).
  */
