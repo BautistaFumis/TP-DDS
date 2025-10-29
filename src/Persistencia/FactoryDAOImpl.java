@@ -34,4 +34,12 @@ public class FactoryDAOImpl implements DAOFactory {
     public EstadiaDAO crearEstadiaDAO() {
         return new EstadiaDAOImpl();
     }
+    @Override
+    public NotaDeCreditoDAO crearNotaDeCreditoDAO() {
+        return new NotaDeCreditoDAOImpl();
+    }
+    @Override
+    public FacturaDAO crearFacturaDAO() {
+        return new FacturaDAOImpl();
+    }
 }
