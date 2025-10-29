@@ -45,4 +45,20 @@ public class FactoryDAOImpl implements DAOFactory {
     public FacturaDAO crearFacturaDAO() {
         return new FacturaDAOImpl();
     }
+
+    @Override
+    public HabitacionDAO crearHabitacionDAO() {
+        return new HabitacionDAOImpl();
+    }
+
+    @Override
+    public ServicioDAO crearServicioDAO() {
+        return new ServicioDAOImpl();
+    }
+
+    @Override
+    public ResponsableDePagoDAO crearResponsableDePagoDAO() {
+        return new ResponsableDePagoDAOImpl() {
+        };
+    }
 }
