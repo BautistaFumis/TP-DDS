@@ -2,10 +2,18 @@ package Logica.Gestores;
 
 import Logica.Dominio.Usuario;
 import Logica.Excepciones.CredencialesInvalidasException;
-import Persistencia.DAOFactory;
-import Persistencia.UsuarioDAO;
+
+// <-- NUEVO: Importamos el Repositorio de Spring Data
+import Persistencia.Repositorios.UsuarioRepository;
+// <-- ADIÓS: Ya no usamos DAOFactory ni UsuarioDAO
+// import Persistencia.DAOFactory;
+// import Persistencia.UsuarioDAO;
 
 import java.util.Optional;
+
+// <-- NUEVO: Importaciones de Spring
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Gestiona la lógica de negocio para las operaciones de autenticación de usuarios.
@@ -13,17 +21,22 @@ import java.util.Optional;
  * contra la capa de persistencia.
  */
 
+// <-- NUEVO: @Service le dice a Spring que esta es una clase de Lógica/Servicio
+@Service
 public class GestorUsuario {
 
-    private final UsuarioDAO usuarioDAO;
+    // <-- CAMBIO: Reemplazamos el DAO por el Repository
+    private final UsuarioRepository usuarioRepository;
+    // private final UsuarioDAO usuarioDAO; <-- ADIÓS
 
     /**
-     * Constructor por defecto.
-     * Inicializa el gestor y crea una instancia concreta del DAO de usuarios (`UsuarioDAOImpl`).
+     * <-- CAMBIO: El constructor ahora usa Inyección de Dependencias (@Autowired).
+     * Spring se encarga de pasarnos el repositorio automáticamente.
      */
-
-    public GestorUsuario(DAOFactory factory) {
-        this.usuarioDAO = factory.crearUsuarioDAO();
+    @Autowired
+    public GestorUsuario(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+        // this.usuarioDAO = factory.crearUsuarioDAO(); <-- ADIÓS
     }
 
     /**
@@ -36,7 +49,10 @@ public class GestorUsuario {
      * @throws CredencialesInvalidasException si el usuario no se encuentra en la persistencia o si la contraseña es incorrecta.
      */
     public void autenticar(String id, String password) throws CredencialesInvalidasException {
-        Optional<Usuario> usuarioOpt = usuarioDAO.buscarPorId(id);
+
+        // <-- CAMBIO: Usamos el método del repositorio de Spring
+        // ANTES: Optional<Usuario> usuarioOpt = usuarioDAO.buscarPorId(id);
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
 
         if (usuarioOpt.isEmpty() || !usuarioOpt.get().getPassword().equals(password)) {
             throw new CredencialesInvalidasException("El usuario o la contraseña no son válidos");

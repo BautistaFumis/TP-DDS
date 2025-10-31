@@ -7,32 +7,68 @@ import Logica.Excepciones.CredencialesInvalidasException;
 import Logica.Excepciones.DocumentoDuplicadoException;
 import Logica.Gestores.GestorHuesped;
 import Logica.Gestores.GestorUsuario;
-import Persistencia.*;
-import Persistencia.Implementaciones.FactoryDAOImpl;
+
+// <-- NUEVO: Importaciones de Spring Boot
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+// <-- ¡IMPORTACIONES DE LA SOLUCIÓN!
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 
 import java.time.LocalDate;
+// ... (el resto de tus imports)
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
+
 /**
  * Clase principal de la aplicación de gestión hotelera.
- * Contiene el punto de entrada (main) y se encarga de manejar el flujo de la aplicación,
- * la interacción con el usuario a través de la consola y la orquestación de los casos de uso.
+ * ...
  */
-public class Main {
 
+@SpringBootApplication
+// Escanea en busca de @Services (GestorUsuario) y @Components (CargadorDeDatos)
+@ComponentScan(basePackages = {"Logica.Gestores", "App"})
+// Escanea en busca de @Repository (UsuarioRepository)
+@EnableJpaRepositories(basePackages = {"Persistencia.Repositorios"})
+// <-- ¡LA LÍNEA QUE FALTABA! Escanea en busca de @Entity (Usuario)
+@EntityScan(basePackages = {"Logica.Dominio"})
+public class Main implements CommandLineRunner {
+
+    // <-- NUEVO: Spring inyecta el gestor de usuarios (que ya tiene el repositorio adentro)
+    @Autowired
+    private GestorUsuario gestorUsuario;
+
+    // <-- TEMPORALMENTE COMENTADO: GestorHuesped aún no está migrado a Spring
+    // @Autowired
+    // private GestorHuesped gestorHuesped;
+
+    // <-- NUEVO: El método main() de Java ahora solo inicia Spring
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        DAOFactory factory = new FactoryDAOImpl();
+        SpringApplication.run(Main.class, args);
+    }
 
-        GestorUsuario gestorUsuario = new GestorUsuario(factory);
-        GestorHuesped gestorHuesped = new GestorHuesped(factory);
+    // <-- NUEVO: Toda tu lógica de consola va dentro del método run()
+    @Override
+    public void run(String... args) throws Exception {
+        Scanner scanner = new Scanner(System.in);
+
+        // <-- ADIÓS: Spring se encarga de crear los gestores
+        // DAOFactory factory = new FactoryDAOImpl();
+        // GestorUsuario gestorUsuario = new GestorUsuario(factory);
+        // GestorHuesped gestorHuesped = new GestorHuesped(factory);
+
         boolean autenticado = false;
 
         System.out.println("========================================");
-        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA");
+        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA (Versión Spring Boot)");
         System.out.println("========================================");
 
         while (!autenticado) {
@@ -42,7 +78,10 @@ public class Main {
                 String id = scanner.nextLine();
                 System.out.print("Contraseña: ");
                 String password = scanner.nextLine();
+
+                // Usamos el gestor que Spring nos inyectó
                 gestorUsuario.autenticar(id, password);
+
                 autenticado = true;
                 System.out.println("\n¡Usuario Autenticado! Bienvenido, " + id + ".");
             } catch (CredencialesInvalidasException e) {
@@ -55,7 +94,7 @@ public class Main {
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
             System.out.println("Seleccione el Caso de Uso que desea ejecutar:");
-            System.out.println("2. (CU02) - Buscar Huésped - Permite DarAlta - Modificar - Eliminar");
+            System.out.println("2. (CU02) - Buscar Huésped (Temporalmente deshabilitado)");
             System.out.println("0. Salir ");
             System.out.print("Opción: ");
 
@@ -67,7 +106,9 @@ public class Main {
 
             switch (option) {
                 case 2:
-                    ejecutarBusquedaHuesped(scanner, gestorHuesped);
+                    // <-- TEMPORALMENTE COMENTADO: Aún no migramos GestorHuesped
+                    System.out.println("Esta función será habilitada cuando migremos Huéspedes a la base de datos.");
+                    // ejecutarBusquedaHuesped(scanner, gestorHuesped);
                     break;
                 case 0:
                     System.out.println("Saliendo del sistema. ¡Hasta luego!");
@@ -80,7 +121,6 @@ public class Main {
 
         scanner.close();
     }
-
     /**
      * Encapsula la lógica para el Caso de Uso 09 - Dar de alta un nuevo Huésped.
      * Solicita todos los datos al usuario por consola y maneja las validaciones y errores.
