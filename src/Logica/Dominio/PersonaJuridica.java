@@ -1,5 +1,7 @@
 package Logica.Dominio;
 
+import Logica.Dominio.Entidades.Direccion;
+
 public class PersonaJuridica {
     private String nombre;
     private String apellido;

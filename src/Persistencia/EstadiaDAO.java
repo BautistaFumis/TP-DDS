@@ -1,7 +1,7 @@
 package Persistencia;
 
-import Logica.Dominio.Estadia;
-import Logica.Dominio.Huesped;
+import Logica.Dominio.Entidades.Estadia;
+import Logica.Dominio.Entidades.Huesped;
 
 /**
  * Define el contrato para las operaciones de acceso a datos (DAO)

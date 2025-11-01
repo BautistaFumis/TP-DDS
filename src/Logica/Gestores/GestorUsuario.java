@@ -1,6 +1,6 @@
 package Logica.Gestores;
 
-import Logica.Dominio.Usuario;
+import Logica.Dominio.Entidades.Usuario;
 import Logica.Excepciones.CredencialesInvalidasException;
 
 // <-- NUEVO: Importamos el Repositorio de Spring Data

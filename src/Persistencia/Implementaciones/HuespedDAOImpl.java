@@ -1,7 +1,7 @@
 package Persistencia.Implementaciones;
 
-import Logica.Dominio.Direccion;
-import Logica.Dominio.Huesped;
+import Logica.Dominio.Entidades.Direccion;
+import Logica.Dominio.Entidades.Huesped;
 import Persistencia.HuespedDAO;
 
 import java.io.*;

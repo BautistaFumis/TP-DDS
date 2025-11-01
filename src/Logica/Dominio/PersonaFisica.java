@@ -1,5 +1,7 @@
 package Logica.Dominio;
 
+import Logica.Dominio.Entidades.Huesped;
+
 public class PersonaFisica extends ResponsableDePago{
     private Huesped huesped;
 

@@ -1,77 +1,79 @@
 package Logica.Gestores;
 
-import Logica.Dominio.Huesped;
+import Logica.Dominio.Entidades.Huesped;
 import Logica.Excepciones.CamposObligatoriosException;
 import Logica.Excepciones.DocumentoDuplicadoException;
-import Persistencia.DAOFactory;
-import Persistencia.EstadiaDAO;
-import Persistencia.HuespedDAO;
+// ADIÓS: import Persistencia.DAOFactory;
+// ADIÓS: import Persistencia.EstadiaDAO;
+// ADIÓS: import Persistencia.HuespedDAO;
+
+// NUEVO: Importamos los repositorios
+import Persistencia.Repositorios.EstadiaRepository;
+import Persistencia.Repositorios.HuespedRepository;
+
+// NUEVO: Importaciones de Spring
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Gestiona la lógica de negocio para las operaciones relacionadas con los huéspedes.
+ * Ahora es un @Service de Spring.
  */
+@Service // NUEVO
 public class GestorHuesped {
 
-    private final HuespedDAO huespedDAO;
-    private final EstadiaDAO estadiaDAO;
+    // NUEVO: Inyectamos los repositorios
+    private final HuespedRepository huespedRepository;
+    private final EstadiaRepository estadiaRepository;
 
     /**
-     * Constructor que inyecta las dependencias de los DAO de Huésped y Estadía.
-     *
-     *
-     * @param factory La fábrica de DAOs que provee las implementaciones concretas.
+     * Constructor con Inyección de Dependencias (@Autowired).
+     * Spring se encarga de pasarnos los repositorios.
      */
-    public GestorHuesped(DAOFactory factory) {
-        this.huespedDAO = factory.crearHuespedDAO();
-        this.estadiaDAO = factory.crearEstadiaDAO();
+    @Autowired // NUEVO
+    public GestorHuesped(HuespedRepository huespedRepository, EstadiaRepository estadiaRepository) {
+        this.huespedRepository = huespedRepository;
+        this.estadiaRepository = estadiaRepository;
     }
 
     /**
-     * Valida y registra un nuevo huésped en el sistema, tiene en cuenta los campos obligatorios.
-     *
-     * @param huesped El objeto Huesped con los datos a registrar.
-     * @throws CamposObligatoriosException Si alguno de los campos requeridos está vacío.
-     * @throws DocumentoDuplicadoException Si ya existe un huésped con el mismo tipo y número de documento.
+     * Valida y registra un nuevo huésped en el sistema.
+     * (La lógica interna es la misma, solo cambia la llamada final)
      */
     public void registrarNuevoHuesped(Huesped huesped) throws CamposObligatoriosException, DocumentoDuplicadoException {
         if (huesped.getCategoriaIVA() == null || huesped.getCategoriaIVA().trim().isEmpty())
             huesped.setCategoriaIVA("Consumidor Final");
         completarCampos(huesped);
-        if (huespedDAO.buscarHuesped(huesped.getTipoDocumento(), huesped.getDocumento()).isPresent()) {
+
+        // CAMBIO: Usamos el repositorio
+        if (huespedRepository.findByTipoDocumentoAndDocumento(huesped.getTipoDocumento(), huesped.getDocumento()).isPresent()) {
             throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
         }
-        huespedDAO.altaHuesped(huesped);
+        // CAMBIO: Usamos .save() en lugar de .altaHuesped()
+        huespedRepository.save(huesped);
     }
 
     /**
      * Registra un huésped sin realizar la validación de documento duplicado.
-     *
-     * @param huesped El objeto Huesped con los datos a registrar.
      */
     public void registrarHuespedAceptandoDuplicado(Huesped huesped) {
-        huespedDAO.altaHuesped(huesped);
+        // CAMBIO: Usamos .save()
+        huespedRepository.save(huesped);
     }
 
     /**
      * Orquesta la búsqueda de huéspedes según múltiples criterios de filtrado.
-     *
-     * @return Una lista de objetos Huesped que coinciden con los criterios.
      */
     public List<Huesped> buscarHuespedes(String apellido, String nombre, String tipoDocumento, String documento) {
-        return huespedDAO.buscarPorCriterios(apellido, nombre, tipoDocumento, documento);
+        // CAMBIO: Usamos el método del repositorio
+        return huespedRepository.buscarPorCriterios(apellido, nombre, tipoDocumento, documento);
     }
 
     /**
-     * Valida los datos modificados de un huésped y solicita su actualización,
-     * pasando los identificadores originales al DAO y validando duplicados.
-     *
-     * @param tipoDocumentoOriginal El tipo de documento ANTES de la modificación.
-     * @param documentoOriginal El número de documento ANTES de la modificación.
-     * @param huespedConNuevosDatos El objeto Huesped con la información ya actualizada.
-     * @throws CamposObligatoriosException Si faltan campos obligatorios en los nuevos datos.
-     * @throws DocumentoDuplicadoException Si los nuevos datos de documento ya pertenecen a OTRO huésped.
+     * Valida y actualiza un huésped.
      */
     public void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos)  throws CamposObligatoriosException, DocumentoDuplicadoException {
 
@@ -84,45 +86,45 @@ public class GestorHuesped {
                 !huespedConNuevosDatos.getDocumento().equals(documentoOriginal);
 
         if (documentoModificado) {
-            Optional<Huesped> otroHuespedConEseDoc = huespedDAO.buscarHuesped(
+            // CAMBIO: Usamos el repositorio
+            Optional<Huesped> otroHuespedConEseDoc = huespedRepository.findByTipoDocumentoAndDocumento(
                     huespedConNuevosDatos.getTipoDocumento(),
                     huespedConNuevosDatos.getDocumento());
 
             if (otroHuespedConEseDoc.isPresent()) {
+                // Pequeña mejora: asegurarnos que no sea él mismo (aunque tu lógica original no lo hacía, esto es más seguro)
+                // if (!otroHuespedConEseDoc.get().getId().equals(huespedConNuevosDatos.getId())) {
                 throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
+                // }
             }
         }
 
-        huespedDAO.modificarHuesped(tipoDocumentoOriginal, documentoOriginal, huespedConNuevosDatos);
+        // CAMBIO: .save() maneja la modificación automáticamente si el Huesped ya tiene un ID.
+        // La lógica original de pasar el documento original ya no es necesaria si tenemos el ID.
+        // Asumimos que "huespedConNuevosDatos" tiene el ID del original.
+        huespedRepository.save(huespedConNuevosDatos);
     }
 
     /**
-     * Modifica un huésped sin realizar la validación de documento duplicado.
-     *
-     * @param tipoDocumentoOriginal El tipo de documento ANTES de la modificación.
-     * @param documentoOriginal El número de documento ANTES de la modificación.
-     * @param huespedConNuevosDatos El objeto Huesped con la información ya actualizada.
+     * Modifica un huésped sin validación de duplicados.
      */
-
     public void modificarHuespedAceptandoDuplicado(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos){
-        huespedDAO.modificarHuesped(tipoDocumentoOriginal, documentoOriginal, huespedConNuevosDatos);
+        // CAMBIO: .save()
+        huespedRepository.save(huespedConNuevosDatos);
     }
 
     /**
-     * Gestiona la eliminación de un huésped, verificando primero si tiene estadías asociadas.
-     * @param huesped El huésped que se desea eliminar.
-     * @return {@code true} si el huésped fue eliminado, {@code false} si no se pudo eliminar.
-     * */
-
-
+     * Gestiona la eliminación de un huésped.
+     */
     public boolean darDeBajaHuesped(Huesped huesped) {
-        if (estadiaDAO.tieneEstadias(huesped)) {
+        // CAMBIO: Usamos el repositorio de estadia
+        if (estadiaRepository.existsByHuespedPrincipal(huesped)) {
             return false;
         }
-        huespedDAO.eliminarHuesped(huesped.getDocumento());
+        // CAMBIO: Usamos .delete()
+        huespedRepository.delete(huesped);
         return true;
     }
-
     /**
      * Gestiona la validacion de campos para un huesped. Una funcion privada al gestor que utilizamos en dos metos y nos viene
      * bien reutilizarla

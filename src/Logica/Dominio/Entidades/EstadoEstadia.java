@@ -1,4 +1,4 @@
-package Logica.Dominio;
+package Logica.Dominio.Entidades;
 
 import Logica.Dominio.Enum.TipoEstadoEstadia;
 

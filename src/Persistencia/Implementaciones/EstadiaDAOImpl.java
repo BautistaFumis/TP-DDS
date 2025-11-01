@@ -1,6 +1,6 @@
 package Persistencia.Implementaciones;
 
-import Logica.Dominio.Huesped;
+import Logica.Dominio.Entidades.Huesped;
 import Persistencia.EstadiaDAO;
 
 import java.io.BufferedReader;

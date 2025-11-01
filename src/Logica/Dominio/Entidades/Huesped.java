@@ -1,55 +1,56 @@
-package Logica.Dominio;
+package Logica.Dominio.Entidades;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.*; // Importamos todo de jakarta.persistence
+
+
 /**
  * Representa la entidad principal del dominio: un huésped del hotel.
- * Esta clase contiene toda la información personal, de contacto y fiscal
- * de una persona que se aloja o se ha alojado en el hotel.
+ * Con @Entity, esta clase se convierte en una tabla de base de datos.
  */
+@Entity
+@Table(name = "huespedes") // Le damos nombre a la tabla
 public class Huesped {
+
+    // --- NUEVO: Clave Primaria (ID) ---
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Autonumérico (1, 2, 3...)
+    private Long id; // La nueva clave primaria de la base de datos
+
+    // --- Campos que ya tenías ---
     private String nombre;
     private String apellido;
     private String email;
     private String tipoDocumento;
+    private String documento; // Mantenemos esto para búsquedas
     private String telefono;
-    private String documento;
+
+    // --- NUEVO: Dirección Incrustada ---
+    @Embedded // Le dice a JPA que "aplane" los campos de Direccion aquí
     private Direccion direccion;
+
     private String cuit;
     private String categoriaIVA;
     private LocalDate fechaNacimiento;
     private String ocupacion;
     private String nacionalidad;
 
+    // --- Constructores (los que ya tenías) ---
+
     /**
-     * Constructor por defecto.
-     * Crea una instancia de Huesped con todos sus campos nulos o con valores por defecto.
+     * Constructor por defecto (REQUERIDO POR JPA)
      */
     public Huesped(){}
 
-    /**
-     * Constructor con todos los parámetros para crear un huésped completo.
-     *
-     * @param nombre El nombre de pila del huésped.
-     * @param apellido El apellido del huésped.
-     * @param email La dirección de correo electrónico.
-     * @param tipoDocumento El tipo de documento (ej: DNI, PASAPORTE).
-     * @param telefono El número de teléfono de contacto.
-     * @param documento El número de identificación del documento.
-     * @param direccion El objeto {@link Direccion} con los datos de su domicilio.
-     * @param cuit El CUIT del huésped (opcional).
-     * @param categoriaIVA La categoría fiscal frente al IVA.
-     * @param fechaNacimiento La fecha de nacimiento del huésped.
-     * @param ocupacion La profesión u ocupación del huésped.
-     * @param nacionalidad La nacionalidad del huésped.
-     */
-    public Huesped(String nombre, String apellido, String email, String tipoDocumento, String telefono, String documento, Direccion direccion, String cuit, String categoriaIVA, LocalDate fechaNacimiento, String ocupacion, String nacionalidad) {
+    public Huesped(Long id, String nombre, String apellido, String email, String tipoDocumento, String documento, String telefono, Direccion direccion, String cuit, String categoriaIVA, LocalDate fechaNacimiento, String ocupacion, String nacionalidad) {
+        this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.tipoDocumento = tipoDocumento;
-        this.telefono = telefono;
         this.documento = documento;
+        this.telefono = telefono;
         this.direccion = direccion;
         this.cuit = cuit;
         this.categoriaIVA = categoriaIVA;
@@ -60,13 +61,10 @@ public class Huesped {
 
     /**
      * Constructor de copia.
-     * Crea una nueva instancia de Huesped a partir de otra instancia existente,
-     * duplicando todos sus atributos. Realiza una copia profunda de la dirección.
-     *
-     * @param otro La instancia de Huesped a copiar.
      */
     public Huesped(Huesped otro) {
         if (otro != null) {
+            // NO copiamos el ID, porque este es un nuevo registro
             this.nombre = otro.nombre;
             this.apellido = otro.apellido;
             this.email = otro.email;
@@ -81,6 +79,9 @@ public class Huesped {
             this.nacionalidad = otro.nacionalidad;
         }
     }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     /**
      * Obtiene el nombre del huésped.

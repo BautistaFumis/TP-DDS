@@ -1,4 +1,4 @@
-package Logica.Dominio;
+package Logica.Dominio.Entidades;
 
 import Logica.Dominio.Enum.TipoEstadoEstadia;
 
@@ -6,16 +6,31 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.*;
+
 /**
- * Representa el período de permanencia de uno o más huéspedes en el hotel.
- *
+ * Placeholder temporal para la Entidad Estadia.
+ * La creamos solo para que GestorHuesped compile.
  */
+@Entity
+@Table(name = "estadias")
 public class Estadia {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // Suponemos que una Estadia está ligada a un Huesped
+    @ManyToOne
+    @JoinColumn(name = "huesped_id") // Clave foránea
+    private Huesped huespedPrincipal;
     private LocalDate fechaCheckin;
     private LocalDate fechaCheckout;
-    private Huesped huespedPrincipal;
-    private List<Huesped> acompanantes; // no esta implementada la logica para cargar acompanantes por el momento, por lo que solo se trabaja con un solo huesped
-    private EstadoEstadia estado;
+   // private List<Huesped> acompanantes; // no esta implementada la logica para cargar acompanantes por el momento, por lo que solo se trabaja con un solo huesped
+    //private EstadoEstadia estado;
+
+
+    public Estadia() {}
 
     /**
      * Constructor para crear una nueva instancia de Estadia.
@@ -27,7 +42,7 @@ public class Estadia {
         this.fechaCheckin = fechaCheckin;
         this.fechaCheckout = null;
         this.huespedPrincipal = huespedPrincipal;
-        this.acompanantes = new ArrayList<>(); //no vamos a tener en cuenta en esta entrega para eliminar los acompanantes, ya que no nos lo pide explicitamente
+      //  this.acompanantes = new ArrayList<>(); //no vamos a tener en cuenta en esta entrega para eliminar los acompanantes, ya que no nos lo pide explicitamente
         setEstadoInterno(new EstadoActiva());
     }
 
@@ -35,14 +50,14 @@ public class Estadia {
      * Intenta cerrar la estadía. El comportamiento depende del estado actual.
      */
     public void cerrar() {
-        this.estado.cerrarEstadia(this);
+   //     this.estado.cerrarEstadia(this);
     }
 
     /**
      * Intenta reabrir la estadía. El comportamiento depende del estado actual.
      */
     public void reabrir() {
-        this.estado.reabrirEstadia(this);
+  //      this.estado.reabrirEstadia(this);
     }
 
 
@@ -51,7 +66,7 @@ public class Estadia {
      * @param nuevoEstado El nuevo objeto de estado.
      */
     void setEstadoInterno(EstadoEstadia nuevoEstado) {
-        this.estado = nuevoEstado;
+     //  this.estado = nuevoEstado;
         System.out.println("--> Nuevo estado de la estadía: " + nuevoEstado.getClass().getSimpleName());
     }
 
@@ -59,17 +74,17 @@ public class Estadia {
      * Obtiene el tipo de estado actual de la estadía.
      * @return El valor Enum {@link TipoEstadoEstadia} correspondiente.
      */
-    public TipoEstadoEstadia getTipoEstado() {
-        return this.estado.getTipoEstado();
-    }
+  //  public TipoEstadoEstadia getTipoEstado() {
+    //    return this.estado.getTipoEstado();
+  //  }
 
     /**
      * Agrega un huésped acompañante a la lista de la estadía.
      * @param huesped El huésped a agregar como acompañante.
      */
-    public void agregarAcompanante(Huesped huesped) {
-        this.acompanantes.add(huesped);
-    }
+  //  public void agregarAcompanante(Huesped huesped) {
+    //    this.acompanantes.add(huesped);
+   // }
     /**
      * Obtiene la fecha de check-in de la estadía.
      *
@@ -118,7 +133,7 @@ public class Estadia {
      * @return Una {@link List} que contiene los objetos {@link Huesped} de los acompañantes.
      * Puede ser una lista vacía si no hay acompañantes.
      */
-    public List<Huesped> getAcompanantes() { return acompanantes; }
+   // public List<Huesped> getAcompanantes() { return acompanantes; }
 
     /**
      * Establece la lista completa de huéspedes acompañantes.
@@ -126,5 +141,5 @@ public class Estadia {
      *
      * @param acompanantes La nueva {@link List} de objetos {@link Huesped} acompañantes.
      */
-    public void setAcompanantes(List<Huesped> acompanantes) { this.acompanantes = acompanantes; }
+   // public void setAcompanantes(List<Huesped> acompanantes) { this.acompanantes = acompanantes; }
 }

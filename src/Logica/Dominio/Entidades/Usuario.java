@@ -1,4 +1,4 @@
-package Logica.Dominio;
+package Logica.Dominio.Entidades;
 
 // <-- NUEVO: Importaciones de JPA (Java Persistence API)
 // <-- VERDE: Estos son los nuevos nombres

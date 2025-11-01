@@ -1,6 +1,6 @@
 package Persistencia.Repositorios;
 
-import Logica.Dominio.Usuario;
+import Logica.Dominio.Entidades.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

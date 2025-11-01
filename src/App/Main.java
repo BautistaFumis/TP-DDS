@@ -1,61 +1,46 @@
 package App;
 
-import Logica.Dominio.Direccion;
-import Logica.Dominio.Huesped;
+import Logica.Dominio.Entidades.Direccion;
+import Logica.Dominio.Entidades.Estadia;
+import Logica.Dominio.Entidades.Huesped;
+import Logica.Dominio.Entidades.Usuario;
 import Logica.Excepciones.CamposObligatoriosException;
 import Logica.Excepciones.CredencialesInvalidasException;
 import Logica.Excepciones.DocumentoDuplicadoException;
 import Logica.Gestores.GestorHuesped;
 import Logica.Gestores.GestorUsuario;
 
-// <-- NUEVO: Importaciones de Spring Boot
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-// <-- ¡IMPORTACIONES DE LA SOLUCIÓN!
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-
 import java.time.LocalDate;
-// ... (el resto de tus imports)
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-
-/**
- * Clase principal de la aplicación de gestión hotelera.
- * ...
- */
-
 @SpringBootApplication
-// Escanea en busca de @Services (GestorUsuario) y @Components (CargadorDeDatos)
 @ComponentScan(basePackages = {"Logica.Gestores", "App"})
-// Escanea en busca de @Repository (UsuarioRepository)
 @EnableJpaRepositories(basePackages = {"Persistencia.Repositorios"})
-// <-- ¡LA LÍNEA QUE FALTABA! Escanea en busca de @Entity (Usuario)
-@EntityScan(basePackages = {"Logica.Dominio"})
+@EntityScan(basePackages = {"Logica.Dominio.Entidades"})
 public class Main implements CommandLineRunner {
 
-    // <-- NUEVO: Spring inyecta el gestor de usuarios (que ya tiene el repositorio adentro)
     @Autowired
     private GestorUsuario gestorUsuario;
 
-    // <-- TEMPORALMENTE COMENTADO: GestorHuesped aún no está migrado a Spring
-    // @Autowired
-    // private GestorHuesped gestorHuesped;
+    // <-- ¡YA NO ESTÁ COMENTADO! ---
+    @Autowired
+    private GestorHuesped gestorHuesped;
 
-    // <-- NUEVO: El método main() de Java ahora solo inicia Spring
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
 
-    // <-- NUEVO: Toda tu lógica de consola va dentro del método run()
     @Override
     public void run(String... args) throws Exception {
         Scanner scanner = new Scanner(System.in);
@@ -68,7 +53,7 @@ public class Main implements CommandLineRunner {
         boolean autenticado = false;
 
         System.out.println("========================================");
-        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA (Versión Spring Boot)");
+        System.out.println(" BIENVENIDO AL SISTEMA DE GESTIÓN HOTELERA ");
         System.out.println("========================================");
 
         while (!autenticado) {
@@ -94,7 +79,7 @@ public class Main implements CommandLineRunner {
         do {
             System.out.println("\n--- MENÚ PRINCIPAL ---");
             System.out.println("Seleccione el Caso de Uso que desea ejecutar:");
-            System.out.println("2. (CU02) - Buscar Huésped (Temporalmente deshabilitado)");
+            System.out.println("2. (CU02) - Buscar Huésped");
             System.out.println("0. Salir ");
             System.out.print("Opción: ");
 
@@ -106,9 +91,7 @@ public class Main implements CommandLineRunner {
 
             switch (option) {
                 case 2:
-                    // <-- TEMPORALMENTE COMENTADO: Aún no migramos GestorHuesped
-                    System.out.println("Esta función será habilitada cuando migremos Huéspedes a la base de datos.");
-                    // ejecutarBusquedaHuesped(scanner, gestorHuesped);
+                    ejecutarBusquedaHuesped(scanner, gestorHuesped);
                     break;
                 case 0:
                     System.out.println("Saliendo del sistema. ¡Hasta luego!");
@@ -129,7 +112,7 @@ public class Main implements CommandLineRunner {
      * @param gestor El GestorHuesped que maneja la lógica de negocio.
      */
 
-    private static void ejecutarAltaHuesped(Scanner scanner, GestorHuesped gestor) {
+    private void ejecutarAltaHuesped(Scanner scanner, GestorHuesped gestor) {
         boolean continuar = true;
         while (continuar) {
             System.out.println("\n--- ALTA DE NUEVO HUÉSPED (CU09) ---");
@@ -138,18 +121,26 @@ public class Main implements CommandLineRunner {
             Direccion direccion = new Direccion();
 
             try {
+                // --- Campos Obligatorios (se quedan igual) ---
                 System.out.print("(*) Apellido: ");
                 huespedParaAlta.setApellido(scanner.nextLine());
+
                 System.out.print("(*) Nombre: ");
                 huespedParaAlta.setNombre(scanner.nextLine());
+
                 System.out.print("(*) Tipo de Documento (DNI, LE, LC, PASAPORTE, Otro): ");
                 huespedParaAlta.setTipoDocumento(scanner.nextLine());
+
                 System.out.print("(*) Número de Documento: ");
                 huespedParaAlta.setDocumento(scanner.nextLine());
+
+                // --- Campos Opcionales (usando los helpers) ---
                 System.out.print("CUIT: ");
-                huespedParaAlta.setCuit(scanner.nextLine());
+                huespedParaAlta.setCuit(parseOptionalString(scanner.nextLine()));
+
                 System.out.print("Posicion frente al IVA: ");
-                huespedParaAlta.setCategoriaIVA(scanner.nextLine());
+                huespedParaAlta.setCategoriaIVA(parseOptionalString(scanner.nextLine()));
+
                 DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 System.out.print("(*) Fecha de Nacimiento (formato dd/mm/aaaa): ");
                 String fechaTexto = scanner.nextLine();
@@ -158,42 +149,55 @@ public class Main implements CommandLineRunner {
                 } else {
                     huespedParaAlta.setFechaNacimiento(null);
                 }
+
                 System.out.println("--- Dirección ---");
+
                 System.out.print("(*) Calle: ");
                 direccion.setCalle(scanner.nextLine());
+
                 System.out.print("(*) Numero: ");
                 String numeroStr = scanner.nextLine();
-                if(numeroStr != null && !numeroStr.trim().isEmpty()) {
-                    direccion.setNumero(Integer.parseInt(numeroStr.trim()));
-                } else {
-                    direccion.setNumero(null);
-                }
+                // Usamos el helper de Integer
+                direccion.setNumero(parseOptionalInteger(numeroStr));
+
                 System.out.print("Departamento (Letra o Numero): ");
-                direccion.setDepartamento(scanner.nextLine());
+                // Usamos el helper de String
+                direccion.setDepartamento(parseOptionalString(scanner.nextLine()));
+
                 System.out.print("Piso (Numero): ");
                 String pisoStr = scanner.nextLine();
-                if (pisoStr != null && !pisoStr.trim().isEmpty()) {
-                    direccion.setPiso(Integer.parseInt(pisoStr.trim()));
-                } else {
-                    direccion.setPiso(null);
-                }
+                // Usamos el helper de Integer
+                direccion.setPiso(parseOptionalInteger(pisoStr));
+
                 System.out.print("(*) Codigo Postal: ");
                 direccion.setCodigoPostal(scanner.nextLine());
+
                 System.out.print("(*) Localidad: ");
                 direccion.setLocalidad(scanner.nextLine());
+
                 System.out.print("(*) Provincia: ");
                 direccion.setProvincia(scanner.nextLine());
+
                 System.out.print("(*) Pais: ");
                 direccion.setPais(scanner.nextLine());
+
                 huespedParaAlta.setDireccion(direccion);
+
                 System.out.print("Teléfono: ");
-                huespedParaAlta.setTelefono(scanner.nextLine());
+                // Usamos el helper de String
+                huespedParaAlta.setTelefono(parseOptionalString(scanner.nextLine()));
+
                 System.out.print("Email: ");
-                huespedParaAlta.setEmail(scanner.nextLine());
+                // Usamos el helper de String
+                huespedParaAlta.setEmail(parseOptionalString(scanner.nextLine()));
+
                 System.out.print("Ocupacion: ");
-                huespedParaAlta.setOcupacion(scanner.nextLine());
+                // Usamos el helper de String
+                huespedParaAlta.setOcupacion(parseOptionalString(scanner.nextLine()));
+
                 System.out.print("Nacionalidad: ");
-                huespedParaAlta.setNacionalidad(scanner.nextLine());
+                // Usamos el helper de String
+                huespedParaAlta.setNacionalidad(parseOptionalString(scanner.nextLine()));
                 gestor.registrarNuevoHuesped(huespedParaAlta);
 
                 System.out.println("\n ÉXITO: El huésped '" + huespedParaAlta.getNombre() + " " + huespedParaAlta.getApellido() + "' ha sido satisfactoriamente cargado al sistema.");
@@ -224,6 +228,37 @@ public class Main implements CommandLineRunner {
     }
 
     /**
+     * Convierte un String de entrada en un Integer o en null.
+     * Si la entrada es vacía o nula, devuelve null.
+     * Si no, la convierte en Integer.
+     *
+     * @param input El String leído desde el scanner.
+     * @return Un Integer o null.
+     */
+    private Integer parseOptionalInteger(String input) {
+        if (input != null && !input.trim().isEmpty()) {
+            return Integer.parseInt(input.trim());
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Convierte un String de entrada en un String limpio o en null.
+     * Si la entrada es vacía o nula, devuelve null.
+     * Si no, devuelve el String sin espacios al inicio/final.
+     *
+     * @param input El String leído desde el scanner.
+     * @return Un String limpio o null.
+     */
+    private String parseOptionalString(String input) {
+        if (input != null && !input.trim().isEmpty()) {
+            return input.trim();
+        } else {
+            return null;
+        }
+    }
+    /**
      * Encapsula la lógica para el Caso de Uso 02 - Buscar un Huésped.
      * Permite buscar por múltiples criterios y, si se encuentra un resultado,
      * deriva a los casos de uso de Modificación (CU10) o Alta (CU09).
@@ -231,7 +266,7 @@ public class Main implements CommandLineRunner {
      * @param scanner El objeto Scanner para leer la entrada del usuario.
      * @param gestor El GestorHuesped que maneja la lógica de negocio.
      */
-    private static void ejecutarBusquedaHuesped(Scanner scanner, GestorHuesped gestor) {
+    private void ejecutarBusquedaHuesped(Scanner scanner, GestorHuesped gestor) {
         System.out.println("\n--- BÚSQUEDA DE HUÉSPED (CU02) ---");
         System.out.println("Ingrese los criterios de búsqueda (deje en blanco para omitir).");
 
@@ -300,6 +335,8 @@ public class Main implements CommandLineRunner {
         System.out.println("Modifique los campos que desee. Presione [Enter] para conservar el valor actual.");
 
         Huesped huespedModificado = new Huesped(huespedOriginal);
+        // Copiamos manualmente el ID para asegurar que .save() funcione como "update"
+        huespedModificado.setId(huespedOriginal.getId());
         Direccion direccionModificada = huespedModificado.getDireccion();
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 

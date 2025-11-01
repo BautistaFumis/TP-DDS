@@ -1,6 +1,6 @@
 package Persistencia;
 
-import Logica.Dominio.Usuario;
+import Logica.Dominio.Entidades.Usuario;
 
 import java.util.Optional;
 

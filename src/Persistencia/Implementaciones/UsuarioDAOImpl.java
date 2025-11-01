@@ -1,6 +1,6 @@
 package Persistencia.Implementaciones;
 
-import Logica.Dominio.Usuario;
+import Logica.Dominio.Entidades.Usuario;
 import Persistencia.UsuarioDAO;
 
 import java.io.BufferedReader;

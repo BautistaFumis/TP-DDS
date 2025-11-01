@@ -1,8 +1,12 @@
-package Logica.Dominio;
+package Logica.Dominio.Entidades;
+import jakarta.persistence.Embeddable;
 
 /**
- * Representa una dirección física con todos sus componentes.
+ * Representa una dirección.
+ * Con @Embeddable, le decimos a JPA que esta clase no es una tabla separada,
+ * sino que sus campos deben ser "incrustados" dentro de la tabla Huesped.
  */
+@Embeddable
 public class Direccion {
     private String pais;
     private String provincia;
