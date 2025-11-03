@@ -1,7 +1,5 @@
 package Logica.Dominio.Entidades;
 
-// <-- NUEVO: Importaciones de JPA (Java Persistence API)
-// <-- VERDE: Estos son los nuevos nombres
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -10,19 +8,15 @@ import jakarta.persistence.Table;
  * Esta clase almacena el identificador único (nombre de usuario) y la contraseña.
  */
 
-// <-- NUEVO: @Entity le dice a Spring que esta clase es una tabla
 @Entity
-// <-- NUEVO: @Table le da el nombre "usuarios" a la tabla en la BD
 @Table(name = "usuarios")
 public class Usuario {
 
-    // <-- NUEVO: @Id le dice a Spring que este campo es la Clave Primaria
     @Id
     private String id;
 
     private String password;
 
-    // <-- NUEVO: JPA necesita OBLIGATORIAMENTE un constructor vacío
     public Usuario() {
     }
 

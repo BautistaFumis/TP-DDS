@@ -1,5 +1,6 @@
-package Logica.Dominio.Entidades;
+package Logica.Dominio.State;
 
+import Logica.Dominio.Entidades.Estadia;
 import Logica.Dominio.Enum.TipoEstadoEstadia;
 
 /**
@@ -18,13 +19,15 @@ public class EstadoCerrada implements EstadoEstadia {
 
     /**
      * Permite reabrir una estadía cerrada (ej: si hubo un error).
-     * Cambia el estado a Activa y podría limpiar la fecha de checkout.
+     * Cambia el estado a Activa.
      * @param estadia La estadía a reabrir.
      */
     @Override
     public void reabrirEstadia(Estadia estadia) {
         System.out.println("Reabriendo la estadía...");
+
         estadia.setEstadoInterno(new EstadoActiva());
+
         System.out.println("Estadía reabierta (ahora está Activa).");
     }
 

@@ -1,7 +1,7 @@
-package Logica.Dominio.Entidades;
+package Logica.Dominio.State;
 
+import Logica.Dominio.Entidades.Estadia;
 import Logica.Dominio.Enum.TipoEstadoEstadia;
-
 import java.time.LocalDate;
 
 /**
@@ -16,10 +16,13 @@ public class EstadoActiva implements EstadoEstadia {
     @Override
     public void cerrarEstadia(Estadia estadia) {
         System.out.println("Cerrando la estadía...");
+
         if (estadia.getFechaCheckout() == null) {
             estadia.setFechaCheckout(LocalDate.now());
         }
+
         estadia.setEstadoInterno(new EstadoCerrada());
+
         System.out.println("Estadía cerrada con fecha: " + estadia.getFechaCheckout());
     }
 

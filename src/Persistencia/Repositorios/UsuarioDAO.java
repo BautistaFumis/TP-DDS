@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * ¡Y muchos más!
  */
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, String> {
+public interface UsuarioDAO extends JpaRepository<Usuario, String> {
 
     // Se deja vacío a propósito. La magia la hace JpaRepository.
 

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface HuespedRepository extends JpaRepository<Huesped, Long> { // Maneja Huesped, ID es Long
+public interface HuespedDAO extends JpaRepository<Huesped, Long> { // Maneja Huesped, ID es Long
 
     /**
      * Reemplaza a HuespedDAO.buscarHuesped()

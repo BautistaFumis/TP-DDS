@@ -2,7 +2,7 @@ package Logica.Dominio.Entidades;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.*; // Importamos todo de jakarta.persistence
+import jakarta.persistence.*;
 
 
 /**
@@ -13,20 +13,18 @@ import jakarta.persistence.*; // Importamos todo de jakarta.persistence
 @Table(name = "huespedes") // Le damos nombre a la tabla
 public class Huesped {
 
-    // --- NUEVO: Clave Primaria (ID) ---
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Autonumérico (1, 2, 3...)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // La nueva clave primaria de la base de datos
 
-    // --- Campos que ya tenías ---
     private String nombre;
     private String apellido;
     private String email;
     private String tipoDocumento;
-    private String documento; // Mantenemos esto para búsquedas
+    private String documento;
     private String telefono;
 
-    // --- NUEVO: Dirección Incrustada ---
+
     @Embedded // Le dice a JPA que "aplane" los campos de Direccion aquí
     private Direccion direccion;
 
@@ -36,10 +34,8 @@ public class Huesped {
     private String ocupacion;
     private String nacionalidad;
 
-    // --- Constructores (los que ya tenías) ---
-
     /**
-     * Constructor por defecto (REQUERIDO POR JPA)
+     * Constructor por defecto
      */
     public Huesped(){}
 
@@ -62,6 +58,7 @@ public class Huesped {
     /**
      * Constructor de copia.
      */
+
     public Huesped(Huesped otro) {
         if (otro != null) {
             // NO copiamos el ID, porque este es un nuevo registro

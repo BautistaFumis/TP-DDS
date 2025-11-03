@@ -16,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.time.LocalDate;
@@ -27,7 +28,8 @@ import java.util.Scanner;
 @SpringBootApplication
 @ComponentScan(basePackages = {"Logica.Gestores", "App"})
 @EnableJpaRepositories(basePackages = {"Persistencia.Repositorios"})
-@EntityScan(basePackages = {"Logica.Dominio.Entidades"})
+@EntityScan(basePackages = {"Logica.Dominio.Entidades" , "Logica.Dominio.State" })
+@Order(2)
 public class Main implements CommandLineRunner {
 
     @Autowired
@@ -45,11 +47,6 @@ public class Main implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-        // <-- ADIÓS: Spring se encarga de crear los gestores
-        // DAOFactory factory = new FactoryDAOImpl();
-        // GestorUsuario gestorUsuario = new GestorUsuario(factory);
-        // GestorHuesped gestorHuesped = new GestorHuesped(factory);
-
         boolean autenticado = false;
 
         System.out.println("========================================");
@@ -64,7 +61,6 @@ public class Main implements CommandLineRunner {
                 System.out.print("Contraseña: ");
                 String password = scanner.nextLine();
 
-                // Usamos el gestor que Spring nos inyectó
                 gestorUsuario.autenticar(id, password);
 
                 autenticado = true;
@@ -121,7 +117,6 @@ public class Main implements CommandLineRunner {
             Direccion direccion = new Direccion();
 
             try {
-                // --- Campos Obligatorios (se quedan igual) ---
                 System.out.print("(*) Apellido: ");
                 huespedParaAlta.setApellido(scanner.nextLine());
 
@@ -134,7 +129,6 @@ public class Main implements CommandLineRunner {
                 System.out.print("(*) Número de Documento: ");
                 huespedParaAlta.setDocumento(scanner.nextLine());
 
-                // --- Campos Opcionales (usando los helpers) ---
                 System.out.print("CUIT: ");
                 huespedParaAlta.setCuit(parseOptionalString(scanner.nextLine()));
 
@@ -157,16 +151,16 @@ public class Main implements CommandLineRunner {
 
                 System.out.print("(*) Numero: ");
                 String numeroStr = scanner.nextLine();
-                // Usamos el helper de Integer
+
                 direccion.setNumero(parseOptionalInteger(numeroStr));
 
                 System.out.print("Departamento (Letra o Numero): ");
-                // Usamos el helper de String
+
                 direccion.setDepartamento(parseOptionalString(scanner.nextLine()));
 
                 System.out.print("Piso (Numero): ");
                 String pisoStr = scanner.nextLine();
-                // Usamos el helper de Integer
+
                 direccion.setPiso(parseOptionalInteger(pisoStr));
 
                 System.out.print("(*) Codigo Postal: ");
@@ -184,19 +178,19 @@ public class Main implements CommandLineRunner {
                 huespedParaAlta.setDireccion(direccion);
 
                 System.out.print("Teléfono: ");
-                // Usamos el helper de String
+
                 huespedParaAlta.setTelefono(parseOptionalString(scanner.nextLine()));
 
                 System.out.print("Email: ");
-                // Usamos el helper de String
+
                 huespedParaAlta.setEmail(parseOptionalString(scanner.nextLine()));
 
                 System.out.print("Ocupacion: ");
-                // Usamos el helper de String
+
                 huespedParaAlta.setOcupacion(parseOptionalString(scanner.nextLine()));
 
                 System.out.print("Nacionalidad: ");
-                // Usamos el helper de String
+
                 huespedParaAlta.setNacionalidad(parseOptionalString(scanner.nextLine()));
                 gestor.registrarNuevoHuesped(huespedParaAlta);
 

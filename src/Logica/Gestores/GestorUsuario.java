@@ -4,7 +4,7 @@ import Logica.Dominio.Entidades.Usuario;
 import Logica.Excepciones.CredencialesInvalidasException;
 
 // <-- NUEVO: Importamos el Repositorio de Spring Data
-import Persistencia.Repositorios.UsuarioRepository;
+import Persistencia.Repositorios.UsuarioDAO;
 // <-- ADIÓS: Ya no usamos DAOFactory ni UsuarioDAO
 // import Persistencia.DAOFactory;
 // import Persistencia.UsuarioDAO;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class GestorUsuario {
 
     // <-- CAMBIO: Reemplazamos el DAO por el Repository
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioDAO usuarioRepository;
     // private final UsuarioDAO usuarioDAO; <-- ADIÓS
 
     /**
@@ -34,7 +34,7 @@ public class GestorUsuario {
      * Spring se encarga de pasarnos el repositorio automáticamente.
      */
     @Autowired
-    public GestorUsuario(UsuarioRepository usuarioRepository) {
+    public GestorUsuario(UsuarioDAO usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
         // this.usuarioDAO = factory.crearUsuarioDAO(); <-- ADIÓS
     }
@@ -50,8 +50,7 @@ public class GestorUsuario {
      */
     public void autenticar(String id, String password) throws CredencialesInvalidasException {
 
-        // <-- CAMBIO: Usamos el método del repositorio de Spring
-        // ANTES: Optional<Usuario> usuarioOpt = usuarioDAO.buscarPorId(id);
+        // usamos el metodo del repositorio de Spring
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
 
         if (usuarioOpt.isEmpty() || !usuarioOpt.get().getPassword().equals(password)) {

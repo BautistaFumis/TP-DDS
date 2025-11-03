@@ -3,15 +3,9 @@ package Logica.Gestores;
 import Logica.Dominio.Entidades.Huesped;
 import Logica.Excepciones.CamposObligatoriosException;
 import Logica.Excepciones.DocumentoDuplicadoException;
-// ADIÓS: import Persistencia.DAOFactory;
-// ADIÓS: import Persistencia.EstadiaDAO;
-// ADIÓS: import Persistencia.HuespedDAO;
+import Persistencia.Repositorios.EstadiaDAO;
+import Persistencia.Repositorios.HuespedDAO;
 
-// NUEVO: Importamos los repositorios
-import Persistencia.Repositorios.EstadiaRepository;
-import Persistencia.Repositorios.HuespedRepository;
-
-// NUEVO: Importaciones de Spring
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,17 +18,16 @@ import java.util.Optional;
  */
 @Service // NUEVO
 public class GestorHuesped {
-
-    // NUEVO: Inyectamos los repositorios
-    private final HuespedRepository huespedRepository;
-    private final EstadiaRepository estadiaRepository;
+    // inyeccion de repositorios
+    private final HuespedDAO huespedRepository;
+    private final EstadiaDAO estadiaRepository;
 
     /**
      * Constructor con Inyección de Dependencias (@Autowired).
      * Spring se encarga de pasarnos los repositorios.
      */
     @Autowired // NUEVO
-    public GestorHuesped(HuespedRepository huespedRepository, EstadiaRepository estadiaRepository) {
+    public GestorHuesped(HuespedDAO huespedRepository, EstadiaDAO estadiaRepository) {
         this.huespedRepository = huespedRepository;
         this.estadiaRepository = estadiaRepository;
     }
@@ -52,7 +45,7 @@ public class GestorHuesped {
         if (huespedRepository.findByTipoDocumentoAndDocumento(huesped.getTipoDocumento(), huesped.getDocumento()).isPresent()) {
             throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
         }
-        // CAMBIO: Usamos .save() en lugar de .altaHuesped()
+        // usamos .save() en lugar de .altaHuesped()
         huespedRepository.save(huesped);
     }
 
@@ -68,7 +61,7 @@ public class GestorHuesped {
      * Orquesta la búsqueda de huéspedes según múltiples criterios de filtrado.
      */
     public List<Huesped> buscarHuespedes(String apellido, String nombre, String tipoDocumento, String documento) {
-        // CAMBIO: Usamos el método del repositorio
+        // usamos el metodo del repositorio
         return huespedRepository.buscarPorCriterios(apellido, nombre, tipoDocumento, documento);
     }
 
@@ -86,22 +79,19 @@ public class GestorHuesped {
                 !huespedConNuevosDatos.getDocumento().equals(documentoOriginal);
 
         if (documentoModificado) {
-            // CAMBIO: Usamos el repositorio
+            // usamos el repositorio
             Optional<Huesped> otroHuespedConEseDoc = huespedRepository.findByTipoDocumentoAndDocumento(
                     huespedConNuevosDatos.getTipoDocumento(),
                     huespedConNuevosDatos.getDocumento());
 
             if (otroHuespedConEseDoc.isPresent()) {
-                // Pequeña mejora: asegurarnos que no sea él mismo (aunque tu lógica original no lo hacía, esto es más seguro)
+                // asegurarnos que no sea él mismo (aunque tu lógica original no lo hacía, esto es más seguro)
                 // if (!otroHuespedConEseDoc.get().getId().equals(huespedConNuevosDatos.getId())) {
                 throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
                 // }
             }
         }
 
-        // CAMBIO: .save() maneja la modificación automáticamente si el Huesped ya tiene un ID.
-        // La lógica original de pasar el documento original ya no es necesaria si tenemos el ID.
-        // Asumimos que "huespedConNuevosDatos" tiene el ID del original.
         huespedRepository.save(huespedConNuevosDatos);
     }
 
@@ -109,7 +99,6 @@ public class GestorHuesped {
      * Modifica un huésped sin validación de duplicados.
      */
     public void modificarHuespedAceptandoDuplicado(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos){
-        // CAMBIO: .save()
         huespedRepository.save(huespedConNuevosDatos);
     }
 
@@ -117,11 +106,9 @@ public class GestorHuesped {
      * Gestiona la eliminación de un huésped.
      */
     public boolean darDeBajaHuesped(Huesped huesped) {
-        // CAMBIO: Usamos el repositorio de estadia
         if (estadiaRepository.existsByHuespedPrincipal(huesped)) {
             return false;
         }
-        // CAMBIO: Usamos .delete()
         huespedRepository.delete(huesped);
         return true;
     }
