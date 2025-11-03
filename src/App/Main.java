@@ -1,14 +1,12 @@
 package App;
 
 import Logica.Dominio.Entidades.Direccion;
-import Logica.Dominio.Entidades.Estadia;
 import Logica.Dominio.Entidades.Huesped;
-import Logica.Dominio.Entidades.Usuario;
 import Logica.Excepciones.CamposObligatoriosException;
 import Logica.Excepciones.CredencialesInvalidasException;
 import Logica.Excepciones.DocumentoDuplicadoException;
-import Logica.Gestores.GestorHuesped;
-import Logica.Gestores.GestorUsuario;
+import Logica.Servicio.GestorHuesped;
+import Logica.Servicio.GestorUsuario;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -26,7 +24,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"Logica.Gestores", "App"})
+@ComponentScan(basePackages = {"Logica.Servicio", "App"})
 @EnableJpaRepositories(basePackages = {"Persistencia.Repositorios"})
 @EntityScan(basePackages = {"Logica.Dominio.Entidades" , "Logica.Dominio.State" })
 @Order(2)
@@ -108,7 +106,7 @@ public class Main implements CommandLineRunner {
      * @param gestor El GestorHuesped que maneja la lógica de negocio.
      */
 
-    private void ejecutarAltaHuesped(Scanner scanner, GestorHuesped gestor) {
+    private void ejecutarAltaHuesped(Scanner scanner, GestorHuesped gestor) throws CamposObligatoriosException {
         boolean continuar = true;
         while (continuar) {
             System.out.println("\n--- ALTA DE NUEVO HUÉSPED (CU09) ---");
@@ -192,8 +190,9 @@ public class Main implements CommandLineRunner {
                 System.out.print("Nacionalidad: ");
 
                 huespedParaAlta.setNacionalidad(parseOptionalString(scanner.nextLine()));
-                gestor.registrarNuevoHuesped(huespedParaAlta);
-
+               if (completarCampos(huespedParaAlta)) {
+                   gestor.registrarNuevoHuesped(huespedParaAlta);
+               }
                 System.out.println("\n ÉXITO: El huésped '" + huespedParaAlta.getNombre() + " " + huespedParaAlta.getApellido() + "' ha sido satisfactoriamente cargado al sistema.");
 
             } catch (DateTimeParseException e) {
@@ -219,6 +218,33 @@ public class Main implements CommandLineRunner {
                 continuar = false;
             }
         }
+    }
+
+    /**
+     * Gestiona la validacion de campos para un huesped. Una funcion privada al gestor que utilizamos en dos metos y nos viene
+     * bien reutilizarla
+     *
+     * @param huesped El objeto Huesped que desea verificar.
+     * @return
+     * @throws CamposObligatoriosException Si alguno de los campos requeridos se deja en blanco..
+     */
+
+    private boolean completarCampos(Huesped huesped) throws CamposObligatoriosException  {
+        if (huesped.getApellido() == null || huesped.getApellido().trim().isEmpty() ||
+                huesped.getNombre() == null || huesped.getNombre().trim().isEmpty() ||
+                huesped.getTipoDocumento() == null || huesped.getTipoDocumento().trim().isEmpty() ||
+                huesped.getDocumento() == null || huesped.getDocumento().trim().isEmpty() ||
+                huesped.getFechaNacimiento() == null ||
+                huesped.getDireccion() == null ||
+                huesped.getDireccion().getCalle() == null || huesped.getDireccion().getCalle().trim().isEmpty() ||
+                huesped.getDireccion().getNumero() == null || huesped.getDireccion().getNumero() <= 0 ||
+                huesped.getDireccion().getCodigoPostal() == null || huesped.getDireccion().getCodigoPostal().trim().isEmpty() ||
+                huesped.getDireccion().getLocalidad() == null || huesped.getDireccion().getLocalidad().trim().isEmpty() ||
+                huesped.getDireccion().getProvincia() == null || huesped.getDireccion().getProvincia().trim().isEmpty() ||
+                huesped.getDireccion().getPais() == null || huesped.getDireccion().getPais().trim().isEmpty()) {
+            throw new CamposObligatoriosException("Debe completar todos los campos obligatorios (*).");
+        }
+        return true;
     }
 
     /**
@@ -260,7 +286,7 @@ public class Main implements CommandLineRunner {
      * @param scanner El objeto Scanner para leer la entrada del usuario.
      * @param gestor El GestorHuesped que maneja la lógica de negocio.
      */
-    private void ejecutarBusquedaHuesped(Scanner scanner, GestorHuesped gestor) {
+    private void ejecutarBusquedaHuesped(Scanner scanner, GestorHuesped gestor) throws CamposObligatoriosException {
         System.out.println("\n--- BÚSQUEDA DE HUÉSPED (CU02) ---");
         System.out.println("Ingrese los criterios de búsqueda (deje en blanco para omitir).");
 
@@ -289,6 +315,12 @@ public class Main implements CommandLineRunner {
         for (int i = 0; i < resultados.size(); i++) {
             Huesped h = resultados.get(i);
             System.out.printf("%d. %s, %s - %s: %s\n", (i + 1), h.getApellido(), h.getNombre(), h.getTipoDocumento(), h.getDocumento());
+        }
+
+        if (resultados.isEmpty()) {
+            System.out.println("Redirigiendo al alta de huésped...");
+            ejecutarAltaHuesped(scanner, gestor);
+            return;
         }
 
         while (true) {

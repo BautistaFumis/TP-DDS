@@ -1,4 +1,4 @@
-package Logica.Gestores;
+package Logica.Servicio;
 
 import Logica.Dominio.Entidades.Usuario;
 import Logica.Excepciones.CredencialesInvalidasException;

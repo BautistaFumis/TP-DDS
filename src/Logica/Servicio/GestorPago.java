@@ -1,4 +1,4 @@
-package Logica.Gestores;
+package Logica.Servicio;
 
 public class GestorPago {
 }
