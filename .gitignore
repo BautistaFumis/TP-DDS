@@ -28,3 +28,17 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# Dependencias y builds del Frontend
+/frontend/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/.DS_Store
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# Builds del Backend (asegúrate de que apunten a la carpeta backend)
+/backend/target/
+/backend/.idea/
+/backend/*.iml
