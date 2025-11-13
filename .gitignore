@@ -1,8 +1,22 @@
-### IntelliJ IDEA ###
+### IntelliJ IDEA (Raíz y Global) ###
+.idea/
+*.iws
+*.iml
+*.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin
+
+### Java / Backend General ###
+target/
+.mvn/
+mvnw
+mvnw.cmd
+*.class
+*.jar
+*.war
+*.log
 
 ### Eclipse ###
 .apt_generated
@@ -26,19 +40,37 @@ bin/
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### Mac OS / Windows Files ###
 .DS_Store
+Thumbs.db
 
-# Dependencias y builds del Frontend
+### FRONTEND (Next.js) ###
+# Dependencias
 /frontend/node_modules/
+
+# Builds de Next.js
 /frontend/.next/
 /frontend/out/
-/frontend/.DS_Store
+/frontend/build/
+
+# Logs de debug
 /frontend/npm-debug.log*
 /frontend/yarn-debug.log*
 /frontend/yarn-error.log*
+/frontend/pnpm-debug.log*
 
-# Builds del Backend (asegúrate de que apunten a la carpeta backend)
+# Archivos de Entorno (¡CRÍTICO POR SEGURIDAD!)
+# Ignora las claves secretas pero permite subir .env.example si lo creas
+/frontend/.env
+/frontend/.env*.local
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+### BACKEND ESPECÍFICO ###
+# Si tu backend está en una subcarpeta llamada 'backend'
 /backend/target/
 /backend/.idea/
 /backend/*.iml
+/backend/help.md
