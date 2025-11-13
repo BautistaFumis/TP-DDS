@@ -1,0 +1,484 @@
+/* Reset básico */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f5f7;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* --- Contenedor Principal (Login y Menú) --- */
+.login-container {
+    display: flex;
+    width: 900px;
+    height: 550px;
+    margin: auto;
+    border-radius: 12px;
+    overflow: hidden; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+/* Panel izquierdo (el verde) */
+.login-panel-left {
+    flex: 1; 
+    background-color: #d4e59f; 
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    padding: 40px;
+    color: #333;
+}
+
+.login-panel-left h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Panel derecho (formulario o menú) */
+.login-panel-right {
+    flex: 1.2; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    
+    /* Centra el contenido (Menú y Login) */
+    align-items: center;
+}
+
+.login-panel-right h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* --- Estilos para el Login --- */
+.login-panel-right form {
+    /* El formulario de login ocupa un ancho prolijo */
+    width: 80%;
+    max-width: 400px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; 
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #d4e59f; 
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #c7d98e;
+}
+
+
+/* --- Estilos para el Menú Principal --- */
+.menu-descripcion {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.menu-opciones {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px; 
+    /* Ancho prolijo para el botón de menú */
+    width: 80%;
+    max-width: 400px;
+}
+
+.menu-opcion-button {
+    width: 100%;
+    padding: 20px; 
+    border-radius: 8px;
+    background-color: #d4e59f; 
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center; 
+    /* Borde verde que pediste */
+    border: 3px solid #a8c454;
+}
+
+.menu-opcion-button:hover {
+    background-color: #c7d98e; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-color: #9cb64d;
+}
+
+
+/* --- Estilos para Búsqueda, Resultados y Alta --- */
+
+.search-container {
+    display: flex;
+    width: 1000px; 
+    min-height: 600px;
+    margin: auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.search-panel-left {
+    flex: 0 0 300px; 
+    background-color: #d4e59f; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 40px;
+    color: #333;
+}
+
+/* --- ¡CAMBIO 1: TÍTULO MÁS ABAJO! --- */
+.search-panel-left h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.2;
+    padding-top: 150px; /* Empuja el título hacia abajo (como en el mockup) */
+}
+
+.cancel-button {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e74c3c;
+    border-radius: 8px;
+    background-color: #fbc6c0; 
+    color: #a94442;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-button:hover {
+    background-color: #f8b3ad;
+    border-color: #c0392b;
+}
+
+/* Panel derecho (para formularios de BÚSQUEDA y ALTA) */
+.search-panel-right {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    overflow-y: auto; 
+    /* Por defecto, alinea arriba (bueno para ALTA) */
+    align-items: stretch;
+    justify-content: flex-start; /* Asegura que el formulario de ALTA empiece arriba */
+}
+
+.search-panel-right h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.search-form {
+    width: 100%;
+}
+
+/* --- ¡CAMBIO 2: CENTRADO VERTICAL! --- */
+/* Esta clase se la pusimos al div .search-panel-right en BuscarHuesped.tsx */
+.search-panel-centered {
+    align-items: center;     /* Centra el .search-form horizontalmente */
+    justify-content: center; /* ¡Centra el .search-form verticalmente! */
+}
+
+/* Le damos un ancho máximo al formulario de búsqueda */
+.search-panel-centered .search-form {
+    max-width: 500px;
+    /* Quitamos el margen superior, ya que justify-content:center lo maneja */
+}
+
+
+.form-row {
+    display: flex;
+    gap: 15px; 
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.search-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #d4e59f; 
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-button:hover:not(:disabled) {
+    background-color: #c7d98e;
+}
+
+.search-button:disabled {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 30px 0;
+}
+
+
+/* --- Estilos para la Pantalla de Resultados --- */
+.results-container {
+    width: 900px;
+    margin: auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.results-header {
+    background-color: #d4e59f; 
+    color: #333;
+    padding: 20px;
+    margin: -40px -40px 30px -40px; 
+    text-align: center;
+}
+
+.results-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.results-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.results-controls label {
+    font-weight: 600;
+    color: #555;
+}
+
+.results-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.results-table-container {
+    width: 100%;
+    max-height: 400px; 
+    overflow-y: auto; 
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table th,
+.results-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.results-table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    position: sticky; 
+    top: 0;
+}
+
+.results-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.results-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.results-table tr.fila-seleccionada {
+    background-color: #d4e59f !important; 
+    color: #333;
+    font-weight: 700;
+}
+
+.results-actions {
+    display: flex;
+    justify-content: flex-end; 
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.results-actions .cancel-button,
+.results-actions .search-button {
+    width: 200px; 
+}
+
+
+/* --- Estilos para el Modal (No Encontrado) --- */
+.modal-overlay {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.modal-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.modal-content h3 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.modal-content p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.modal-button-aceptar {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #d4e59f; 
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-button-aceptar:hover {
+    background-color: #c7d98e;
+}
+
+
+/* --- Estilos para Formulario de Alta --- */
+.form-section-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+    border-bottom: 2px solid #d4e59f;
+    padding-bottom: 5px;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+.form-section-header:first-of-type {
+    margin-top: 0;
+}
+
+.error-message {
+    color: #d93025;
+    background-color: #fbeae9;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #d93025;
+}
+
+.success-message {
+    color: #1a73e8;
+    background-color: #e8f0fe;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #1a73e8;
+}
+
+/* Pantalla de "Autenticado" (si se usa) */
+.welcome-message {
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.welcome-message h1 {
+    color: #4CAF50; /* Verde éxito */
+}
