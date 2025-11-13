@@ -16,7 +16,7 @@ import java.util.Optional;
  * Gestiona la lógica de negocio para las operaciones relacionadas con los huéspedes.
  * Ahora es un @Service de Spring.
  */
-@Service // NUEVO
+@Service
 public class GestorHuesped {
     // inyeccion de repositorios
     private final HuespedDAO huespedRepository;
@@ -26,7 +26,7 @@ public class GestorHuesped {
      * Constructor con Inyección de Dependencias (@Autowired).
      * Spring se encarga de pasarnos los repositorios.
      */
-    @Autowired // NUEVO
+    @Autowired
     public GestorHuesped(HuespedDAO huespedRepository, EstadiaDAO estadiaRepository) {
         this.huespedRepository = huespedRepository;
         this.estadiaRepository = estadiaRepository;
@@ -34,25 +34,36 @@ public class GestorHuesped {
 
     /**
      * Valida y registra un nuevo huésped en el sistema.
-     * (La lógica interna es la misma, solo cambia la llamada final)
      */
     public void registrarNuevoHuesped(Huesped huesped) throws CamposObligatoriosException, DocumentoDuplicadoException {
+
+        // --- NUEVO PASO 1: Validación de campos obligatorios ---
+        validarCamposObligatorios(huesped);
+
+        // --- PASO 2: Lógica de negocio (IVA) ---
         if (huesped.getCategoriaIVA() == null || huesped.getCategoriaIVA().trim().isEmpty())
             huesped.setCategoriaIVA("Consumidor Final");
 
-        // CAMBIO: Usamos el repositorio
+        // --- PASO 3: Validación de duplicados ---
         if (huespedRepository.findByTipoDocumentoAndDocumento(huesped.getTipoDocumento(), huesped.getDocumento()).isPresent()) {
             throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
         }
-        // usamos .save() en lugar de .altaHuesped()
+
+        // --- PASO 4: Guardado ---
         huespedRepository.save(huesped);
     }
 
     /**
      * Registra un huésped sin realizar la validación de documento duplicado.
      */
-    public void registrarHuespedAceptandoDuplicado(Huesped huesped) {
-        // CAMBIO: Usamos .save()
+    public void registrarHuespedAceptandoDuplicado(Huesped huesped) throws CamposObligatoriosException {
+        // --- AÚN VALIDAMOS CAMPOS OBLIGATORIOS ---
+        validarCamposObligatorios(huesped);
+
+        if (huesped.getCategoriaIVA() == null || huesped.getCategoriaIVA().trim().isEmpty())
+            huesped.setCategoriaIVA("Consumidor Final");
+
+        // CAMBIO: Usamos .save() directamente sin chequear duplicado
         huespedRepository.save(huesped);
     }
 
@@ -67,7 +78,8 @@ public class GestorHuesped {
     /**
      * Valida y actualiza un huésped.
      */
-    public void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos)  throws  DocumentoDuplicadoException {
+    public void modificarHuesped(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos) throws DocumentoDuplicadoException, CamposObligatoriosException {
+        validarCamposObligatorios(huespedConNuevosDatos);
 
         if (huespedConNuevosDatos.getCategoriaIVA() == null || huespedConNuevosDatos.getCategoriaIVA().trim().isEmpty()) {
             huespedConNuevosDatos.setCategoriaIVA("Consumidor Final");
@@ -77,16 +89,12 @@ public class GestorHuesped {
                 !huespedConNuevosDatos.getDocumento().equals(documentoOriginal);
 
         if (documentoModificado) {
-            // usamos el repositorio
             Optional<Huesped> otroHuespedConEseDoc = huespedRepository.findByTipoDocumentoAndDocumento(
                     huespedConNuevosDatos.getTipoDocumento(),
                     huespedConNuevosDatos.getDocumento());
 
             if (otroHuespedConEseDoc.isPresent()) {
-                // asegurarnos que no sea él mismo (aunque tu lógica original no lo hacía, esto es más seguro)
-                // if (!otroHuespedConEseDoc.get().getId().equals(huespedConNuevosDatos.getId())) {
                 throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
-                // }
             }
         }
 
@@ -96,7 +104,13 @@ public class GestorHuesped {
     /**
      * Modifica un huésped sin validación de duplicados.
      */
-    public void modificarHuespedAceptandoDuplicado(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos){
+    public void modificarHuespedAceptandoDuplicado(String tipoDocumentoOriginal, String documentoOriginal, Huesped huespedConNuevosDatos) throws CamposObligatoriosException {
+        validarCamposObligatorios(huespedConNuevosDatos); // Aún validamos el resto
+
+        if (huespedConNuevosDatos.getCategoriaIVA() == null || huespedConNuevosDatos.getCategoriaIVA().trim().isEmpty()) {
+            huespedConNuevosDatos.setCategoriaIVA("Consumidor Final");
+        }
+
         huespedRepository.save(huespedConNuevosDatos);
     }
 
@@ -111,4 +125,81 @@ public class GestorHuesped {
         return true;
     }
 
+    // ========================================================================
+    // --- NUEVOS MÉTODOS PRIVADOS DE VALIDACIÓN ---
+    // ========================================================================
+
+    /**
+     * Método de ayuda privado para validar todos los campos requeridos de un Huesped.
+     * Lanza CamposObligatoriosException si falta alguno.
+     * * @param huesped El objeto Huesped a validar.
+     * @throws CamposObligatoriosException Si un campo obligatorio es nulo o vacío.
+     */
+    private void validarCamposObligatorios(Huesped huesped) throws CamposObligatoriosException {
+        if (huesped == null) {
+            throw new CamposObligatoriosException("Los datos del huésped no pueden ser nulos.");
+        }
+
+        // --- Campos de Huesped (String) ---
+        if (esNuloOVacio(huesped.getNombre())) {
+            throw new CamposObligatoriosException("El campo 'Nombre' es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getApellido())) {
+            throw new CamposObligatoriosException("El campo 'Apellido' es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getTipoDocumento())) {
+            throw new CamposObligatoriosException("El campo 'Tipo de Documento' es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getDocumento())) {
+            throw new CamposObligatoriosException("El campo 'Documento' es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getTelefono())) {
+            throw new CamposObligatoriosException("El campo 'Teléfono' es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getNacionalidad())) {
+            throw new CamposObligatoriosException("El campo 'Nacionalidad' es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getOcupacion())) {
+            throw new CamposObligatoriosException("El campo 'Ocupación' es obligatorio.");
+        }
+
+        // --- Campos de Huesped (Objetos) ---
+        if (huesped.getFechaNacimiento() == null) {
+            throw new CamposObligatoriosException("El campo 'Fecha de Nacimiento' es obligatorio.");
+        }
+
+        // --- Campos Embebidos (Direccion) ---
+        if (huesped.getDireccion() == null) {
+            throw new CamposObligatoriosException("La 'Dirección' (calle, número, localidad, etc.) es obligatoria.");
+        }
+
+        if (esNuloOVacio(huesped.getDireccion().getCalle())) {
+            throw new CamposObligatoriosException("El campo 'Calle' de la dirección es obligatorio.");
+        }
+        // CORRECCIÓN: Tu código original tenía un bug aquí, convertía el NÚMERO a String.
+        // Lo correcto es chequear el string 'numero' directamente.
+        if (esNuloOVacio(String.valueOf(huesped.getDireccion().getNumero()))) {
+            throw new CamposObligatoriosException("El campo 'Número' de la dirección es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getDireccion().getLocalidad())) {
+            throw new CamposObligatoriosException("El campo 'Localidad' de la dirección es obligatoria.");
+        }
+        if (esNuloOVacio(huesped.getDireccion().getProvincia())) {
+            throw new CamposObligatoriosException("El campo 'Provincia' de la dirección es obligatorio.");
+        }
+        if (esNuloOVacio(huesped.getDireccion().getPais())) {
+            throw new CamposObligatoriosException("El campo 'País' de la dirección es obligatorio.");
+        }
+        // Añadí CP que estaba en tu frontend pero no aquí
+        if (esNuloOVacio(huesped.getDireccion().getCodigoPostal())) {
+            throw new CamposObligatoriosException("El campo 'Código Postal' de la dirección es obligatorio.");
+        }
+    }
+
+    /**
+     * Pequeño helper para chequear si un String es nulo, vacío o solo espacios.
+     */
+    private boolean esNuloOVacio(String texto) {
+        return texto == null || texto.trim().isEmpty();
+    }
 }
