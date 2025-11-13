@@ -1,6 +1,6 @@
 package DTO;
 
-// Un DTO simple solo con los datos que la UI necesita
+
 public class HuespedBusquedaDTO {
     private Long id;
     private String nombre;

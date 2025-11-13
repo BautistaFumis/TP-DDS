@@ -21,18 +21,11 @@ import org.springframework.stereotype.Service;
  * contra la capa de persistencia.
  */
 
-// <-- NUEVO: @Service le dice a Spring que esta es una clase de Lógica/Servicio
 @Service
 public class GestorUsuario {
 
-    // <-- CAMBIO: Reemplazamos el DAO por el Repository
     private final UsuarioDAO usuarioRepository;
-    // private final UsuarioDAO usuarioDAO; <-- ADIÓS
 
-    /**
-     * <-- CAMBIO: El constructor ahora usa Inyección de Dependencias (@Autowired).
-     * Spring se encarga de pasarnos el repositorio automáticamente.
-     */
     @Autowired
     public GestorUsuario(UsuarioDAO usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -50,7 +43,6 @@ public class GestorUsuario {
      */
     public void autenticar(String id, String password) throws CredencialesInvalidasException {
 
-        // usamos el metodo del repositorio de Spring
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
 
         if (usuarioOpt.isEmpty() || !usuarioOpt.get().getPassword().equals(password)) {

@@ -33,7 +33,7 @@ public class CargadorDeDatos implements CommandLineRunner {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
-    @Transactional // <-- 4. ASEGURAR QUE TODO SEA UNA SOLA TRANSACCIÓN
+    @Transactional
     public void run(String... args) throws Exception {
 
         if (usuarioRepository.count() == 0) {
@@ -81,7 +81,7 @@ public class CargadorDeDatos implements CommandLineRunner {
                         crearEstadia("01/12/2025", "05/12/2025", "PASAPORTE", "DEF45678") // Gomez, Ana
                 );
 
-                System.out.println(">>> [DEBUG] Guardando estadías en la BD...");
+                System.out.println(">>> Guardando estadías en la BD...");
                 estadiaRepository.saveAll(estadiasACargar);
                 System.out.println(">>> " + estadiasACargar.size() + " estadías cargadas exitosamente.");
 
@@ -94,32 +94,22 @@ public class CargadorDeDatos implements CommandLineRunner {
         }
     }
 
-    /**
-     * ==========================================================
-     * --- SECCIÓN CORREGIDA ---
-     * ==========================================================
-     */
     private Huesped crearHuesped(String apellido, String nombre, String tipoDoc, String doc, String cuit, String iva, String fechaNac,
                                  String calle, String numero, String depto, String piso, String cp, String localidad, String prov, String pais,
                                  String tel, String email, String ocup, String nac) {
 
         Direccion dir = new Direccion();
 
-        // --- Campos de texto en Mayúsculas ---
         dir.setCalle(parseStringMayus(calle));
         dir.setDepartamento(parseStringMayus(depto));
         dir.setCodigoPostal(parseStringMayus(cp));
         dir.setLocalidad(parseStringMayus(localidad));
         dir.setProvincia(parseStringMayus(prov));
         dir.setPais(parseStringMayus(pais));
-
-        // --- CORRECCIÓN: Usamos parseInteger para los campos numéricos ---
-        // Esto es seguro y maneja valores vacíos ("") devolviendo null.
         dir.setNumero(parseInteger(numero));
         dir.setPiso(parseInteger(piso));
 
         Huesped h = new Huesped();
-        // --- Campos de texto en Mayúsculas ---
         h.setApellido(parseStringMayus(apellido));
         h.setNombre(parseStringMayus(nombre));
         h.setTipoDocumento(parseStringMayus(tipoDoc));
@@ -129,10 +119,8 @@ public class CargadorDeDatos implements CommandLineRunner {
         h.setTelefono(parseStringMayus(tel));
         h.setOcupacion(parseStringMayus(ocup));
         h.setNacionalidad(parseStringMayus(nac));
-
-        // --- Campos especiales (sin mayúsculas o con parseo diferente) ---
         h.setFechaNacimiento(parseLocalDate(fechaNac));
-        h.setEmail(parseString(email)); // <-- EMAIL SE QUEDA CON parseString (sin mayúsculas)
+        h.setEmail(parseString(email));
         h.setDireccion(dir);
 
         return h;
@@ -141,14 +129,13 @@ public class CargadorDeDatos implements CommandLineRunner {
     private Estadia crearEstadia(String checkin, String checkout, String tipoDoc, String numDoc) {
         System.out.println(">>> [DEBUG] Buscando huésped: " + tipoDoc + " " + numDoc);
 
-        // --- CAMBIO: Nos aseguramos de buscar en mayúsculas (como se guardaron) ---
         Optional<Huesped> huespedOpt = huespedRepository.findByTipoDocumentoAndDocumento(
                 parseStringMayus(tipoDoc),
                 parseStringMayus(numDoc)
         );
 
         if (huespedOpt.isEmpty()) {
-            System.err.println(">>> [DEBUG] ¡FALLÓ! No se encontró al huésped: " + tipoDoc + " " + numDoc);
+            System.err.println(">>> ¡FALLÓ! No se encontró al huésped: " + tipoDoc + " " + numDoc);
             throw new RuntimeException("No se pudo cargar la estadía. Huésped no encontrado: " + tipoDoc + " " + numDoc);
         }
 
@@ -165,7 +152,6 @@ public class CargadorDeDatos implements CommandLineRunner {
         return estadia;
     }
 
-    // --- Métodos Ayudantes de parseo (Robustos para evitar errores) ---
 
     /**
      * Parsea un Integer. Devuelve null si está vacío o no es un número.

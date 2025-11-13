@@ -73,7 +73,6 @@ public class HuespedController {
                 // Flujo normal (que puede lanzar DocumentoDuplicadoException)
                 gestorHuesped.registrarNuevoHuesped(nuevoHuesped);
             }
-            // --- FIN DE LA LÓGICA ---
 
             // 3. Convertir la Entidad (ya con ID) a un DTO de respuesta
             HuespedBusquedaDTO dtoRespuesta = convertirEntidadADTO(nuevoHuesped);
@@ -82,23 +81,21 @@ public class HuespedController {
             return ResponseEntity.status(HttpStatus.CREATED).body(dtoRespuesta);
 
         } catch (DocumentoDuplicadoException e) {
-            // Devuelve el mensaje de error de negocio (409)
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
         } catch (CamposObligatoriosException e) { // <-- 3. MANEJAR ERRORES 400
-            // Devuelve el mensaje de error de validación (400)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
         } catch (Exception e) {
-            // Devuelve un mensaje de error genérico
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor: " + e.getMessage());
         }
     }
 
     /**
-     * Método helper privado para convertir una Entidad Huesped a un HuespedDTO.
+     * Metodo helper privado para convertir una Entidad Huesped a un HuespedDTO.
      * (Sin cambios)
      */
+
     private HuespedBusquedaDTO convertirEntidadADTO(Huesped huesped) {
         HuespedBusquedaDTO dto = new HuespedBusquedaDTO();
         dto.setId(huesped.getId());

@@ -1,10 +1,8 @@
 'use client';
-// --- ¡CAMBIO 1: IMPORTAMOS EL COMPONENTE REAL! ---
+
 import AltaHuesped from './AltaHuesped'; 
 import { useState, FormEvent, useMemo } from 'react';
 
-// --- (FIN DE FUTUROS COMPONENTES) ---
-// Dejamos el "stub" de Modificar, porque aún no lo hemos creado.
 const ModificarHuesped = ({ huespedId, onCancel }: { huespedId: number, onCancel: () => void }) => (
     <div className="search-container">
         <div className="search-panel-left"><h1>MODIFICAR HUÉSPED</h1></div>
@@ -16,36 +14,27 @@ const ModificarHuesped = ({ huespedId, onCancel }: { huespedId: number, onCancel
     </div>
 );
 
-// --- ¡CAMBIO 2: BORRAMOS EL 'const AltaHuesped = ...' FALSO DE AQUÍ! ---
 
-
-// CAMBIO: La interfaz ahora coincide con el HuespedDTO y los mockups
 interface Huesped {
     id: number;
     nombre: string;
     apellido: string;
     tipoDocumento: string;
     documento: string;
-    email: string; // Lo mantenemos aunque no se muestre, puede ser útil
+    email: string;
 }
 
-// Definimos las props que recibe el componente (solo 'onCancel' desde MenuPrincipal)
 interface BuscarHuespedProps {
-    onCancel: () => void; // Función para manejar el clic en "Cancelar" (vuelve al menú)
+    onCancel: () => void;
 }
 
-// El tipo para las vistas que este componente puede mostrar
 type VistaInterna = 'buscar' | 'resultados' | 'alta' | 'modificar';
 
-// El tipo para las opciones de ordenamiento
 type OrdenType = 'apellidoAsc' | 'apellidoDesc' | 'nombreAsc' | 'nombreDesc';
 
-// URL del endpoint (sin cambios)
 const API_SEARCH_URL = 'http://localhost:8081/api/huespedes/buscar';
 
-/**
- * Componente Modal para el flujo 4.A (No encontrado)
- */
+
 const ModalNoEncontrado = ({ onAceptar }: { onAceptar: () => void }) => (
     <div className="modal-overlay">
         <div className="modal-content">
@@ -59,22 +48,16 @@ const ModalNoEncontrado = ({ onAceptar }: { onAceptar: () => void }) => (
     </div>
 );
 
-/**
- * Componente principal del Caso de Uso "Buscar Huésped" (CU-02)
- */
+
 export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
 
-    // --- Estado de la Vista ---
-    // Controla qué "pantalla" se muestra: 'buscar', 'resultados', 'alta', 'modificar'
     const [vista, setVista] = useState<VistaInterna>('buscar');
 
-    // --- Estados del Formulario de Búsqueda ---
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [tipoDocumento, setTipoDocumento] = useState('DNI');
     const [documento, setDocumento] = useState('');
 
-    // --- Estados de Resultados y Modal ---
     const [resultados, setResultados] = useState<Huesped[]>([]);
     const [huespedSeleccionadoId, setHuespedSeleccionadoId] = useState<number | null>(null);
     const [orden, setOrden] = useState<OrdenType>('apellidoAsc'); // Para el sorting
@@ -82,12 +65,11 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
     const [error, setError] = useState<string | null>(null);
     const [mostrarModalNoEncontrado, setMostrarModalNoEncontrado] = useState(false); // Para el Mockup 1
 
-    // --- Lógica de Búsqueda (CU Flujo Principal 3 & 4) ---
     const handleSearch = async (e: FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
-        setResultados([]); // Limpia resultados anteriores
+        setResultados([]);
 
         const params = new URLSearchParams();
         if (nombre) params.append('nombre', nombre);
@@ -107,9 +89,8 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
             if (data.length > 0) {
                 // Éxito: Se encontraron huéspedes
                 setResultados(data);
-                setVista('resultados'); // CAMBIO: Muestra la pantalla de resultados
+                setVista('resultados');
             } else {
-                // Flujo 4.A: No se encontraron huéspedes
                 setMostrarModalNoEncontrado(true);
             }
 
@@ -120,26 +101,19 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
         }
     };
 
-    // --- Lógica de la Pantalla de Resultados ---
-
-    // Flujo 4.A.1: Al presionar "Aceptar" en el modal de no encontrado
     const handleModalAceptar = () => {
         setMostrarModalNoEncontrado(false);
-        setVista('alta'); // Pasa al CU11 "Dar alta de Huésped"
+        setVista('alta');
     };
 
-    // Flujo 5: Al presionar "Siguiente"
     const handleSiguiente = () => {
         if (huespedSeleccionadoId) {
-            // Flujo 5: Pasa al CU10 "Modificar Huésped"
             setVista('modificar');
         } else {
-            // Flujo 5.A: Pasa al CU11 "Dar alta de Huésped"
             setVista('alta');
         }
     };
 
-    // Memoiza los resultados ordenados para no recalcular en cada render
     const resultadosOrdenados = useMemo(() => {
         return [...resultados].sort((a, b) => {
             switch (orden) {
@@ -158,13 +132,9 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
     }, [resultados, orden]);
 
 
-    // --- Renderizado Condicional de Vistas ---
-
-    // Vista 1: Formulario de Búsqueda (Default)
     if (vista === 'buscar') {
         return (
             <>
-                {/* Modal (Mockup 1) - se muestra si es true */}
                 {mostrarModalNoEncontrado && (
                     <ModalNoEncontrado onAceptar={handleModalAceptar} />
                 )}
@@ -172,13 +142,11 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
                 <div className="search-container">
                     <div className="search-panel-left">
                         <h1>BUSCAR HUÉSPED</h1>
-                        {/* El botón "Cancelar" aquí te saca del CU completo */}
                         <button onClick={onCancel} className="cancel-button">
                             Cancelar
                         </button>
                     </div>
 
-                    {/* --- ¡CAMBIO 3: CLASE AÑADIDA AQUÍ! --- */}
                     <div className="search-panel-right search-panel-centered">
                         <form onSubmit={handleSearch} className="search-form">
                             <div className="form-group">
@@ -189,7 +157,7 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
                                     value={apellido}
                                     onChange={(e) => setApellido(e.target.value)}
                                     placeholder="Apellido"
-                                    style={{ textTransform: 'uppercase' }} // REQUERIMIENTO: Mayúsculas
+                                    style={{ textTransform: 'uppercase' }}
                                 />
                             </div>
                             
@@ -201,7 +169,7 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
                                     value={nombre}
                                     onChange={(e) => setNombre(e.target.value)}
                                     placeholder="Nombre"
-                                    style={{ textTransform: 'uppercase' }} // REQUERIMIENTO: Mayúsculas
+                                    style={{ textTransform: 'uppercase' }}
                                 />
                             </div>
 
@@ -246,7 +214,6 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
         );
     }
 
-    // Vista 2: Pantalla de Resultados (Mockups 2 y 3)
     if (vista === 'resultados') {
         return (
             <div className="results-container">

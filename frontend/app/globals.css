@@ -1,4 +1,4 @@
-/* Reset básico */
+
 body, html {
     margin: 0;
     padding: 0;
@@ -13,7 +13,7 @@ main {
     min-height: 100vh;
 }
 
-/* --- Contenedor Principal (Login y Menú) --- */
+
 .login-container {
     display: flex;
     width: 900px;
@@ -25,7 +25,7 @@ main {
     background-color: white;
 }
 
-/* Panel izquierdo (el verde) */
+
 .login-panel-left {
     flex: 1; 
     background-color: #d4e59f; 
@@ -44,7 +44,7 @@ main {
     line-height: 1.2;
 }
 
-/* Panel derecho (formulario o menú) */
+
 .login-panel-right {
     flex: 1.2; 
     display: flex;
@@ -52,7 +52,7 @@ main {
     justify-content: center;
     padding: 60px;
     
-    /* Centra el contenido (Menú y Login) */
+
     align-items: center;
 }
 
@@ -63,9 +63,8 @@ main {
     text-align: center;
 }
 
-/* --- Estilos para el Login --- */
+
 .login-panel-right form {
-    /* El formulario de login ocupa un ancho prolijo */
     width: 80%;
     max-width: 400px;
 }
@@ -109,7 +108,7 @@ main {
 }
 
 
-/* --- Estilos para el Menú Principal --- */
+
 .menu-descripcion {
     font-size: 1.1rem;
     color: #555;
@@ -120,8 +119,7 @@ main {
 .menu-opciones {
     display: flex;
     flex-direction: column; 
-    gap: 15px; 
-    /* Ancho prolijo para el botón de menú */
+    gap: 15px;
     width: 80%;
     max-width: 400px;
 }
@@ -148,9 +146,6 @@ main {
     border-color: #9cb64d;
 }
 
-
-/* --- Estilos para Búsqueda, Resultados y Alta --- */
-
 .search-container {
     display: flex;
     width: 1000px; 
@@ -173,13 +168,12 @@ main {
     color: #333;
 }
 
-/* --- ¡CAMBIO 1: TÍTULO MÁS ABAJO! --- */
 .search-panel-left h1 {
     font-size: 2.5rem;
     font-weight: 800;
     text-align: center;
     line-height: 1.2;
-    padding-top: 150px; /* Empuja el título hacia abajo (como en el mockup) */
+    padding-top: 150px;
 }
 
 .cancel-button {
@@ -200,16 +194,14 @@ main {
     border-color: #c0392b;
 }
 
-/* Panel derecho (para formularios de BÚSQUEDA y ALTA) */
 .search-panel-right {
     flex: 1; 
     display: flex;
     flex-direction: column;
     padding: 40px;
-    overflow-y: auto; 
-    /* Por defecto, alinea arriba (bueno para ALTA) */
+    overflow-y: auto;
     align-items: stretch;
-    justify-content: flex-start; /* Asegura que el formulario de ALTA empiece arriba */
+    justify-content: flex-start;
 }
 
 .search-panel-right h2 {
@@ -223,17 +215,14 @@ main {
     width: 100%;
 }
 
-/* --- ¡CAMBIO 2: CENTRADO VERTICAL! --- */
-/* Esta clase se la pusimos al div .search-panel-right en BuscarHuesped.tsx */
+
 .search-panel-centered {
-    align-items: center;     /* Centra el .search-form horizontalmente */
-    justify-content: center; /* ¡Centra el .search-form verticalmente! */
+    align-items: center;
+    justify-content: center;
 }
 
-/* Le damos un ancho máximo al formulario de búsqueda */
 .search-panel-centered .search-form {
     max-width: 500px;
-    /* Quitamos el margen superior, ya que justify-content:center lo maneja */
 }
 
 
@@ -274,8 +263,6 @@ main {
     margin: 30px 0;
 }
 
-
-/* --- Estilos para la Pantalla de Resultados --- */
 .results-container {
     width: 900px;
     margin: auto;
@@ -377,8 +364,6 @@ main {
     width: 200px; 
 }
 
-
-/* --- Estilos para el Modal (No Encontrado) --- */
 .modal-overlay {
     position: fixed; 
     top: 0;
@@ -439,7 +424,6 @@ main {
 }
 
 
-/* --- Estilos para Formulario de Alta --- */
 .form-section-header {
     font-size: 1.2rem;
     font-weight: 700;
@@ -473,12 +457,11 @@ main {
     border: 1px solid #1a73e8;
 }
 
-/* Pantalla de "Autenticado" (si se usa) */
 .welcome-message {
     text-align: center;
     font-size: 1.5rem;
 }
 
 .welcome-message h1 {
-    color: #4CAF50; /* Verde éxito */
+    color: #4CAF50;
 }

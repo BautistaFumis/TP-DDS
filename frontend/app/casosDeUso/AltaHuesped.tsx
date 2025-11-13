@@ -1,14 +1,14 @@
 'use client';
 import { useState, FormEvent, useRef } from 'react';
 
-// Props (sin cambios)
+
 interface AltaHuespedProps {
     onCancel: () => void;
 }
 
 const API_REGISTER_URL = 'http://localhost:8081/api/huespedes/registrar';
 
-// Estado inicial (sin cambios)
+
 const estadoInicialFormulario = {
     nombre: '',
     apellido: '',
@@ -33,12 +33,10 @@ const estadoInicialFormulario = {
     }
 };
 
-/**
- * Componente para el Caso de Uso 11: Dar de Alta Huésped
- */
+
 export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
 
-    // Estados
+
     const [formData, setFormData] = useState(estadoInicialFormulario);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -49,7 +47,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
     const [successHuespedName, setSuccessHuespedName] = useState('');
     const [errorCampos, setErrorCampos] = useState<string[]>([]);
 
-    // --- CAMBIO 1: Crear un Ref para CADA campo obligatorio ---
+
     const nombreRef = useRef<HTMLInputElement>(null);
     const apellidoRef = useRef<HTMLInputElement>(null);
     const tipoDocumentoRef = useRef<HTMLSelectElement>(null);
@@ -64,9 +62,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
     const calleRef = useRef<HTMLInputElement>(null);
     const numeroRef = useRef<HTMLInputElement>(null);
     const codigoPostalRef = useRef<HTMLInputElement>(null);
-    // --- FIN CAMBIO 1 ---
 
-    // 'handleChange' (actualizado para limpiar error)
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         const camposSinMayusculas = ['email', 'tipoDocumento', 'categoriaIVA'];
@@ -74,13 +70,13 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
         
         setFormData(prev => ({ ...prev, [name]: valorProcesado }));
 
-        // Si el usuario modifica un campo, quitamos la marca de error
+
         if (errorCampos.includes(name)) {
             setErrorCampos(prevErrores => prevErrores.filter(campo => campo !== name));
         }
     };
 
-    // --- CAMBIO 2: Actualizar 'handleDireccionChange' para limpiar error ---
+
     const handleDireccionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -88,21 +84,17 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
             direccion: { ...prev.direccion, [name]: value.toUpperCase() }
         }));
 
-        // Si el usuario modifica un campo de dirección, quitamos la marca de error
         if (errorCampos.includes(name)) {
             setErrorCampos(prevErrores => prevErrores.filter(campo => campo !== name));
         }
     };
-    // --- FIN CAMBIO 2 ---
 
-    // 'handleCorregirDuplicado' (sin cambios, ya funciona con el nuevo sistema)
     const handleCorregirDuplicado = () => {
         setShowDuplicateModal(false); 
         setErrorCampos(['tipoDocumento', 'documento']); 
         tipoDocumentoRef.current?.focus();
     };
 
-    // --- CAMBIO 3: 'validarFormulario' ahora devuelve un array de errores ---
     const validarFormulario = (): string[] => {
         const { nombre, apellido, documento, telefono, fechaNacimiento, ocupacion, nacionalidad, direccion } = formData;
         const errores: string[] = [];
@@ -126,24 +118,21 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
 
         return errores;
     };
-    // --- FIN CAMBIO 3 ---
 
-    // --- CAMBIO 4: 'handleSubmit' actualizado para manejar la nueva validación ---
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault(); // Siempre necesario
+        e.preventDefault();
         setIsLoading(true);
         setError(null);
-        setErrorCampos([]); // Limpiamos errores en cada submit
+        setErrorCampos([]);
         
         const erroresDeValidacion = validarFormulario();
         
         if (erroresDeValidacion.length > 0) {
-            // Hay errores de validación
+
             setError("Campos obligatorios no completados, complete todo los campos obligatorios (*)");
             setErrorCampos(erroresDeValidacion);
             setIsLoading(false);
 
-            // Hacemos foco en el PRIMER campo con error
             const primerError = erroresDeValidacion[0];
             switch (primerError) {
                 case 'nombre': nombreRef.current?.focus(); break;
@@ -162,10 +151,9 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
                 case 'codigoPostal': codigoPostalRef.current?.focus(); break;
                 default: break;
             }
-            return; // Detenemos el envío
+            return;
         }
 
-        // Si pasa de aquí, el formulario es válido
         try {
             const response = await fetch(API_REGISTER_URL, {
                 method: 'POST',
@@ -192,9 +180,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
             setIsLoading(false);
         }
     };
-    // --- FIN CAMBIO 4 ---
 
-    // 'handleForceSubmit' (sin cambios)
     const handleForceSubmit = async () => {
         setShowDuplicateModal(false);
         setIsLoading(true);
@@ -223,20 +209,18 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
     };
 
 
-    // --- CAMBIO 5: Función helper para unificar estilos ---
-    // Esto hace que el JSX sea más limpio.
     const getEstiloCampo = (nombreCampo: string, estilosBase: React.CSSProperties = {}) => {
         return {
             ...estilosBase,
             border: errorCampos.includes(nombreCampo) ? '2px solid red' : undefined
         };
     };
-    // --- FIN CAMBIO 5 ---
+
 
 
    return (
         <div className="search-container">
-            {/* Panel Izquierdo (sin cambios) */}
+
             <div className="search-panel-left">
                 <h1 style={{ paddingTop: '300px' }}>ALTA DE HUÉSPED</h1>
                 <button 
@@ -247,18 +231,17 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
                     Cancelar
                 </button>
             </div>
-            {/* Panel Derecho (Formulario) */}
+
             <div className="search-panel-right">
                 
-                {/* --- CAMBIO 6: Añadir 'noValidate' al form --- */}
+
                 <form onSubmit={handleSubmit} className="search-form" noValidate>
-                {/* --- FIN CAMBIO 6 --- */}
+
 
                     {error && <div className="error-message">{error}</div>}
 
                     <h3 className="form-section-header">Datos Personales</h3>
-                    
-                    {/* --- CAMBIO 7: Aplicar 'ref' y 'style', quitar 'required' --- */}
+
                     <div className="form-row">
                         <div className="form-group">
                             <label htmlFor="nombre">Nombre(*)</label>
@@ -422,7 +405,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
                             />
                         </div>
                     </div>
-                    {/* --- FIN CAMBIO 7 --- */}
+
 
                     <p style={{ color: 'red', fontSize: '0.9rem', textAlign: 'left', marginTop: '15px' }}>
                         * Campos obligatorios
@@ -436,7 +419,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
                 </form>
             </div>
 
- {/* Modal de Cancelar (sin cambios) */}
+
             {showCancelModal && (
                 <div className="modal-overlay">
                     <div className="modal-content" style={{ textAlign: 'center' }}>
@@ -488,7 +471,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
                                     setShowSuccessModal(false);
                                     setSuccessHuespedName('');
                                     setError(null);
-                                    setErrorCampos([]); // Limpiar errores al resetear
+                                    setErrorCampos([]);
                                 }}
                             >
                                 SI

@@ -8,11 +8,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Ajusta "/api/**" según las URLs que encontraste en el Paso 2
-        // Si no todas empiezan con /api, puedes poner "/**" para permitir todo
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // El origen de tu app Next.js
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "PATCH") // Métodos permitidos
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "PATCH")
                 .allowCredentials(true);
     }
 }

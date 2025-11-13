@@ -19,23 +19,14 @@ public class HuespedAltaDTO {
     private LocalDate fechaNacimiento;
     private String ocupacion;
     private String nacionalidad;
-
-    // Datos Fiscales
     private String cuit;
     private String categoriaIVA;
-
-    // Datos de Dirección
-    // Incluimos el objeto Direccion directamente.
-    // Spring/Jackson sabrá cómo "desarmar" un JSON anidado
-    // { ..., "direccion": { "pais": "...", "provincia": "..." } }
     private Direccion direccion;
 
-    // Constructor por defecto
+
     public HuespedAltaDTO() {
     }
 
-    // --- Getters y Setters para todos los campos ---
-    // (Spring los necesita para "poblar" el objeto desde el JSON)
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }

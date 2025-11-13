@@ -1,8 +1,8 @@
-// page.tsx Autenticacion de usuario 
+
 'use client';
 
 import { useState, FormEvent, ChangeEvent } from 'react';
-// IMPORTAMOS EL NUEVO COMPONENTE
+
 import MenuPrincipal from './casosDeUso/MenuPrincipal'; 
 
 const API_LOGIN_URL = 'http://localhost:8081/api/auth/login';
@@ -13,7 +13,7 @@ export default function Home() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    // const [welcomeMessage, setWelcomeMessage] = useState(''); // Ya no lo necesitamos
+
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault(); 
@@ -27,8 +27,6 @@ export default function Home() {
             });
 
             if (response.ok) {
-                // const data = await response.json(); // No necesitamos el mensaje
-                // setWelcomeMessage(data.message);
                 setIsLoggedIn(true);
             } else {
                 const errorMsg = await response.text();
@@ -39,14 +37,10 @@ export default function Home() {
         }
     };
 
-    // --- ¡ESTE ES EL CAMBIO PRINCIPAL! ---
-    // Si está logueado, muestra el Menú Principal en lugar del mensaje.
     if (isLoggedIn) {
-        // Renderizamos el componente que maneja toda la lógica post-login
         return <MenuPrincipal />;
     }
 
-    // Si no está logueado, muestra el formulario de Login (sin cambios)
     return (
         <main>
             <div className="login-container">
@@ -56,7 +50,7 @@ export default function Home() {
                 <div className="login-panel-right">
                     <h2>Iniciar Sesión</h2>
                     <form onSubmit={handleLogin}>
-                        {/* ... (el resto de tu formulario de login no cambia) ... */}
+                        {}
                         <div className="form-group">
                             <label htmlFor="usuario">Usuario</label>
                             <input

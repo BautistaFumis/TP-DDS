@@ -8,11 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EstadiaDAO extends JpaRepository<Estadia, Long> {
 
-    /**
-     * Reemplaza a EstadiaDAO.tieneEstadias()
-     * * ¡AQUÍ ESTÁ LA CORRECCIÓN!
-     * El nombre del metodo DEBE coincidir con el nombre del campo
-     * "huespedPrincipal" en la Entidad Estadia.
-     */
     boolean existsByHuespedPrincipal(Huesped huespedPrincipal);
 }
