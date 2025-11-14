@@ -47,7 +47,6 @@ public class CargadorDeDatos implements CommandLineRunner {
         if (huespedRepository.count() == 0) {
             System.out.println(">>> Base de datos de huéspedes vacía. Cargando 10 huéspedes iniciales (EN MAYÚSCULAS)...");
 
-            // --- DATOS EN MAYÚSCULAS ---
             List<Huesped> huespedesACargar = Arrays.asList(
                     crearHuesped("FUMIS", "BAUTISTA", "DNI", "45828019", "20-45828019-4", "CONSUMIDOR FINAL", "28/05/2004", "SAAVEDRA", "2444", "", "9", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3425112233", "bautistafumis@gmail.com", "ESTUDIANTE", "ARGENTINA"),
                     crearHuesped("FERNANDEZ", "JUAN", "LE", "8123456", "20-8123456-9", "MONOTRIBUTISTA", "11/12/1950", "BV. PELLEGRINI", "3201", "", "2", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3424111222", "juan.fernandez@example.com", "JUBILADO", "ARGENTINA"),
