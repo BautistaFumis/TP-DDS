@@ -3,9 +3,12 @@ package App;
 import Logica.Dominio.Entidades.Direccion;
 import Logica.Dominio.Entidades.Estadia;
 import Logica.Dominio.Entidades.Huesped;
+import Logica.Dominio.Entidades.Reserva;
 import Logica.Dominio.Entidades.Usuario;
+import Logica.Dominio.Enum.EstadoReserva; // <--- IMPORTANTE
 import Persistencia.Repositorios.EstadiaDAO;
 import Persistencia.Repositorios.HuespedDAO;
+import Persistencia.Repositorios.ReservaDAO;
 import Persistencia.Repositorios.UsuarioDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -15,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
-@Order(1) // le decimos a Spring que esto es lo primero
+@Order(1)
 public class CargadorDeDatos implements CommandLineRunner {
 
     @Autowired
@@ -29,6 +35,8 @@ public class CargadorDeDatos implements CommandLineRunner {
     private HuespedDAO huespedRepository;
     @Autowired
     private EstadiaDAO estadiaRepository;
+    @Autowired
+    private ReservaDAO reservaRepository;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -37,16 +45,12 @@ public class CargadorDeDatos implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         if (usuarioRepository.count() == 0) {
-            System.out.println(">>> Base de datos de usuarios vacía. Cargando usuario por defecto...");
+            System.out.println(">>> Cargando usuario por defecto...");
             usuarioRepository.save(new Usuario("Conserje", "conserje123"));
-            System.out.println(">>> Usuario 'Conserje' cargado exitosamente.");
-        } else {
-            System.out.println(">>> La base de datos de usuarios ya tiene datos.");
         }
 
         if (huespedRepository.count() == 0) {
-            System.out.println(">>> Base de datos de huéspedes vacía. Cargando 10 huéspedes iniciales (EN MAYÚSCULAS)...");
-
+            System.out.println(">>> Cargando huéspedes iniciales...");
             List<Huesped> huespedesACargar = Arrays.asList(
                     crearHuesped("FUMIS", "BAUTISTA", "DNI", "45828019", "20-45828019-4", "CONSUMIDOR FINAL", "28/05/2004", "SAAVEDRA", "2444", "", "9", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3425112233", "bautistafumis@gmail.com", "ESTUDIANTE", "ARGENTINA"),
                     crearHuesped("FERNANDEZ", "JUAN", "LE", "8123456", "20-8123456-9", "MONOTRIBUTISTA", "11/12/1950", "BV. PELLEGRINI", "3201", "", "2", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3424111222", "juan.fernandez@example.com", "JUBILADO", "ARGENTINA"),
@@ -60,45 +64,39 @@ public class CargadorDeDatos implements CommandLineRunner {
                     crearHuesped("MARTINEZ", "MATIAS", "LE", "32144231", "20-32144231-9", "CONSUMIDOR FINAL", "22/05/2003", "JUJUY", "516", "", "", "3100", "PARANA", "ENTRE RIOS", "ARG", "", "", "", ""),
                     crearHuesped("GOMEZ", "CARLOS", "PASAPORTE", "ABC98765", "20-28765432-1", "RESPONSABLE INSCRIPTO", "22/07/1980", "AV. CORRIENTES", "950", "A", "5", "1043", "BUENOS AIRES", "CABA", "ARGENTINA", "1155667788", "carlos.martinez@work.com", "ARQUITECTO", "URUGUAYA")
             );
-
             huespedRepository.saveAllAndFlush(huespedesACargar);
             System.out.println(">>> " + huespedesACargar.size() + " huéspedes cargados exitosamente.");
-        } else {
-            System.out.println(">>> La base de datos de huéspedes ya tiene datos.");
         }
 
         if (estadiaRepository.count() == 0) {
-            System.out.println(">>> Base de datos de estadias vacía. Cargando 5 estadias iniciales...");
-
+            System.out.println(">>> Cargando estadías y reservas...");
+            List<Estadia> estadiasACargar = new ArrayList<>();
             try {
-                System.out.println(">>> [DEBUG] Creando lista de estadías...");
-                List<Estadia> estadiasACargar = Arrays.asList(
-                        crearEstadia("15/10/2025", "20/10/2025", "DNI", "45828019"), // Fumis
-                        crearEstadia("01/11/2025", "10/11/2025", "PASAPORTE", "ABC98765"), // Gomez, Carlos
-                        crearEstadia("12/11/2025", "15/11/2025", "LE", "8123456"), // Fernandez, Juan
-                        crearEstadia("20/11/2025", "22/11/2025", "DNI", "41987654"), // Garcia, Sofia
-                        crearEstadia("01/12/2025", "05/12/2025", "PASAPORTE", "DEF45678") // Gomez, Ana
-                );
+                // Fumis (Con reserva)
+                estadiasACargar.add(crearEstadia("15/10/2025", "20/10/2025", "DNI", "45828019", true));
+                // Gomez Carlos (Walk-in, sin reserva)
+                estadiasACargar.add(crearEstadia("01/11/2025", "10/11/2025", "PASAPORTE", "ABC98765", false));
+                // Fernandez Juan (Con reserva)
+                estadiasACargar.add(crearEstadia("12/11/2025", "15/11/2025", "LE", "8123456", true));
+                // Garcia Sofia (Con reserva)
+                estadiasACargar.add(crearEstadia("20/11/2025", "22/11/2025", "DNI", "41987654", true));
+                // Gomez Ana (Walk-in)
+                estadiasACargar.add(crearEstadia("01/12/2025", "05/12/2025", "PASAPORTE", "DEF45678", false));
 
-                System.out.println(">>> Guardando estadías en la BD...");
                 estadiaRepository.saveAll(estadiasACargar);
                 System.out.println(">>> " + estadiasACargar.size() + " estadías cargadas exitosamente.");
-
             } catch (Exception e) {
-                System.err.println("ERROR al cargar estadias iniciales: " + e.getMessage());
                 e.printStackTrace();
             }
-        } else {
-            System.out.println(">>> La base de datos de estadias ya tiene datos.");
         }
     }
+
+    // --- MÉTODOS AUXILIARES ---
 
     private Huesped crearHuesped(String apellido, String nombre, String tipoDoc, String doc, String cuit, String iva, String fechaNac,
                                  String calle, String numero, String depto, String piso, String cp, String localidad, String prov, String pais,
                                  String tel, String email, String ocup, String nac) {
-
         Direccion dir = new Direccion();
-
         dir.setCalle(parseStringMayus(calle));
         dir.setDepartamento(parseStringMayus(depto));
         dir.setCodigoPostal(parseStringMayus(cp));
@@ -121,87 +119,62 @@ public class CargadorDeDatos implements CommandLineRunner {
         h.setFechaNacimiento(parseLocalDate(fechaNac));
         h.setEmail(parseString(email));
         h.setDireccion(dir);
-
         return h;
     }
 
-    private Estadia crearEstadia(String checkin, String checkout, String tipoDoc, String numDoc) {
-        System.out.println(">>> [DEBUG] Buscando huésped: " + tipoDoc + " " + numDoc);
+    private Estadia crearEstadia(String checkin, String checkout, String tipoDoc, String numDoc, boolean conReserva) {
 
         Optional<Huesped> huespedOpt = huespedRepository.findByTipoDocumentoAndDocumento(
                 parseStringMayus(tipoDoc),
                 parseStringMayus(numDoc)
         );
 
-        if (huespedOpt.isEmpty()) {
-            System.err.println(">>> ¡FALLÓ! No se encontró al huésped: " + tipoDoc + " " + numDoc);
-            throw new RuntimeException("No se pudo cargar la estadía. Huésped no encontrado: " + tipoDoc + " " + numDoc);
+        if (huespedOpt.isEmpty()) throw new RuntimeException("Huésped no encontrado: " + numDoc);
+
+        Huesped principal = huespedOpt.get();
+        // Creamos un ArrayList modificable envolviendo al huesped
+        List<Huesped> huespedes = new ArrayList<>(Collections.singletonList(principal));
+
+        LocalDate fechaIn = parseLocalDate(checkin);
+        LocalDate fechaOut = parseLocalDate(checkout);
+        Estadia estadia = new Estadia(fechaIn, huespedes);
+
+        if (conReserva) {
+            Reserva reserva = new Reserva();
+            reserva.setFechaInicio(fechaIn);
+            reserva.setFechaFin(fechaOut);
+            reserva.setFechaReserva(fechaIn.minusDays(15));
+
+            // CAMBIO IMPORTANTE: Usamos el Enum
+            reserva.setEstado(EstadoReserva.RESERVADA);
+
+            String codigo = "RES-" + principal.getApellido().substring(0, Math.min(3, principal.getApellido().length()))
+                    + "-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+            reserva.setCodigoReserva(codigo);
+            reserva.setNombre(principal.getNombre());
+            reserva.setApellido(principal.getApellido());
+            reserva.setTelefono(principal.getTelefono());
+
+            reserva = reservaRepository.save(reserva);
+            estadia.setReserva(reserva);
         }
 
-        System.out.println(">>> [DEBUG] ¡Éxito! Huésped encontrado: " + huespedOpt.get().getApellido());
-        Huesped huespedPrincipal = huespedOpt.get();
-        Estadia estadia = new Estadia(parseLocalDate(checkin), huespedPrincipal);
-
-        LocalDate fechaCheckout = parseLocalDate(checkout);
-        if (fechaCheckout != null) {
-            estadia.setFechaCheckout(fechaCheckout);
+        if (fechaOut != null) {
+            estadia.setFechaCheckout(fechaOut);
             estadia.cerrar();
         }
 
         return estadia;
     }
 
-
-    /**
-     * Parsea un Integer. Devuelve null si está vacío o no es un número.
-     */
     private Integer parseInteger(String valor) {
-        if (valor == null || valor.trim().isEmpty()) {
-            return null; // Esto es seguro y no causa el crash
-        }
-        try {
-            return Integer.parseInt(valor.trim());
-        } catch (NumberFormatException e) {
-            System.err.println("Advertencia: no se pudo parsear el NÚMERO '" + valor + "'. Se guardará como null.");
-            return null;
-        }
+        if (valor == null || valor.trim().isEmpty()) return null;
+        try { return Integer.parseInt(valor.trim()); } catch (NumberFormatException e) { return null; }
     }
-
-    /**
-     * Parsea un String, lo trimea. Devuelve null si está vacío.
-     * (Usado para email o campos que no deban ir en mayúsculas)
-     */
-    private String parseString(String valor) {
-        if (valor == null || valor.trim().isEmpty()) {
-            return null;
-        }
-        return valor.trim();
-    }
-
-    /**
-     * Parsea un String, lo trimea y lo pasa a MAYÚSCULAS.
-     * Devuelve null si está vacío.
-     */
-    private String parseStringMayus(String valor) {
-        if (valor == null || valor.trim().isEmpty()) {
-            return null;
-        }
-        return valor.trim().toUpperCase();
-    }
-
-
-    /**
-     * Parsea una Fecha. Devuelve null si está vacía o tiene formato incorrecto.
-     */
+    private String parseString(String valor) { return (valor == null || valor.trim().isEmpty()) ? null : valor.trim(); }
+    private String parseStringMayus(String valor) { return (valor == null || valor.trim().isEmpty()) ? null : valor.trim().toUpperCase(); }
     private LocalDate parseLocalDate(String valor) {
-        if (valor == null || valor.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(valor.trim(), formatter);
-        } catch (Exception e) {
-            System.err.println("Advertencia: no se pudo parsear la FECHA '" + valor + "'. Se guardará como null.");
-            return null;
-        }
+        if (valor == null || valor.trim().isEmpty()) return null;
+        try { return LocalDate.parse(valor.trim(), formatter); } catch (Exception e) { return null; }
     }
 }

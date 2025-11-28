@@ -1,6 +1,6 @@
 package DTO;
 
-import Logica.Dominio.Entidades.Direccion; // Reutilizamos tu clase Direccion
+import Logica.Dominio.Entidades.Direccion;
 import java.time.LocalDate;
 
 /**

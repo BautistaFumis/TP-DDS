@@ -109,7 +109,7 @@ public class GestorHuesped {
      * Gestiona la eliminación de un huésped.
      */
     public boolean darDeBajaHuesped(Huesped huesped) {
-        if (estadiaRepository.existsByHuespedPrincipal(huesped)) {
+        if (estadiaRepository.existsByHuespedes(huesped)) {
             return false;
         }
         huespedRepository.delete(huesped);

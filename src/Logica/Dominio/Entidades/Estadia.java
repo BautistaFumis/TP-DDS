@@ -1,12 +1,11 @@
 package Logica.Dominio.Entidades;
 
 import Logica.Dominio.Enum.TipoEstadoEstadia;
-import Logica.Dominio.State.EstadoActiva; // <-- Asume que moviste tus clases State
-import Logica.Dominio.State.EstadoCerrada; // <-- Asume que moviste tus clases State
-import Logica.Dominio.State.EstadoEstadia; // <-- Asume que moviste tus clases State
+import Logica.Dominio.State.EstadoActiva;
+import Logica.Dominio.State.EstadoCerrada;
+import Logica.Dominio.State.EstadoEstadia;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 
@@ -18,15 +17,23 @@ public class Estadia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "huesped_id")
-    private Huesped huespedPrincipal;
+    // Relación ManyToMany con Huéspedes (La que arreglamos antes)
+    @ManyToMany
+    @JoinTable(
+            name = "estadia_huespedes",
+            joinColumns = @JoinColumn(name = "estadia_id"),
+            inverseJoinColumns = @JoinColumn(name = "huesped_id")
+    )
+    private List<Huesped> huespedes;
+
+    // RELACIÓN 1 a 1 con RESERVA
+    // Esta es la dueña de la relación (Foreign Key: reserva_id)
+    @OneToOne
+    @JoinColumn(name = "reserva_id", referencedColumnName = "id", nullable = true)
+    private Reserva reserva;
 
     private LocalDate fechaCheckin;
     private LocalDate fechaCheckout;
-
-    @Transient // Le dice a JPA: "Ignora este campo, no es parte de la base de datos"
-    private List<Huesped> acompanantes;
 
     @Enumerated(EnumType.STRING)
     private TipoEstadoEstadia tipoEstado;
@@ -45,37 +52,47 @@ public class Estadia {
 
     public void setEstadoInterno(EstadoEstadia nuevoEstado) {
         this.estadoLogic = nuevoEstado;
-        this.tipoEstado = nuevoEstado.getTipoEstado(); // Sincroniza el Enum
+        this.tipoEstado = nuevoEstado.getTipoEstado();
     }
 
     public Estadia() {}
 
-    public Estadia(LocalDate fechaCheckin, Huesped huespedPrincipal) {
+    public Estadia(LocalDate fechaCheckin, List<Huesped> huespedes) {
         this.fechaCheckin = fechaCheckin;
-        this.huespedPrincipal = huespedPrincipal;
-        this.acompanantes = new ArrayList<>();
-        setEstadoInterno(new EstadoActiva()); // Inicia el estado
+        this.huespedes = huespedes;
+        setEstadoInterno(new EstadoActiva());
     }
 
+    // Métodos de negocio
     public void cerrar() {
-        if (this.estadoLogic == null) reconstruirEstado(); // Seguridad
+        if (this.estadoLogic == null) reconstruirEstado();
         this.estadoLogic.cerrarEstadia(this);
     }
 
     public void reabrir() {
-        if (this.estadoLogic == null) reconstruirEstado(); // Seguridad
+        if (this.estadoLogic == null) reconstruirEstado();
         this.estadoLogic.reabrirEstadia(this);
     }
 
-    public TipoEstadoEstadia getTipoEstado() { return this.tipoEstado; }
+    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public Huesped getHuespedPrincipal() { return huespedPrincipal; }
-    public void setHuespedPrincipal(Huesped huespedPrincipal) { this.huespedPrincipal = huespedPrincipal; }
+    public List<Huesped> getHuespedes() { return huespedes; }
+    public void setHuespedes(List<Huesped> huespedes) { this.huespedes = huespedes; }
     public LocalDate getFechaCheckin() { return fechaCheckin; }
     public void setFechaCheckin(LocalDate fechaCheckin) { this.fechaCheckin = fechaCheckin; }
     public LocalDate getFechaCheckout() { return fechaCheckout; }
     public void setFechaCheckout(LocalDate fechaCheckout) { this.fechaCheckout = fechaCheckout; }
-    public List<Huesped> getAcompanantes() { return acompanantes; }
-    public void setAcompanantes(List<Huesped> acompanantes) { this.acompanantes = acompanantes; }
+    public TipoEstadoEstadia getTipoEstado() { return tipoEstado; }
+
+    public Reserva getReserva() { return reserva; }
+
+    // Setter bidireccional
+    public void setReserva(Reserva reserva) {
+        this.reserva = reserva;
+        // Evitar bucle infinito al setear
+        if (reserva != null && reserva.getEstadia() != this) {
+            reserva.setEstadia(this);
+        }
+    }
 }

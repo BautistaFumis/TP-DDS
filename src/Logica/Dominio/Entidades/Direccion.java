@@ -1,41 +1,26 @@
 package Logica.Dominio.Entidades;
-import jakarta.persistence.Embeddable;
 
-/**
- * Representa una dirección.
- * Con @Embeddable, le decimos a JPA que esta clase no es una tabla separada,
- * sino que sus campos deben ser "incrustados" dentro de la tabla Huesped.
- */
-@Embeddable
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "direcciones") // Nueva tabla independiente
 public class Direccion {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Necesario ahora que es entidad
+
     private String pais;
     private String provincia;
     private String localidad;
-    private String codigoPostal; // Hay ciudades que el CP tiene letra
+    private String codigoPostal;
     private String calle;
     private Integer numero;
     private String departamento;
     private Integer piso;
 
-    /**
-     * Constructor por defecto.
-     * Crea una instancia de Direccion con todos sus campos inicializados a sus valores por defecto.
-     */
     public Direccion(){}
 
-    /**
-     * Constructor con todos los parámetros.
-     * Crea una instancia de Direccion con todos sus atributos especificados.
-     *
-     * @param pais El país de la dirección.
-     * @param provincia La provincia o estado de la dirección.
-     * @param localidad La ciudad o localidad de la dirección.
-     * @param codigoPostal El código postal numérico.
-     * @param calle El nombre de la calle.
-     * @param numero El número de la dirección en la calle.
-     * @param departamento El identificador del departamento (puede ser número o letra).
-     * @param piso El número del piso.
-     */
     public Direccion(String pais, String provincia, String localidad, String codigoPostal, String calle, Integer numero, String departamento, Integer piso) {
         this.pais = pais;
         this.provincia = provincia;
@@ -47,12 +32,7 @@ public class Direccion {
         this.piso = piso;
     }
 
-    /**
-     * Constructor de copia.
-     * Crea una nueva instancia de Direccion a partir de otra instancia existente.
-     *
-     * @param otra La instancia de Direccion a copiar.
-     */
+    // Constructor de copia
     public Direccion(Direccion otra) {
         if (otra != null) {
             this.calle = otra.calle;
@@ -66,131 +46,24 @@ public class Direccion {
         }
     }
 
-    /**
-     * Obtiene el país.
-     * @return El país de la dirección.
-     */
-    public String getPais() {
-        return pais;
-    }
+    // Getters y Setters necesarios (incluyendo ID)
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    /**
-     * Establece el país.
-     * @param pais El nuevo país de la dirección.
-     */
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-
-    /**
-     * Obtiene la provincia.
-     * @return La provincia de la dirección.
-     */
-    public String getProvincia() {
-        return provincia;
-    }
-
-    /**
-     * Establece la provincia.
-     * @param provincia La nueva provincia de la dirección.
-     */
-    public void setProvincia(String provincia) {
-        this.provincia = provincia;
-    }
-
-    /**
-     * Obtiene la localidad.
-     * @return La localidad de la dirección.
-     */
-    public String getLocalidad() {
-        return localidad;
-    }
-
-    /**
-     * Establece la localidad.
-     * @param localidad La nueva localidad de la dirección.
-     */
-    public void setLocalidad(String localidad) {
-        this.localidad = localidad;
-    }
-
-    /**
-     * Obtiene el código postal.
-     * @return El código postal de la dirección.
-     */
-    public String getCodigoPostal() {
-        return codigoPostal;
-    }
-
-    /**
-     * Establece el código postal.
-     * @param codigoPostal El nuevo código postal de la dirección.
-     */
-    public void setCodigoPostal(String codigoPostal) {
-        this.codigoPostal = codigoPostal;
-    }
-
-    /**
-     * Obtiene el nombre de la calle.
-     * @return El nombre de la calle.
-     */
-    public String getCalle() {
-        return calle;
-    }
-
-    /**
-     * Establece el nombre de la calle.
-     * @param calle El nuevo nombre de la calle.
-     */
-    public void setCalle(String calle) {
-        this.calle = calle;
-    }
-
-    /**
-     * Obtiene el número de la dirección.
-     * @return El número de la dirección.
-     */
-    public Integer getNumero() {
-        return numero;
-    }
-
-    /**
-     * Establece el número de la dirección.
-     * @param numero El nuevo número de la dirección.
-     */
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
-
-    /**
-     * Obtiene el departamento.
-     * @return El identificador del departamento.
-     */
-    public String getDepartamento() {
-        return departamento;
-    }
-
-    /**
-     * Establece el departamento.
-     * @param departamento El nuevo identificador del departamento.
-     */
-    public void setDepartamento(String departamento) {
-        this.departamento = departamento;
-    }
-
-    /**
-     * Obtiene el piso.
-     * @return El número del piso.
-     */
-    public Integer getPiso() {
-        return piso;
-    }
-
-    /**
-     * Establece el piso.
-     * @param piso El nuevo número del piso.
-     */
-    public void setPiso(Integer piso) {
-        this.piso = piso;
-    }
+    public String getPais() { return pais; }
+    public void setPais(String pais) { this.pais = pais; }
+    public String getProvincia() { return provincia; }
+    public void setProvincia(String provincia) { this.provincia = provincia; }
+    public String getLocalidad() { return localidad; }
+    public void setLocalidad(String localidad) { this.localidad = localidad; }
+    public String getCodigoPostal() { return codigoPostal; }
+    public void setCodigoPostal(String codigoPostal) { this.codigoPostal = codigoPostal; }
+    public String getCalle() { return calle; }
+    public void setCalle(String calle) { this.calle = calle; }
+    public Integer getNumero() { return numero; }
+    public void setNumero(Integer numero) { this.numero = numero; }
+    public String getDepartamento() { return departamento; }
+    public void setDepartamento(String departamento) { this.departamento = departamento; }
+    public Integer getPiso() { return piso; }
+    public void setPiso(Integer piso) { this.piso = piso; }
 }

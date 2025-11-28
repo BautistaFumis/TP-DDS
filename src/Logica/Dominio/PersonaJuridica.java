@@ -2,15 +2,15 @@ package Logica.Dominio;
 
 import Logica.Dominio.Entidades.Direccion;
 
-public class PersonaJuridica {
+public class PersonaJuridica extends ResponsableDePago {
     private String nombre;
     private String apellido;
     private String razonSocial;
-    private int  telefono;
+    private String  telefono;
     private Direccion direccion;
     private String cuit;
 
-    public PersonaJuridica(String nombre, String apellido, String razonSocial, int telefono, Direccion direccion, String cuit) {
+    public PersonaJuridica(String nombre, String apellido, String razonSocial, String telefono, Direccion direccion, String cuit) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.razonSocial = razonSocial;
@@ -43,11 +43,11 @@ public class PersonaJuridica {
         this.razonSocial = razonSocial;
     }
 
-    public int getTelefono() {
+    public String getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(int telefono) {
+    public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 
