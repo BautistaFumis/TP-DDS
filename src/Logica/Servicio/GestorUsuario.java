@@ -7,7 +7,7 @@ import Logica.Excepciones.CredencialesInvalidasException;
 import Persistencia.Repositorios.UsuarioDAO;
 // <-- ADIÓS: Ya no usamos DAOFactory ni UsuarioDAO
 // import Persistencia.DAOFactory;
-// import Persistencia.UsuarioDAO;
+// import Persistencia.Repositorios.UsuarioDAO;
 
 import java.util.Optional;
 

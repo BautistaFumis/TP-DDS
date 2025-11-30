@@ -6,6 +6,7 @@ import Logica.Dominio.State.EstadoCerrada;
 import Logica.Dominio.State.EstadoEstadia;
 
 import java.time.LocalDate;
+import java.util.ArrayList; // Importante para inicializar listas
 import java.util.List;
 import jakarta.persistence.*;
 
@@ -17,7 +18,16 @@ public class Estadia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación ManyToMany con Huéspedes (La que arreglamos antes)
+    // RELACIÓN NUEVA: MUCHAS ESTADÍAS -> 1 HABITACIÓN
+    @ManyToOne
+    @JoinColumn(name = "habitacion_id", nullable = true) // nullable=true por si hay datos viejos, idealmente false
+    private Habitacion habitacion;
+
+    // RELACIÓN NUEVA: 1 ESTADÍA -> MUCHOS SERVICIOS
+    // CascadeType.ALL permite que si guardas la estadía, se guarden sus servicios nuevos
+    @OneToMany(mappedBy = "estadia", cascade = CascadeType.ALL)
+    private List<Servicio> servicios = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name = "estadia_huespedes",
@@ -26,8 +36,6 @@ public class Estadia {
     )
     private List<Huesped> huespedes;
 
-    // RELACIÓN 1 a 1 con RESERVA
-    // Esta es la dueña de la relación (Foreign Key: reserva_id)
     @OneToOne
     @JoinColumn(name = "reserva_id", referencedColumnName = "id", nullable = true)
     private Reserva reserva;
@@ -57,13 +65,14 @@ public class Estadia {
 
     public Estadia() {}
 
-    public Estadia(LocalDate fechaCheckin, List<Huesped> huespedes) {
+    // Constructor actualizado
+    public Estadia(LocalDate fechaCheckin, List<Huesped> huespedes, Habitacion habitacion) {
         this.fechaCheckin = fechaCheckin;
         this.huespedes = huespedes;
+        this.habitacion = habitacion;
         setEstadoInterno(new EstadoActiva());
     }
 
-    // Métodos de negocio
     public void cerrar() {
         if (this.estadoLogic == null) reconstruirEstado();
         this.estadoLogic.cerrarEstadia(this);
@@ -72,6 +81,12 @@ public class Estadia {
     public void reabrir() {
         if (this.estadoLogic == null) reconstruirEstado();
         this.estadoLogic.reabrirEstadia(this);
+    }
+
+    // Método helper para agregar servicios facilmente
+    public void agregarServicio(Servicio servicio) {
+        this.servicios.add(servicio);
+        servicio.setEstadia(this);
     }
 
     // Getters y Setters
@@ -84,15 +99,19 @@ public class Estadia {
     public LocalDate getFechaCheckout() { return fechaCheckout; }
     public void setFechaCheckout(LocalDate fechaCheckout) { this.fechaCheckout = fechaCheckout; }
     public TipoEstadoEstadia getTipoEstado() { return tipoEstado; }
-
     public Reserva getReserva() { return reserva; }
 
-    // Setter bidireccional
     public void setReserva(Reserva reserva) {
         this.reserva = reserva;
-        // Evitar bucle infinito al setear
         if (reserva != null && reserva.getEstadia() != this) {
             reserva.setEstadia(this);
         }
     }
+
+    // Getters y Setters Nuevos
+    public Habitacion getHabitacion() { return habitacion; }
+    public void setHabitacion(Habitacion habitacion) { this.habitacion = habitacion; }
+
+    public List<Servicio> getServicios() { return servicios; }
+    public void setServicios(List<Servicio> servicios) { this.servicios = servicios; }
 }
