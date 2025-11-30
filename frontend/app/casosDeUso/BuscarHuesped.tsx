@@ -12,7 +12,7 @@ const ModificarHuesped = ({ huespedId, onCancel }: { huespedId: number, onCancel
             <button onClick={onCancel} className="cancel-button" style={{ width: 200, alignSelf: 'center' }}>Volver</button>
         </div>
     </div>
-);
+)
 
 
 interface Huesped {

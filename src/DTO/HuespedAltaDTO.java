@@ -1,15 +1,10 @@
 package DTO;
 
-import Logica.Dominio.Entidades.Direccion;
 import java.time.LocalDate;
+// Nota: NO importamos la Entidad Direccion aquí. Usamos el DTO.
 
-/**
- * DTO para recibir los datos de un nuevo huésped desde el frontend.
- * Contiene todos los campos necesarios para crear una Entidad Huesped completa.
- */
 public class HuespedAltaDTO {
 
-    // Datos Personales
     private String nombre;
     private String apellido;
     private String email;
@@ -21,13 +16,14 @@ public class HuespedAltaDTO {
     private String nacionalidad;
     private String cuit;
     private String categoriaIVA;
-    private Direccion direccion;
 
+    // CORRECCIÓN: Usamos DireccionDTO, no la entidad Direccion
+    private DireccionDTO direccion;
 
     public HuespedAltaDTO() {
     }
 
-
+    // Getters y Setters
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
@@ -61,6 +57,6 @@ public class HuespedAltaDTO {
     public String getCategoriaIVA() { return categoriaIVA; }
     public void setCategoriaIVA(String categoriaIVA) { this.categoriaIVA = categoriaIVA; }
 
-    public Direccion getDireccion() { return direccion; }
-    public void setDireccion(Direccion direccion) { this.direccion = direccion; }
+    public DireccionDTO getDireccion() { return direccion; }
+    public void setDireccion(DireccionDTO direccion) { this.direccion = direccion; }
 }

@@ -1,9 +1,9 @@
 package App;
 
-import DTO.HuespedBusquedaDTO;
 import DTO.HuespedAltaDTO;
+import DTO.HuespedBusquedaDTO; // Asumo que ya tienes este DTO de la respuesta anterior
 import Logica.Dominio.Entidades.Huesped;
-import Logica.Excepciones.CamposObligatoriosException; // <-- IMPORTAR
+import Logica.Excepciones.CamposObligatoriosException;
 import Logica.Excepciones.DocumentoDuplicadoException;
 import Logica.Servicio.GestorHuesped;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +16,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/huespedes")
+@CrossOrigin(origins = "http://localhost:3000") // Permite conexión desde React
 public class HuespedController {
 
     @Autowired
     private GestorHuesped gestorHuesped;
 
-    /**
-     * Endpoint para buscar huéspedes (GET /api/huespedes/buscar)
-     * (Sin cambios)
-     */
+    // --- BÚSQUEDA ---
     @GetMapping("/buscar")
     public ResponseEntity<List<HuespedBusquedaDTO>> buscarHuespedes(
             @RequestParam(required = false) String nombre,
@@ -32,70 +30,47 @@ public class HuespedController {
             @RequestParam(required = false) String tipoDocumento,
             @RequestParam(required = false) String documento
     ) {
-        List<Huesped> huespedesEncontrados = gestorHuesped.buscarHuespedes(apellido, nombre, tipoDocumento, documento);
-        List<HuespedBusquedaDTO> respuestaDTOs = huespedesEncontrados.stream()
+        List<Huesped> encontrados = gestorHuesped.buscarHuespedes(apellido, nombre, tipoDocumento, documento);
+
+        // Convertimos a DTO de salida
+        List<HuespedBusquedaDTO> respuesta = encontrados.stream()
                 .map(this::convertirEntidadADTO)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(respuestaDTOs);
+
+        return ResponseEntity.ok(respuesta);
     }
 
-    /**
-     * Endpoint para registrar un nuevo huésped (POST /api/huespedes/registrar)
-     * Recibe: HuespedRegistroDTO
-     * Devuelve: HuespedDTO (el huésped creado) o un String de error
-     */
+    // --- REGISTRO ---
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarNuevoHuesped(
             @RequestBody HuespedAltaDTO huespedDTO,
-            @RequestParam(required = false) Boolean forzar // <-- 1. AÑADIR PARÁMETRO
+            @RequestParam(required = false) Boolean forzar
     ) {
         try {
-            // 1. Convertir el DTO de Registro a una Entidad Huesped
-            Huesped nuevoHuesped = new Huesped();
-            nuevoHuesped.setNombre(huespedDTO.getNombre());
-            nuevoHuesped.setApellido(huespedDTO.getApellido());
-            nuevoHuesped.setEmail(huespedDTO.getEmail());
-            nuevoHuesped.setTipoDocumento(huespedDTO.getTipoDocumento());
-            nuevoHuesped.setDocumento(huespedDTO.getDocumento());
-            nuevoHuesped.setTelefono(huespedDTO.getTelefono());
-            nuevoHuesped.setFechaNacimiento(huespedDTO.getFechaNacimiento());
-            nuevoHuesped.setOcupacion(huespedDTO.getOcupacion());
-            nuevoHuesped.setNacionalidad(huespedDTO.getNacionalidad());
-            nuevoHuesped.setCuit(huespedDTO.getCuit());
-            nuevoHuesped.setCategoriaIVA(huespedDTO.getCategoriaIVA());
-            nuevoHuesped.setDireccion(huespedDTO.getDireccion());
+            // 1. Delegamos al Gestor la creación de la Entidad (New y Setters)
+            Huesped nuevoHuesped = gestorHuesped.seleccionarHuesped(huespedDTO);
 
-            // --- 2. LÓGICA DE DECISIÓN ---
+            // 2. Lógica de decisión
             if (Boolean.TRUE.equals(forzar)) {
-                // Flujo 2.B.2.1: Aceptar Igualmente
                 gestorHuesped.registrarHuespedAceptandoDuplicado(nuevoHuesped);
             } else {
-                // Flujo normal (que puede lanzar DocumentoDuplicadoException)
                 gestorHuesped.registrarNuevoHuesped(nuevoHuesped);
             }
 
-            // 3. Convertir la Entidad (ya con ID) a un DTO de respuesta
+            // 3. Respuesta Exitosa
             HuespedBusquedaDTO dtoRespuesta = convertirEntidadADTO(nuevoHuesped);
-
-            // 4. Devolver el DTO de respuesta
             return ResponseEntity.status(HttpStatus.CREATED).body(dtoRespuesta);
 
         } catch (DocumentoDuplicadoException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-
-        } catch (CamposObligatoriosException e) { // <-- 3. MANEJAR ERRORES 400
+        } catch (CamposObligatoriosException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno: " + e.getMessage());
         }
     }
 
-    /**
-     * Metodo helper privado para convertir una Entidad Huesped a un HuespedDTO.
-     * (Sin cambios)
-     */
-
+    // Helper para convertir a DTO de salida
     private HuespedBusquedaDTO convertirEntidadADTO(Huesped huesped) {
         HuespedBusquedaDTO dto = new HuespedBusquedaDTO();
         dto.setId(huesped.getId());
