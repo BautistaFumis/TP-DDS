@@ -6,7 +6,7 @@ import Logica.Dominio.State.EstadoCerrada;
 import Logica.Dominio.State.EstadoEstadia;
 
 import java.time.LocalDate;
-import java.util.ArrayList; // Importante para inicializar listas
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 
@@ -18,24 +18,25 @@ public class Estadia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // RELACIÓN NUEVA: MUCHAS ESTADÍAS -> 1 HABITACIÓN
+    // Relación con Habitación
     @ManyToOne
-    @JoinColumn(name = "habitacion_id", nullable = true) // nullable=true por si hay datos viejos, idealmente false
+    @JoinColumn(name = "habitacion_id", nullable = false)
     private Habitacion habitacion;
 
-    // RELACIÓN NUEVA: 1 ESTADÍA -> MUCHOS SERVICIOS
-    // CascadeType.ALL permite que si guardas la estadía, se guarden sus servicios nuevos
+    // Relación con Servicios
     @OneToMany(mappedBy = "estadia", cascade = CascadeType.ALL)
     private List<Servicio> servicios = new ArrayList<>();
 
+    // Relación con Huéspedes
     @ManyToMany
     @JoinTable(
             name = "estadia_huespedes",
             joinColumns = @JoinColumn(name = "estadia_id"),
             inverseJoinColumns = @JoinColumn(name = "huesped_id")
     )
-    private List<Huesped> huespedes;
+    private List<Huesped> huespedes = new ArrayList<>();
 
+    // Relación con Reserva (Bidireccional opcional)
     @OneToOne
     @JoinColumn(name = "reserva_id", referencedColumnName = "id", nullable = true)
     private Reserva reserva;
@@ -49,6 +50,25 @@ public class Estadia {
     @Transient
     private EstadoEstadia estadoLogic;
 
+    // --- CONSTRUCTOR VACÍO (Requerido por JPA) ---
+    public Estadia() {}
+
+    // --- CONSTRUCTOR PRINCIPAL (CORREGIDO) ---
+    // Este es el que usas en el GestorReserva. Antes estaba vacío y por eso fallaba.
+    public Estadia(LocalDate fechaCheckin, LocalDate fechaCheckout, Habitacion habitacion, TipoEstadoEstadia tipoEstado) {
+        this.fechaCheckin = fechaCheckin;
+        this.fechaCheckout = fechaCheckout;
+        this.habitacion = habitacion;
+        this.tipoEstado = tipoEstado;
+
+        // Inicialización básica del State Pattern
+        if (tipoEstado == TipoEstadoEstadia.ACTIVA) {
+            this.estadoLogic = new EstadoActiva();
+        }
+        // Si es RESERVADA, no tiene estado lógico activo todavía o podrías asignar uno EstadoReservada si existe.
+    }
+
+    // --- MÉTODOS DE LÓGICA (State Pattern) ---
     @PostLoad
     private void reconstruirEstado() {
         if (tipoEstado == TipoEstadoEstadia.ACTIVA) {
@@ -63,55 +83,49 @@ public class Estadia {
         this.tipoEstado = nuevoEstado.getTipoEstado();
     }
 
-    public Estadia() {}
-
-    // Constructor actualizado
-    public Estadia(LocalDate fechaCheckin, List<Huesped> huespedes, Habitacion habitacion) {
-        this.fechaCheckin = fechaCheckin;
-        this.huespedes = huespedes;
-        this.habitacion = habitacion;
-        setEstadoInterno(new EstadoActiva());
-    }
-
     public void cerrar() {
         if (this.estadoLogic == null) reconstruirEstado();
-        this.estadoLogic.cerrarEstadia(this);
+        if (this.estadoLogic != null) this.estadoLogic.cerrarEstadia(this);
     }
 
     public void reabrir() {
         if (this.estadoLogic == null) reconstruirEstado();
-        this.estadoLogic.reabrirEstadia(this);
+        if (this.estadoLogic != null) this.estadoLogic.reabrirEstadia(this);
     }
 
-    // Método helper para agregar servicios facilmente
     public void agregarServicio(Servicio servicio) {
         this.servicios.add(servicio);
         servicio.setEstadia(this);
     }
 
-    // Getters y Setters
+    // --- GETTERS Y SETTERS ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public List<Huesped> getHuespedes() { return huespedes; }
-    public void setHuespedes(List<Huesped> huespedes) { this.huespedes = huespedes; }
-    public LocalDate getFechaCheckin() { return fechaCheckin; }
-    public void setFechaCheckin(LocalDate fechaCheckin) { this.fechaCheckin = fechaCheckin; }
-    public LocalDate getFechaCheckout() { return fechaCheckout; }
-    public void setFechaCheckout(LocalDate fechaCheckout) { this.fechaCheckout = fechaCheckout; }
-    public TipoEstadoEstadia getTipoEstado() { return tipoEstado; }
-    public Reserva getReserva() { return reserva; }
 
-    public void setReserva(Reserva reserva) {
-        this.reserva = reserva;
-        if (reserva != null && reserva.getEstadia() != this) {
-            reserva.setEstadia(this);
-        }
-    }
-
-    // Getters y Setters Nuevos
     public Habitacion getHabitacion() { return habitacion; }
     public void setHabitacion(Habitacion habitacion) { this.habitacion = habitacion; }
 
     public List<Servicio> getServicios() { return servicios; }
     public void setServicios(List<Servicio> servicios) { this.servicios = servicios; }
+
+    public List<Huesped> getHuespedes() { return huespedes; }
+    public void setHuespedes(List<Huesped> huespedes) { this.huespedes = huespedes; }
+
+    public LocalDate getFechaCheckin() { return fechaCheckin; }
+    public void setFechaCheckin(LocalDate fechaCheckin) { this.fechaCheckin = fechaCheckin; }
+
+    public LocalDate getFechaCheckout() { return fechaCheckout; }
+    public void setFechaCheckout(LocalDate fechaCheckout) { this.fechaCheckout = fechaCheckout; }
+
+    public TipoEstadoEstadia getTipoEstado() { return tipoEstado; }
+    public void setTipoEstado(TipoEstadoEstadia tipoEstado) { this.tipoEstado = tipoEstado; }
+
+    public Reserva getReserva() { return reserva; }
+    public void setReserva(Reserva reserva) {
+        this.reserva = reserva;
+        // Mantenimiento de la relación bidireccional
+        if (reserva != null && reserva.getEstadia() != this) {
+            reserva.setEstadia(this);
+        }
+    }
 }

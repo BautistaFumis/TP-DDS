@@ -175,7 +175,7 @@ public class CargadorDeDatos implements CommandLineRunner {
         LocalDate fechaOut = parseLocalDate(checkout);
 
         // Constructor actualizado: recibe la Habitacion
-        Estadia estadia = new Estadia(fechaIn, huespedes, habitacion);
+        Estadia estadia = new Estadia(fechaIn, fechaOut, habitacion, Logica.Dominio.Enum.TipoEstadoEstadia.ACTIVA);
 
         if (conReserva) {
             Reserva reserva = new Reserva();

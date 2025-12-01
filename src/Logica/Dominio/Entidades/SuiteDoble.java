@@ -12,6 +12,11 @@ public class SuiteDoble extends Habitacion {
     private Integer cantCamasIndividuales;
 
     public SuiteDoble() {}
+    
+    @Override
+    public String getNombreTipo() {
+        return "Suite Doble"; // <--- AQUÍ DEFINES EL NOMBRE
+    }
 
     public SuiteDoble(String numero, EstadoHabitacion estado, Float costoNoche, Integer cantCamasDobles, Integer cantCamasIndividuales) {
         super(numero, estado, costoNoche);

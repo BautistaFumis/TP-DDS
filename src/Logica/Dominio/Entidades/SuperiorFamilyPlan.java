@@ -18,7 +18,10 @@ public class SuperiorFamilyPlan extends Habitacion {
         this.cantCamasDobles = cantCamasDobles;
         this.cantCamasIndividuales = cantCamasIndividuales;
     }
-
+    @Override
+    public String getNombreTipo() {
+        return "Superior Family Plan"; // <--- AQUÍ DEFINES EL NOMBRE QUE SE VE EN EL FRONT
+    }
     @Override
     public int getCantidadCamas() {
         return (cantCamasDobles != null ? cantCamasDobles : 0) +

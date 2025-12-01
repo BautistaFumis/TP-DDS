@@ -20,7 +20,10 @@ public class DobleSuperior extends Habitacion {
         this.cantCamasIndividuales = cantCamasIndividuales;
         this.cantCamasKingSize = cantCamasKingSize;
     }
-
+    @Override
+    public String getNombreTipo() {
+        return "Doble Superior"; // <--- AQUÍ DEFINES EL NOMBRE QUE SE VE EN EL FRONT
+    }
     @Override
     public int getCantidadCamas() {
         return (cantCamasDobles != null ? cantCamasDobles : 0) +

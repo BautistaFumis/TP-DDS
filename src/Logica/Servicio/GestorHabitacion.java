@@ -4,7 +4,7 @@ import DTO.CeldaEstadoDTO;
 import DTO.FilaGrillaDTO;
 import Logica.Dominio.Entidades.Estadia;
 import Logica.Dominio.Entidades.Habitacion;
-import Logica.Dominio.Enum.EstadoHabitacion;
+import Logica.Dominio.Enum.TipoEstadoEstadia;
 import Persistencia.Repositorios.EstadiaDAO;
 import Persistencia.Repositorios.HabitacionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,57 +19,55 @@ import java.util.List;
 @Service
 public class GestorHabitacion {
 
-    @Autowired
-    private HabitacionDAO habitacionRepository;
-    @Autowired
-    private EstadiaDAO estadiaRepository;
+    @Autowired private HabitacionDAO habitacionRepository;
+    @Autowired private EstadiaDAO estadiaRepository;
 
     public List<FilaGrillaDTO> consultarEstadoHabitaciones(LocalDate desde, LocalDate hasta) {
         List<FilaGrillaDTO> grilla = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // 1. Traer habitaciones ordenadas (01, 02, 03...)
+        // 1. Obtener Habitaciones ordenadas
         List<Habitacion> habitaciones = habitacionRepository.findAll(Sort.by(Sort.Direction.ASC, "numero"));
 
-        // esto nos lo olvidamos en el diagrama de secuencia
+        // 2. Obtener Estadias en el rango (asegúrate que tu DAO tenga este método)
         List<Estadia> estadias = estadiaRepository.buscarPorRango(desde, hasta);
 
-        // 3. Barrido por Fechas
         LocalDate diaActual = desde;
+
+        // 3. Recorrer Días
         while (!diaActual.isAfter(hasta)) {
             List<CeldaEstadoDTO> celdasFila = new ArrayList<>();
 
-            // 4. Barrido por Habitaciones
+            // 4. Recorrer Habitaciones
             for (Habitacion hab : habitaciones) {
                 String estadoCodigo = "LIBRE";
-                String texto = "LIBRE";
+                String texto = "Disponible";
 
-                    for (Estadia e : estadias) {
-                        // Coincide habitación y la fecha cae dentro de la estadía
-                        if (e.getHabitacion().getId().equals(hab.getId()) &&
-                                !diaActual.isBefore(e.getFechaCheckin()) &&
-                                diaActual.isBefore(e.getFechaCheckout())) {
+                for (Estadia e : estadias) {
+                    // Verificar si la habitación coincide y el día cae dentro de la estadía
+                    // IMPORTANTE: checkin <= dia < checkout (usualmente checkout es a las 10am, asi que el día de salida queda libre para entrar)
+                    if (e.getHabitacion().getId().equals(hab.getId()) &&
+                            !diaActual.isBefore(e.getFechaCheckin()) &&
+                            diaActual.isBefore(e.getFechaCheckout())) {
 
-                            estadoCodigo = "OCUPADA";
-                            texto = "OCUPADA";
-                            break;
-                        }
+                            estadoCodigo = "OCUPADA";   // Se pintará Rosa
+                            texto = "Ocupada";
+
+                        break; // Ya encontramos ocupación, no seguir buscando
                     }
+                }
 
-
-                // Agregamos la celda a la fila
                 celdasFila.add(new CeldaEstadoDTO(
                         hab.getId().toString(),
                         hab.getNumero(),
                         estadoCodigo,
-                        texto
+                        texto,
+                        hab.getNombreTipo() // <--- Asegúrate que tu entidad Habitacion tenga acceso al nombre del tipo
                 ));
             }
-
             grilla.add(new FilaGrillaDTO(diaActual.format(formatter), celdasFila));
             diaActual = diaActual.plusDays(1);
         }
-
         return grilla;
     }
 }

@@ -31,7 +31,8 @@ public abstract class Habitacion {
         this.estado = estado;
         this.costoNoche = costoNoche;
     }
-
+    // MÉTODO ABSTRACTO: Obliga a las hijas a decir cómo se llaman
+    public abstract String getNombreTipo();
     // Metodo abstracto: obliga a las hijas a decir cuántas camas tienen
     // Esto es útil si quieres preguntar habitacion.getCantidadCamas() sin importar el tipo
     public abstract int getCantidadCamas();

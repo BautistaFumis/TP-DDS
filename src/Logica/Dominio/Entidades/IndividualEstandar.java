@@ -9,7 +9,10 @@ import jakarta.persistence.Entity;
 public class IndividualEstandar extends Habitacion {
 
     private Integer cantCamasIndividuales;
-
+    @Override
+    public String getNombreTipo() {
+        return "Individual Estándar"; // <--- AQUÍ DEFINES EL NOMBRE QUE SE VE EN EL FRONT
+    }
     public IndividualEstandar() {}
 
     public IndividualEstandar(String numero, EstadoHabitacion estado, Float costoNoche, Integer cantCamasIndividuales) {

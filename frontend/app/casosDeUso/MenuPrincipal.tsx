@@ -1,56 +1,37 @@
 'use client';
 import { useState } from 'react';
-
 import BuscarHuesped from './BuscarHuesped';
-import MostrarEstadoHabitaciones from './MostrarEstadoHabitaciones'; // <--- 1. IMPORTAR
+import ReservarHabitacion from './ReservarHabitacion';
 
-type Vista = 'menu' | 'buscarHuesped' | 'estadoHabitaciones'; // <--- 2. AGREGAR OPCIÓN
+type Vista = 'MENU' | 'BUSCAR_HUESPED' | 'RESERVAR_HABITACION';
 
 export default function MenuPrincipal() {
-    const [vistaActual, setVistaActual] = useState<Vista>('menu');
+    const [vista, setVista] = useState<Vista>('MENU');
 
-    const irAlMenu = () => setVistaActual('menu');
+    const irAlMenu = () => setVista('MENU');
 
     const renderizarVista = () => {
-        switch (vistaActual) {
-            case 'buscarHuesped':
+        switch (vista) {
+            case 'BUSCAR_HUESPED':
                 return <BuscarHuesped onCancel={irAlMenu} />;
-
-            case 'estadoHabitaciones': // <--- 3. RENDERIZAR COMPONENTE
-                return <MostrarEstadoHabitaciones onCancel={irAlMenu} />;
-
-            case 'menu':
+            case 'RESERVAR_HABITACION':
+                return <ReservarHabitacion onCancel={irAlMenu} />;
             default:
                 return (
                     <div className="login-container">
-
                         <div className="login-panel-left">
-                            <h1>SISTEMA DE GESTIÓN HOTELERA</h1>
+                            <h1>SISTEMA HOTELERO</h1>
                         </div>
-
                         <div className="login-panel-right">
                             <h2>Menú Principal</h2>
-                            <p className="menu-descripcion">
-                                Seleccione una operación para continuar.
-                            </p>
-
                             <div className="menu-opciones">
-                                <button
-                                    className="menu-opcion-button"
-                                    onClick={() => setVistaActual('buscarHuesped')}
-                                >
+                                <button className="menu-opcion-button" onClick={() => setVista('BUSCAR_HUESPED')}>
                                     Buscar Huésped
                                 </button>
-
-                                {/* <--- 4. BOTÓN NUEVO AGREGADO */}
-                                <button
-                                    className="menu-opcion-button"
-                                    onClick={() => setVistaActual('estadoHabitaciones')}
-                                    style={{ marginTop: '10px' }}
-                                >
-                                    Mostrar Estado de Habitaciones
+                                <button className="menu-opcion-button" onClick={() => setVista('RESERVAR_HABITACION')}
+                                        style={{ marginTop: '15px', borderColor: '#4a7c35' }}>
+                                    Reservar Habitación
                                 </button>
-
                             </div>
                         </div>
                     </div>
@@ -58,9 +39,5 @@ export default function MenuPrincipal() {
         }
     };
 
-    return (
-        <main>
-            {renderizarVista()}
-        </main>
-    );
+    return <main>{renderizarVista()}</main>;
 }
