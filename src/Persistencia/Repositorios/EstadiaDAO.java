@@ -1,17 +1,21 @@
 package Persistencia.Repositorios;
 
 import Logica.Dominio.Entidades.Estadia;
-import Logica.Dominio.Entidades.Huesped; // Asegurate de tener este import
+import Logica.Dominio.Entidades.Huesped;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface EstadiaDAO extends JpaRepository<Estadia, Long> {
-
-    // CAMBIO AQUI: Antes era existsByHuespedPrincipal
-    // Al llamarse 'huespedes' la lista en la entidad, Spring entiende que debe buscar si el huesped está en esa lista.
     boolean existsByHuespedes(Huesped huesped);
 
-    // Si tenías otros métodos buscando por el viejo nombre, actualízalos también, por ejemplo:
-    // List<Estadia> findByHuespedes(Huesped huesped);
+    // Busca estadías activas que chocan con el rango
+    // Una estadía ocupa el día si CheckIn <= dia < CheckOut
+    @Query("SELECT e FROM Estadia e WHERE e.fechaCheckin < :hasta AND e.fechaCheckout > :desde")
+    List<Estadia> buscarPorRango(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 }

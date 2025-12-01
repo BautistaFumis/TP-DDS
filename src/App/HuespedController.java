@@ -47,13 +47,13 @@ public class HuespedController {
             @RequestParam(required = false) Boolean forzar
     ) {
         try {
-            // 1. Delegamos al Gestor la creación de la Entidad (New y Setters)
-            Huesped nuevoHuesped = gestorHuesped.seleccionarHuesped(huespedDTO);
+            Huesped nuevoHuesped = new Huesped();
 
-            // 2. Lógica de decisión
             if (Boolean.TRUE.equals(forzar)) {
+                nuevoHuesped = gestorHuesped.convertirHuesped(huespedDTO);
                 gestorHuesped.registrarHuespedAceptandoDuplicado(nuevoHuesped);
             } else {
+                nuevoHuesped = gestorHuesped.convertirHuesped(huespedDTO);
                 gestorHuesped.registrarNuevoHuesped(nuevoHuesped);
             }
 

@@ -30,7 +30,7 @@ public class GestorHuesped {
      * Crea las instancias de Huesped y Direccion a partir del DTO.
      * (Equivale a los new() y set() del diagrama de secuencia).
      */
-    public Huesped seleccionarHuesped(HuespedAltaDTO dto) {
+    public Huesped convertirHuesped(HuespedAltaDTO dto) {
         // 1. Instanciación del Huésped
         Huesped huesped = new Huesped();
 
