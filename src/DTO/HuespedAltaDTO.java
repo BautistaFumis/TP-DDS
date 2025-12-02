@@ -17,13 +17,13 @@ public class HuespedAltaDTO {
     private String cuit;
     private String categoriaIVA;
 
-    // CORRECCIÓN: Usamos DireccionDTO, no la entidad Direccion
+
     private DireccionDTO direccion;
 
     public HuespedAltaDTO() {
     }
 
-    // Getters y Setters
+
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 

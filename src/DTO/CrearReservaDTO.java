@@ -6,7 +6,7 @@ public class CrearReservaDTO {
     private String apellido;
     private String telefono;
     private List<ReservaItemDTO> items;
-    // Getters y Setters...
+
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getApellido() { return apellido; }

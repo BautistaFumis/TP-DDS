@@ -4,7 +4,7 @@ import BuscarHuesped from './BuscarHuesped';
 import ReservarHabitacion from './ReservarHabitacion';
 import OcuparHabitacion from './OcuparHabitacion'; // Importamos el nuevo componente
 
-// Agregamos 'OCUPAR_HABITACION' a los tipos de vista
+
 type Vista = 'MENU' | 'BUSCAR_HUESPED' | 'RESERVAR_HABITACION' | 'OCUPAR_HABITACION';
 
 export default function MenuPrincipal() {
@@ -37,7 +37,6 @@ export default function MenuPrincipal() {
                                     Reservar Habitación
                                 </button>
 
-                                {/* Nuevo Botón para CU15: Ocupar Habitación */}
                                 <button className="menu-opcion-button" onClick={() => setVista('OCUPAR_HABITACION')}>
                                     Ocupar Habitación
                                 </button>

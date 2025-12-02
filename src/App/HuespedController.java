@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/huespedes")
-@CrossOrigin(origins = "http://localhost:3000") // Permite conexión desde React
+@CrossOrigin(origins = "http://localhost:3000")
 public class HuespedController {
 
     @Autowired
     private GestorHuesped gestorHuesped;
 
-    // --- BÚSQUEDA ---
+
     @GetMapping("/buscar")
     public ResponseEntity<List<HuespedBusquedaDTO>> buscarHuespedes(
             @RequestParam(required = false) String nombre,
@@ -32,7 +32,6 @@ public class HuespedController {
     ) {
         List<Huesped> encontrados = gestorHuesped.buscarHuespedes(apellido, nombre, tipoDocumento, documento);
 
-        // Convertimos a DTO de salida
         List<HuespedBusquedaDTO> respuesta = encontrados.stream()
                 .map(this::convertirEntidadADTO)
                 .collect(Collectors.toList());
@@ -40,7 +39,7 @@ public class HuespedController {
         return ResponseEntity.ok(respuesta);
     }
 
-    // --- REGISTRO ---
+
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarNuevoHuesped(
             @RequestBody HuespedAltaDTO huespedDTO,
@@ -57,7 +56,6 @@ public class HuespedController {
                 gestorHuesped.registrarNuevoHuesped(nuevoHuesped);
             }
 
-            // 3. Respuesta Exitosa
             HuespedBusquedaDTO dtoRespuesta = convertirEntidadADTO(nuevoHuesped);
             return ResponseEntity.status(HttpStatus.CREATED).body(dtoRespuesta);
 
@@ -70,7 +68,7 @@ public class HuespedController {
         }
     }
 
-    // Helper para convertir a DTO de salida
+    // auxiliar para convertir a DTO de salida
     private HuespedBusquedaDTO convertirEntidadADTO(Huesped huesped) {
         HuespedBusquedaDTO dto = new HuespedBusquedaDTO();
         dto.setId(huesped.getId());

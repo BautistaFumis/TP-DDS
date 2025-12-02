@@ -15,7 +15,6 @@ public class CeldaEstadoDTO {
         this.tipoHabitacion = tipoHabitacion;
     }
 
-    // Getters
     public String getIdHabitacion() { return idHabitacion; }
     public String getNumero() { return numero; }
     public String getEstado() { return estado; }

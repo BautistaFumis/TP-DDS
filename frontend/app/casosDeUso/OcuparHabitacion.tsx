@@ -6,7 +6,7 @@ import ModalAlerta from './ModalAlerta';
 interface Celda {
     idHabitacion: string;
     numero: string;
-    estado: string; // 'LIBRE' | 'OCUPADA' | 'RESERVADA'
+    estado: string; // disponible , ocupada , reservada
     texto: string;
     tipoHabitacion: string;
 }
@@ -50,26 +50,23 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
     const [paso, setPaso] = useState<Paso>('INGRESO_FECHAS');
     const [modal, setModal] = useState<{show: boolean, msg: string | React.ReactNode}>({show:false, msg:''});
 
-    // Fechas y Grilla
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
     const [grilla, setGrilla] = useState<Fila[]>([]);
     const [filtroTipo, setFiltroTipo] = useState<string>('Todos');
     const [cargando, setCargando] = useState(false);
 
-    // Selección
+
     const [primerClick, setPrimerClick] = useState<{ idHab: string, idx: number } | null>(null);
     const [seleccion, setSeleccion] = useState<Seleccion | null>(null);
     const [modalConflicto, setModalConflicto] = useState<{show: boolean, data: Seleccion | null, huespedNombre?: string}>({show: false, data: null});
 
-    // Gestión Huéspedes
-    // Inicializamos el tipo en 'DNI' por defecto para el select
     const [busqueda, setBusqueda] = useState({ nombre: '', apellido: '', tipo: 'DNI', documento: '' });
     const [listaResultados, setListaResultados] = useState<Huesped[]>([]);
     const [huespedTemporal, setHuespedTemporal] = useState<Huesped | null>(null);
     const [listaHuespedesAsignados, setListaHuespedesAsignados] = useState<Huesped[]>([]);
 
-    // --- HELPERS ---
+ // auxiliar
     const convertirFechaIso = (f: string) => { const [d,m,a] = f.split('/'); return `${a}-${m}-${d}`; }
 
     const sumarDia = (fechaStr: string) => {
@@ -82,7 +79,6 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         return { iso: `${aa}-${mm}-${dd}`, display: `${dd}/${mm}/${aa}` };
     }
 
-    // --- PASO 4: TECLA PARA CONTINUAR ---
     useEffect(() => {
         if (paso === 'PINTAR_OCUPADA') {
             const handleInput = (e: Event) => {
@@ -99,7 +95,6 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         }
     }, [paso]);
 
-    // --- ACCIONES ---
 
     const handleConsultar = async () => {
         if (!fechaInicio || !fechaFin) { setModal({show: true, msg: 'Debe ingresar ambas fechas'}); return; }
@@ -134,7 +129,6 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
             const ini = Math.min(primerClick.idx, idxFila);
             const fin = Math.max(primerClick.idx, idxFila);
 
-            // Validar conflictos intermedios
             let tieneReservadas = false;
             let nombreReserva = "";
 
@@ -257,7 +251,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
                         setSeleccion(null);
                         setListaHuespedesAsignados([]);
                         setBusqueda({nombre:'', apellido:'', tipo:'DNI', documento:''});
-                        handleConsultar(); // Al refrescar, la estadía creada debe venir como OCUPADA (Rosa)
+                        handleConsultar();
                     }
                 }, 1500);
             } else {
@@ -269,11 +263,11 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         }
     };
 
-    // --- ESTILOS DE CELDA ---
+    // estilos por celda
     const getCellStyle = (celda: Celda, idxFila: number) => {
         let bg = '#ccc'; let color = '#000'; let cursor = 'default'; let textoCelda = celda.texto;
 
-        // 1. Estados que vienen del Backend
+        //estados que vienen del backend
         if (celda.estado === 'LIBRE') {
             bg = '#4a7c35'; color = 'white'; cursor = 'pointer';
         }
@@ -287,33 +281,32 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
             bg = '#f4b942'; color = 'black'; cursor = 'pointer';
         }
 
-        // 2. Selección Actual (Paso de Pintar)
-        // Esto sobrescribe visualmente para que el usuario vea qué está seleccionando ahora
+        // aca pintaremos las celdas
+        // esto sobrescribe visualmente para que el usuario vea qué está seleccionando ahora
         if (paso === 'PINTAR_OCUPADA' && seleccion) {
             if (celda.idHabitacion === seleccion.idHabitacion && idxFila >= seleccion.indiceInicio && idxFila <= seleccion.indiceFin) {
-                bg = '#ffcccc'; // Rojo Clarito / Rosa distinto para diferenciar "Nueva" de "Vieja"
+                bg = '#ffcccc';
                 color = 'black';
                 textoCelda = 'OCUPADA';
             }
         }
 
-        // 3. Borde Primer Click
         let border = '1px solid #999';
         if (primerClick?.idHab === celda.idHabitacion && primerClick.idx === idxFila) border = '3px solid yellow';
 
         return { style: { backgroundColor: bg, color, cursor, border, padding: '10px', textAlign: 'center' as const, fontWeight: 'bold' }, texto: textoCelda };
     };
 
-    // --- MEMOS ---
+
     const indicesColumnas = useMemo(() => {
         if(grilla.length===0) return [];
         return grilla[0].celdas.map((c,i) => (filtroTipo==='Todos'||c.tipoHabitacion===filtroTipo) ? i : -1).filter(i=>i!==-1);
     }, [grilla, filtroTipo]);
     const tipos = useMemo(() => grilla.length>0 ? ['Todos', ...Array.from(new Set(grilla[0].celdas.map(c=>c.tipoHabitacion)))] : [], [grilla]);
 
-    // --- VISTAS ---
 
-    // 1. FECHAS
+
+
     if (paso === 'INGRESO_FECHAS') {
         return (
             <div style={{ width: '800px', margin: '0 auto', border: '1px solid #000', backgroundColor: '#f9f9f9', display: 'flex' }}>
@@ -335,7 +328,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         );
     }
 
-    // 2. GRILLA & CONFLICTO & PINTAR
+
     if (paso === 'SELECCION_GRILLA' || paso === 'PINTAR_OCUPADA') {
         return (
             <div style={{ width: '900px', margin: '0 auto', border: '1px solid #000', backgroundColor: '#f9f9f9', position: 'relative' }}>
@@ -402,7 +395,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         );
     }
 
-    // 6. GESTIONAR HUÉSPED (SPLIT LAYOUT)
+
     if (paso === 'BUSQUEDA_HUESPED') {
         return (
             <div style={{ width: '800px', margin: '20px auto', display: 'flex', border: '1px solid #000', backgroundColor: '#fff', minHeight: '400px' }}>
@@ -412,7 +405,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
                     <button onClick={onCancel} style={{ backgroundColor: '#ffbdad', border: '1px solid #cc8b79', padding: '10px 30px', fontWeight: 'bold', cursor: 'pointer' }}>Cancelar</button>
                 </div>
 
-                {/* Panel Derecho */}
+
                 <div style={{ width: '65%', padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <h3 style={{ marginTop: 0, color: '#666', marginBottom: '20px', textAlign: 'center' }}>Huéspedes asignados: <strong>{listaHuespedesAsignados.length}</strong></h3>
                     <form onSubmit={handleBuscarHuesped} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -448,7 +441,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         );
     }
 
-    // 7. RESULTADOS
+
     if (paso === 'RESULTADOS_HUESPED') {
         return (
             <div style={{ width: '700px', margin: '20px auto', border: '1px solid #000', backgroundColor: '#f9f9f9' }}>
@@ -490,7 +483,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         );
     }
 
-    // 10. GESTION FINAL
+
     if (paso === 'GESTION_FINAL') {
         return (
             <div style={{ width: '700px', margin: '20px auto', border: '1px solid #000', backgroundColor: '#fff', minHeight:'500px', display:'flex', flexDirection:'column' }}>

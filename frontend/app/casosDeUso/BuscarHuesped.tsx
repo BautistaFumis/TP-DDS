@@ -205,7 +205,6 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
                                 {isLoading ? 'Buscando...' : 'Buscar'}
                             </button>
 
-                            {/* Mensaje de error de conexión/servidor */}
                             {error && <div className="error-message" style={{marginTop: '15px'}}>{error}</div>}
                         </form>
                     </div>
@@ -274,14 +273,12 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
         );
     }
 
-    // Vista 3: Alta de Huésped (CU11)
+    // nos movemos al caso de uso 9 , alta huesped
     if (vista === 'alta') {
-        // --- ¡CONEXIÓN REAL! ---
-        // Ahora llama al componente importado
         return <AltaHuesped onCancel={() => setVista('buscar')} />;
     }
 
-    // Vista 4: Modificar Huésped (CU10)
+    // nos movemos al caso de uso 10 , modificar huesped (no implementado en el tp)
     if (vista === 'modificar' && huespedSeleccionadoId) {
         // Sigue usando el "stub" falso por ahora
         return <ModificarHuesped 
@@ -290,6 +287,5 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
                 />;
     }
 
-    // Fallback (no debería ocurrir)
     return <button onClick={onCancel}>Volver al Menú</button>;
 }

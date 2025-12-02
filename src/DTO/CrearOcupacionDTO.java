@@ -11,7 +11,6 @@ public class CrearOcupacionDTO {
     private List<Long> idsHuespedes;
     private boolean esOverrideReserva;
 
-    // Getters y Setters
     public Long getIdHabitacion() { return idHabitacion; }
     public void setIdHabitacion(Long idHabitacion) { this.idHabitacion = idHabitacion; }
 

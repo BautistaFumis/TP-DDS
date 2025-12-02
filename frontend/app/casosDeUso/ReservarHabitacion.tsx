@@ -31,7 +31,7 @@ interface Seleccion {
 type Paso = 'INGRESO_FECHAS' | 'SELECCION_GRILLA' | 'CONFIRMACION' | 'DATOS_HUESPED' | 'FINAL';
 
 export default function ReservarHabitacion({ onCancel }: { onCancel: () => void }) {
-    // ESTADOS
+
     const [paso, setPaso] = useState<Paso>('INGRESO_FECHAS');
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
@@ -44,7 +44,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
     const [modal, setModal] = useState<{show: boolean, msg: string | React.ReactNode}>({show:false, msg:''});
     const [primerClick, setPrimerClick] = useState<{ idHab: string, idx: number } | null>(null);
 
-    // --- FILTROS ---
+
     const tiposDisponibles = useMemo(() => {
         if (grilla.length === 0) return [];
         const tipos = new Set(grilla[0].celdas.map(c => c.tipoHabitacion));
@@ -58,10 +58,10 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
             .filter(i => i !== -1);
     }, [grilla, filtroTipo]);
 
-    // --- UTILS ---
+
     const convertirFechaIso = (f: string) => { const [d,m,a] = f.split('/'); return `${a}-${m}-${d}`; }
 
-    // Función nueva para arreglar el bug de "1 solo día"
+    //funcion para manejar la reserva de un solo dia
     const sumarDia = (fechaStr: string) => {
         const [d, m, a] = fechaStr.split('/').map(Number);
         const fecha = new Date(a, m - 1, d);
@@ -77,7 +77,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
         };
     }
 
-    // --- ACCIONES ---
+
 
     const handleConsultar = async () => {
         setSelecciones([]);
@@ -155,8 +155,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
                 }
             }
 
-            // CORRECCIÓN PRINCIPAL AQUI:
-            // La fecha de Fin (Checkout) debe ser el día SIGUIENTE al último seleccionado
+
             const fechaFinCalc = sumarDia(grilla[fin].fechaStr);
 
             const nueva: Seleccion = {
@@ -211,7 +210,6 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
         }
     };
 
-    // --- RENDERIZADO VISUAL ---
 
     const getCellStyle = (celda: Celda, idxFila: number) => {
         let bg = '#ccc'; let color = '#000'; let cursor = 'not-allowed'; let texto = celda.texto;
@@ -237,7 +235,6 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
         return { style: { backgroundColor: bg, color, cursor, border, padding: '10px', textAlign: 'center' as const, fontWeight: 'bold' }, texto };
     };
 
-    // --- VISTAS ---
 
     if (paso === 'INGRESO_FECHAS') {
         return (

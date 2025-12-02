@@ -39,10 +39,9 @@ export default function MostrarEstadoHabitaciones({ onCancel, modoSeleccion = fa
     const [grilla, setGrilla] = useState<Fila[]>([]);
     const [cargando, setCargando] = useState(false);
 
-    // Estados para Modales de Error (Mockups)
     const [modalError, setModalError] = useState<{show: boolean, msg: string | React.ReactNode}>({show: false, msg: ''});
 
-    // Estado para la selección (Lógica de 2 clicks)
+    // estado para manejar los clicks en la seleccion
     const [primerClick, setPrimerClick] = useState<{ idHabitacion: string, fechaIndex: number } | null>(null);
     const [selecciones, setSelecciones] = useState<SeleccionReserva[]>([]);
 
@@ -51,13 +50,11 @@ export default function MostrarEstadoHabitaciones({ onCancel, modoSeleccion = fa
         setSelecciones([]);
         setPrimerClick(null);
 
-        // 1. VALIDACIÓN FECHAS (Flujo Alternativo 3.A y 4.A)
         if (!fechaDesde || !fechaHasta) {
             setModalError({ show: true, msg: "Debe ingresar ambas fechas." });
             return;
         }
 
-        // Mockup: "Fecha fin anterior a inicio"
         if (fechaDesde > fechaHasta) {
             setModalError({
                 show: true,
@@ -72,8 +69,7 @@ export default function MostrarEstadoHabitaciones({ onCancel, modoSeleccion = fa
             if(!res.ok) throw new Error("Error de servidor");
             const data: Fila[] = await res.json();
 
-            // 2. VALIDACIÓN GRILLA VACÍA O SIN DISPONIBILIDAD (Mockup "No existen habitaciones")
-            // Verificamos si hay al menos una celda LIBRE en toda la matriz
+            // verificamos si hay al menos una celda libre en toda la matriz
             let hayDisponibilidad = false;
             if (data.length > 0) {
                 // Revisamos todas las celdas
@@ -90,7 +86,6 @@ export default function MostrarEstadoHabitaciones({ onCancel, modoSeleccion = fa
                     show: true,
                     msg: "No existen habitaciones disponibles con las comodidades deseadas para el rango de fechas solicitado."
                 });
-                // Según mockup parece que muestra el modal sobre la pantalla anterior.
                 setGrilla([]);
             } else {
                 setGrilla(data);
@@ -103,23 +98,19 @@ export default function MostrarEstadoHabitaciones({ onCancel, modoSeleccion = fa
         }
     };
 
-    // Lógica de Selección (Flujo Principal 3)
     const handleCeldaClick = (idHabitacion: string, numero: string, tipo: string, rowIndex: number, estado: string) => {
         if (!modoSeleccion) return;
 
-        // Flujo Alternativo 3.B (Habitación no disponible)
         if (estado !== 'LIBRE') {
             setModalError({ show: true, msg: "La habitación seleccionada no está disponible." });
             return;
         }
 
-        // Primer Click
         if (!primerClick) {
             setPrimerClick({ idHabitacion, fechaIndex: rowIndex });
             return;
         }
 
-        // Segundo Click (Validaciones)
         if (primerClick.idHabitacion !== idHabitacion) {
             setModalError({ show: true, msg: "Debe seleccionar inicio y fin en la misma habitación." });
             setPrimerClick(null);
@@ -129,7 +120,6 @@ export default function MostrarEstadoHabitaciones({ onCancel, modoSeleccion = fa
         const inicioIdx = Math.min(primerClick.fechaIndex, rowIndex);
         const finIdx = Math.max(primerClick.fechaIndex, rowIndex);
 
-        // Validar rango intermedio
         for (let i = inicioIdx; i <= finIdx; i++) {
             const celda = grilla[i].celdas.find(c => c.idHabitacion === idHabitacion);
             if (celda?.estado !== 'LIBRE') {
@@ -201,7 +191,7 @@ export default function MostrarEstadoHabitaciones({ onCancel, modoSeleccion = fa
                     </div>
                 )}
 
-                {/* Grilla */}
+
                 {grilla.length > 0 && (
                     <div style={{ overflowX: 'auto', border: '1px solid #999', maxHeight: '400px' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>

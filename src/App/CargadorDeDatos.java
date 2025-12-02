@@ -28,7 +28,7 @@ public class CargadorDeDatos implements CommandLineRunner {
     @Autowired
     private ReservaDAO reservaRepository;
     @Autowired
-    private HabitacionDAO habitacionRepository; // <--- NUEVO REPOSITORIO
+    private HabitacionDAO habitacionRepository;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -36,13 +36,11 @@ public class CargadorDeDatos implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
-        // --- 1. USUARIOS ---
         if (usuarioRepository.count() == 0) {
             System.out.println(">>> Cargando usuario por defecto...");
             usuarioRepository.save(new Usuario("Conserje", "conserje123"));
         }
 
-        // --- 2. HABITACIONES (NUEVO: HERENCIA) ---
         if (habitacionRepository.count() == 0) {
             System.out.println(">>> Cargando habitaciones (Probando Herencia)...");
             List<Habitacion> habitaciones = new ArrayList<>();
@@ -66,7 +64,6 @@ public class CargadorDeDatos implements CommandLineRunner {
             System.out.println(">>> " + habitaciones.size() + " habitaciones cargadas.");
         }
 
-        // --- 3. HUÉSPEDES ---
         if (huespedRepository.count() == 0) {
             System.out.println(">>> Cargando huéspedes iniciales...");
             List<Huesped> huespedesACargar = Arrays.asList(
@@ -86,35 +83,30 @@ public class CargadorDeDatos implements CommandLineRunner {
             System.out.println(">>> " + huespedesACargar.size() + " huéspedes cargados exitosamente.");
         }
 
-        // --- 4. ESTADÍAS, RESERVAS Y SERVICIOS ---
         if (estadiaRepository.count() == 0) {
             System.out.println(">>> Cargando estadías, reservas y asignando servicios...");
             List<Estadia> estadiasACargar = new ArrayList<>();
 
-            // Obtenemos las habitaciones para asignarlas
+            // obtenemos las habitaciones para asignarlas
             List<Habitacion> habitaciones = habitacionRepository.findAll();
 
             try {
-                // Fumis (Con reserva) - Hab 101
+
                 Estadia e1 = crearEstadia("15/10/2025", "20/10/2025", "DNI", "45828019", true, habitaciones.get(0));
                 e1.agregarServicio(new Servicio("Coca Cola", 2500f));
                 e1.agregarServicio(new Servicio("Papas Fritas", 3500f));
                 estadiasACargar.add(e1);
 
-                // Gomez Carlos (Walk-in) - Hab 102
                 Estadia e2 = crearEstadia("01/11/2025", "10/11/2025", "PASAPORTE", "ABC98765", false, habitaciones.get(1));
                 e2.agregarServicio(new Servicio("Desayuno Continental", 8000f));
                 estadiasACargar.add(e2);
 
-                // Fernandez Juan (Con reserva) - Hab 201
                 Estadia e3 = crearEstadia("12/12/2025", "15/12/2025", "LE", "8123456", true, habitaciones.get(2));
                 e3.agregarServicio(new Servicio("Lavandería", 5000f));
                 estadiasACargar.add(e3);
 
-                // Garcia Sofia (Con reserva) - Hab 202
                 estadiasACargar.add(crearEstadia("20/12/2025", "22/12/2025", "DNI", "41987654", true, habitaciones.get(3)));
 
-                // Gomez Ana (Walk-in) - Hab 301
                 estadiasACargar.add(crearEstadia("01/12/2025", "05/12/2025", "PASAPORTE", "DEF45678", false, habitaciones.get(4)));
 
                 estadiaRepository.saveAll(estadiasACargar);
@@ -127,7 +119,6 @@ public class CargadorDeDatos implements CommandLineRunner {
         }
     }
 
-    // --- MÉTODOS AUXILIARES ---
 
     private Huesped crearHuesped(String apellido, String nombre, String tipoDoc, String doc, String cuit, String iva, String fechaNac,
                                  String calle, String numero, String depto, String piso, String cp, String localidad, String prov, String pais,
@@ -158,7 +149,7 @@ public class CargadorDeDatos implements CommandLineRunner {
         return h;
     }
 
-    // CAMBIO IMPORTANTE: Ahora recibe la 'habitacion' por parámetro
+
     private Estadia crearEstadia(String checkin, String checkout, String tipoDoc, String numDoc, boolean conReserva, Habitacion habitacion) {
 
         Optional<Huesped> huespedOpt = huespedRepository.findByTipoDocumentoAndDocumento(
@@ -169,13 +160,13 @@ public class CargadorDeDatos implements CommandLineRunner {
         if (huespedOpt.isEmpty()) throw new RuntimeException("Huésped no encontrado: " + numDoc);
 
         Huesped principal = huespedOpt.get();
-        // Usamos ArrayList modificable
+
         List<Huesped> huespedes = new ArrayList<>(Collections.singletonList(principal));
 
         LocalDate fechaIn = parseLocalDate(checkin);
         LocalDate fechaOut = parseLocalDate(checkout);
 
-        // Constructor actualizado: recibe la Habitacion
+
         Estadia estadia = new Estadia(fechaIn, fechaOut, habitacion, Logica.Dominio.Enum.TipoEstadoEstadia.ACTIVA);
 
         if (conReserva) {
