@@ -58,10 +58,28 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
             .filter(i => i !== -1);
     }, [grilla, filtroTipo]);
 
+    // --- UTILS ---
+    const convertirFechaIso = (f: string) => { const [d,m,a] = f.split('/'); return `${a}-${m}-${d}`; }
+
+    // Función nueva para arreglar el bug de "1 solo día"
+    const sumarDia = (fechaStr: string) => {
+        const [d, m, a] = fechaStr.split('/').map(Number);
+        const fecha = new Date(a, m - 1, d);
+        fecha.setDate(fecha.getDate() + 1); // Sumamos 1 día para el Checkout
+
+        const dd = String(fecha.getDate()).padStart(2, '0');
+        const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+        const aa = fecha.getFullYear();
+
+        return {
+            iso: `${aa}-${mm}-${dd}`,
+            display: `${dd}/${mm}/${aa}`
+        };
+    }
+
     // --- ACCIONES ---
 
     const handleConsultar = async () => {
-        // Limpiamos selecciones anteriores al hacer una nueva consulta
         setSelecciones([]);
 
         if (!fechaInicio || !fechaFin) {
@@ -91,14 +109,11 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
     };
 
     const handleCellClick = (celda: Celda, idxFila: number) => {
-        // 1. Validar Backend (Si está ocupada/reservada en BD)
         if (celda.estado !== 'LIBRE') {
             setModal({show: true, msg: 'La habitación seleccionada no está disponible.'});
             return;
         }
 
-        // 2. Validar Local (Si YA la seleccioné yo mismo en azul)
-        // Verificamos si el click cae sobre una selección existente
         const yaSeleccionada = selecciones.some(s =>
             s.idHabitacion === celda.idHabitacion && idxFila >= s.indiceInicio && idxFila <= s.indiceFin
         );
@@ -110,10 +125,8 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
         }
 
         if (!primerClick) {
-            // Primer Click
             setPrimerClick({ idHab: celda.idHabitacion, idx: idxFila });
         } else {
-            // Segundo Click
             if (primerClick.idHab !== celda.idHabitacion) {
                 setModal({show: true, msg: 'Debe seleccionar inicio y fin en la misma habitación'});
                 setPrimerClick(null);
@@ -123,9 +136,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
             const ini = Math.min(primerClick.idx, idxFila);
             const fin = Math.max(primerClick.idx, idxFila);
 
-            // Validar Rango
             for(let i=ini; i<=fin; i++) {
-                // A. Check Backend
                 const c = grilla[i].celdas.find(x => x.idHabitacion === celda.idHabitacion);
                 if(c?.estado !== 'LIBRE') {
                     setModal({show: true, msg: 'El rango seleccionado contiene días ocupados.'});
@@ -133,7 +144,6 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
                     return;
                 }
 
-                // B. Check Local (Superposición con mis otras selecciones azules)
                 const superponeLocal = selecciones.some(s =>
                     s.idHabitacion === celda.idHabitacion && i >= s.indiceInicio && i <= s.indiceFin
                 );
@@ -145,14 +155,18 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
                 }
             }
 
+            // CORRECCIÓN PRINCIPAL AQUI:
+            // La fecha de Fin (Checkout) debe ser el día SIGUIENTE al último seleccionado
+            const fechaFinCalc = sumarDia(grilla[fin].fechaStr);
+
             const nueva: Seleccion = {
                 idHabitacion: celda.idHabitacion,
                 numeroHabitacion: celda.numero,
                 tipoHabitacion: celda.tipoHabitacion,
                 fechaInicio: convertirFechaIso(grilla[ini].fechaStr),
-                fechaFin: convertirFechaIso(grilla[fin].fechaStr),
+                fechaFin: fechaFinCalc.iso,          // Usamos fecha calculada (+1 día)
                 fechaInicioDisplay: grilla[ini].fechaStr,
-                fechaFinDisplay: grilla[fin].fechaStr,
+                fechaFinDisplay: fechaFinCalc.display, // Usamos fecha calculada (+1 día)
                 indiceInicio: ini,
                 indiceFin: fin
             };
@@ -188,7 +202,6 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
 
             if (res.ok) {
                 setModal({show: true, msg: "Reserva confirmada exitosamente. Presione el boton para continuar"});
-                // Al cerrar el modal, volvemos al menú principal
                 setTimeout(() => onCancel(), 2000);
             } else {
                 setModal({show: true, msg: "Error al guardar la reserva"});
@@ -197,8 +210,6 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
             setModal({show: true, msg: "Error de conexión al guardar"});
         }
     };
-
-    const convertirFechaIso = (f: string) => { const [d,m,a] = f.split('/'); return `${a}-${m}-${d}`; }
 
     // --- RENDERIZADO VISUAL ---
 
@@ -209,13 +220,12 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
         else if (celda.estado === 'OCUPADA') { bg = '#ffd1dc'; color = 'black'; }
         else if (celda.estado === 'RESERVADA') { bg = '#f4b942'; color = 'black'; }
 
-        // Sobre-escribir si es Selección del Usuario (AZUL)
         const estaSeleccionada = selecciones.some(sel =>
             sel.idHabitacion === celda.idHabitacion && idxFila >= sel.indiceInicio && idxFila <= sel.indiceFin
         );
 
         if (estaSeleccionada) {
-            bg = '#1a3b70'; color = 'white'; cursor = 'not-allowed'; // Cursor bloqueado porque ya está elegida
+            bg = '#1a3b70'; color = 'white'; cursor = 'not-allowed';
             texto = "RESERVADA";
         }
 
@@ -301,7 +311,6 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        {/* BOTÓN CANCELAR: Limpia selecciones y vuelve al inicio */}
                         <button style={{ backgroundColor: '#ffbdad', border: '1px solid #cc8b79', padding: '10px 30px', fontWeight: 'bold' }}
                                 onClick={() => { setSelecciones([]); setPaso('INGRESO_FECHAS'); }}>Cancelar</button>
 

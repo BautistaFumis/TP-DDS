@@ -26,10 +26,10 @@ public class GestorHabitacion {
         List<FilaGrillaDTO> grilla = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // 1. Obtener Habitaciones ordenadas
+        // 1. Obtener Habitaciones ordenadas por número
         List<Habitacion> habitaciones = habitacionRepository.findAll(Sort.by(Sort.Direction.ASC, "numero"));
 
-        // 2. Obtener Estadias en el rango (asegúrate que tu DAO tenga este método)
+        // 2. Obtener Estadias en el rango
         List<Estadia> estadias = estadiaRepository.buscarPorRango(desde, hasta);
 
         LocalDate diaActual = desde;
@@ -38,22 +38,34 @@ public class GestorHabitacion {
         while (!diaActual.isAfter(hasta)) {
             List<CeldaEstadoDTO> celdasFila = new ArrayList<>();
 
-            // 4. Recorrer Habitaciones
+            // 4. Recorrer Habitaciones para este día
             for (Habitacion hab : habitaciones) {
                 String estadoCodigo = "LIBRE";
                 String texto = "Disponible";
 
+                // Buscamos si hay alguna estadía que ocupe esta habitación en este día
                 for (Estadia e : estadias) {
-                    // Verificar si la habitación coincide y el día cae dentro de la estadía
-                    // IMPORTANTE: checkin <= dia < checkout (usualmente checkout es a las 10am, asi que el día de salida queda libre para entrar)
+                    // Condición de solapamiento: Habitación coincide Y día está en rango [CheckIn, CheckOut)
                     if (e.getHabitacion().getId().equals(hab.getId()) &&
-                            !diaActual.isBefore(e.getFechaCheckin()) &&
-                            diaActual.isBefore(e.getFechaCheckout())) {
+                            !diaActual.isBefore(e.getFechaCheckin()) && // fecha >= inicio
+                            diaActual.isBefore(e.getFechaCheckout())) {     // fecha < fin
 
-                            estadoCodigo = "OCUPADA";   // Se pintará Rosa
-                            texto = "Ocupada";
+                        // --- LÓGICA DE ESTADOS CORREGIDA ---
+                        if (e.getTipoEstado() == TipoEstadoEstadia.ACTIVA) {
+                            estadoCodigo = "OCUPADA";
+                            texto = "OCUPADA"; // Requerimiento explícito: texto "OCUPADA"
+                        } else if (e.getTipoEstado() == TipoEstadoEstadia.RESERVADA) {
+                            estadoCodigo = "RESERVADA";
+                            // Intentamos mostrar el apellido del responsable si existe
+                            if (e.getHuespedes() != null && !e.getHuespedes().isEmpty()) {
+                                texto = e.getHuespedes().get(0).getApellido();
+                            } else {
+                                texto = "Reservado";
+                            }
+                        }
 
-                        break; // Ya encontramos ocupación, no seguir buscando
+                        // Si encontramos una ocupación, dejamos de buscar otras estadías para esta celda
+                        break;
                     }
                 }
 
@@ -62,7 +74,7 @@ public class GestorHabitacion {
                         hab.getNumero(),
                         estadoCodigo,
                         texto,
-                        hab.getNombreTipo() // <--- Asegúrate que tu entidad Habitacion tenga acceso al nombre del tipo
+                        hab.getNombreTipo()
                 ));
             }
             grilla.add(new FilaGrillaDTO(diaActual.format(formatter), celdasFila));

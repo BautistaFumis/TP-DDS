@@ -2,8 +2,10 @@
 import { useState } from 'react';
 import BuscarHuesped from './BuscarHuesped';
 import ReservarHabitacion from './ReservarHabitacion';
+import OcuparHabitacion from './OcuparHabitacion'; // Importamos el nuevo componente
 
-type Vista = 'MENU' | 'BUSCAR_HUESPED' | 'RESERVAR_HABITACION';
+// Agregamos 'OCUPAR_HABITACION' a los tipos de vista
+type Vista = 'MENU' | 'BUSCAR_HUESPED' | 'RESERVAR_HABITACION' | 'OCUPAR_HABITACION';
 
 export default function MenuPrincipal() {
     const [vista, setVista] = useState<Vista>('MENU');
@@ -16,6 +18,8 @@ export default function MenuPrincipal() {
                 return <BuscarHuesped onCancel={irAlMenu} />;
             case 'RESERVAR_HABITACION':
                 return <ReservarHabitacion onCancel={irAlMenu} />;
+            case 'OCUPAR_HABITACION': // Nuevo caso para renderizar el componente
+                return <OcuparHabitacion onCancel={irAlMenu} />;
             default:
                 return (
                     <div className="login-container">
@@ -28,9 +32,14 @@ export default function MenuPrincipal() {
                                 <button className="menu-opcion-button" onClick={() => setVista('BUSCAR_HUESPED')}>
                                     Buscar Huésped
                                 </button>
-                                <button className="menu-opcion-button" onClick={() => setVista('RESERVAR_HABITACION')}
-                                        style={{ marginTop: '15px', borderColor: '#4a7c35' }}>
+
+                                <button className="menu-opcion-button" onClick={() => setVista('RESERVAR_HABITACION')}>
                                     Reservar Habitación
+                                </button>
+
+                                {/* Nuevo Botón para CU15: Ocupar Habitación */}
+                                <button className="menu-opcion-button" onClick={() => setVista('OCUPAR_HABITACION')}>
+                                    Ocupar Habitación
                                 </button>
                             </div>
                         </div>
