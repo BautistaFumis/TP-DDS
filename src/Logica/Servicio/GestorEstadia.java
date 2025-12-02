@@ -77,7 +77,7 @@ public class GestorEstadia {
         nuevaEstadia.setHabitacion(habitacion);
         nuevaEstadia.setFechaCheckin(dto.getFechaInicio());
         nuevaEstadia.setFechaCheckout(dto.getFechaFin());
-        nuevaEstadia.setTipoEstado(TipoEstadoEstadia.RESERVADA); // Estado ACTIVA = OCUPADA en la grilla
+        nuevaEstadia.setTipoEstado(TipoEstadoEstadia.ACTIVA); // Estado ACTIVA = OCUPADA en la grilla
         nuevaEstadia.setHuespedes(listaHuespedes);
 
         estadiaRepository.save(nuevaEstadia);

@@ -53,16 +53,16 @@ public class GestorHabitacion {
                         // --- LÓGICA DE ESTADOS CORREGIDA ---
                         if (e.getTipoEstado() == TipoEstadoEstadia.ACTIVA) {
                             estadoCodigo = "OCUPADA";
-                            texto = "OCUPADA"; // Requerimiento explícito: texto "OCUPADA"
-                        } else if (e.getTipoEstado() == TipoEstadoEstadia.RESERVADA) {
-                            estadoCodigo = "RESERVADA";
-                            // Intentamos mostrar el apellido del responsable si existe
-                            if (e.getHuespedes() != null && !e.getHuespedes().isEmpty()) {
-                                texto = e.getHuespedes().get(0).getApellido();
-                            } else {
-                                texto = "Reservado";
-                            }
+                            texto = "OCUPADA";
                         }
+                        else if (e.getTipoEstado() == TipoEstadoEstadia.RESERVADA) {
+                            estadoCodigo = "RESERVADA";
+                 }
+                        else if (e.getTipoEstado() == TipoEstadoEstadia.CERRADA) {
+                            estadoCodigo = "OCUPADA";
+                            texto = "OCUPADA";
+                        }
+
 
                         // Si encontramos una ocupación, dejamos de buscar otras estadías para esta celda
                         break;
