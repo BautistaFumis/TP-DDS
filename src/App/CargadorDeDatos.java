@@ -3,6 +3,7 @@ package App;
 import Logica.Dominio.Entidades.*;
 import Logica.Dominio.Enum.EstadoHabitacion;
 import Logica.Dominio.Enum.EstadoReserva;
+import Logica.Dominio.Enum.TipoEstadoEstadia;
 import Persistencia.Repositorios.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -106,12 +107,12 @@ public class CargadorDeDatos implements CommandLineRunner {
                 estadiasACargar.add(e2);
 
                 // Fernandez Juan (Con reserva) - Hab 201
-                Estadia e3 = crearEstadia("12/11/2025", "15/11/2025", "LE", "8123456", true, habitaciones.get(2));
+                Estadia e3 = crearEstadia("12/12/2025", "15/12/2025", "LE", "8123456", true, habitaciones.get(2));
                 e3.agregarServicio(new Servicio("Lavandería", 5000f));
                 estadiasACargar.add(e3);
 
                 // Garcia Sofia (Con reserva) - Hab 202
-                estadiasACargar.add(crearEstadia("20/11/2025", "22/11/2025", "DNI", "41987654", true, habitaciones.get(3)));
+                estadiasACargar.add(crearEstadia("20/12/2025", "22/12/2025", "DNI", "41987654", true, habitaciones.get(3)));
 
                 // Gomez Ana (Walk-in) - Hab 301
                 estadiasACargar.add(crearEstadia("01/12/2025", "05/12/2025", "PASAPORTE", "DEF45678", false, habitaciones.get(4)));
@@ -196,9 +197,14 @@ public class CargadorDeDatos implements CommandLineRunner {
             estadia.setReserva(reserva);
         }
 
-        if (fechaOut != null) {
-            estadia.setFechaCheckout(fechaOut);
-            estadia.cerrar();
+        LocalDate hoy = LocalDate.now();
+
+        if (fechaOut.isBefore(hoy)) {
+            estadia.setTipoEstado(TipoEstadoEstadia.CERRADA); // Pasada
+        } else if (fechaIn.isAfter(hoy)) {
+            estadia.setTipoEstado(TipoEstadoEstadia.RESERVADA); // Futura
+        } else {
+            estadia.setTipoEstado(TipoEstadoEstadia.ACTIVA); // Hoy o en curso
         }
 
         return estadia;

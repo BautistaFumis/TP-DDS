@@ -41,7 +41,7 @@ public class GestorHabitacion {
             // 4. Recorrer Habitaciones para este día
             for (Habitacion hab : habitaciones) {
                 String estadoCodigo = "LIBRE";
-                String texto = "Disponible";
+                String texto = "DISPONIBLE";
 
                 // Buscamos si hay alguna estadía que ocupe esta habitación en este día
                 for (Estadia e : estadias) {
@@ -57,10 +57,11 @@ public class GestorHabitacion {
                         }
                         else if (e.getTipoEstado() == TipoEstadoEstadia.RESERVADA) {
                             estadoCodigo = "RESERVADA";
+                            texto = "RESERVADA";
                  }
                         else if (e.getTipoEstado() == TipoEstadoEstadia.CERRADA) {
-                            estadoCodigo = "OCUPADA";
-                            texto = "OCUPADA";
+                            estadoCodigo = "LIBRE";
+                            texto = "DISPONIBLE";
                         }
 
 

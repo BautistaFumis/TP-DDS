@@ -277,7 +277,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
                         </select>
                     </div>
 
-                    <div style={{ overflowX: 'auto', marginBottom: '20px' }}>
+                    <div style={{ overflowX: 'auto', marginBottom: '20px', maxHeight:'400px' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                             <tr>
@@ -335,6 +335,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
                         <h2 style={{margin:0, color: '#777'}}>Estado de Habitaciones</h2>
                     </div>
                     <h1 style={{ marginBottom: '20px' }}>Reservar</h1>
+
 
                     <div style={{ display: 'flex', gap: '0', border: '1px solid #000', backgroundColor: '#eee', overflowX: 'auto', whiteSpace: 'nowrap' }}>
                         {selecciones.map((sel, idx) => (
