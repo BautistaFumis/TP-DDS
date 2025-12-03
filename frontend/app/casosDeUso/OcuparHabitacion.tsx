@@ -383,7 +383,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
                                     <option value="DNI">DNI</option>
                                     <option value="LE">LE</option>
                                     <option value="LC">LC</option>
-                                    <option value="Pasaporte">Pasaporte</option>
+                                    <option value="PASAPORTE">PASAPORTE</option>
                                 </select>
                             </div>
                             <div style={{ flexGrow: 1 }}>

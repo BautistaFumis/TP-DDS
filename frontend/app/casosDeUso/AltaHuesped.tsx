@@ -95,29 +95,82 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
         tipoDocumentoRef.current?.focus();
     };
 
-    const validarFormulario = (): string[] => {
-        const { nombre, apellido, documento, telefono, fechaNacimiento, ocupacion, nacionalidad, direccion } = formData;
-        const errores: string[] = [];
-        
-        // Comprobamos cada campo obligatorio
-        if (!nombre) errores.push('nombre');
-        if (!apellido) errores.push('apellido');
-        if (!documento) errores.push('documento');
-        if (!telefono) errores.push('telefono');
-        if (!fechaNacimiento) errores.push('fechaNacimiento');
-        if (!ocupacion) errores.push('ocupacion');
-        if (!nacionalidad) errores.push('nacionalidad');
-        
-        // Comprobamos dirección
-        if (!direccion.pais) errores.push('pais');
-        if (!direccion.provincia) errores.push('provincia');
-        if (!direccion.localidad) errores.push('localidad');
-        if (!direccion.calle) errores.push('calle');
-        if (!direccion.numero) errores.push('numero');
-        if (!direccion.codigoPostal) errores.push('codigoPostal');
+   const validarFormulario = (): string[] => {
+       const {
+           nombre,
+           apellido,
+           documento,
+           telefono,
+           fechaNacimiento,
+           ocupacion,
+           nacionalidad,
+           cuit,
+           direccion
+       } = formData;
 
-        return errores;
-    };
+       const errores: string[] = [];
+
+       // Solo letras
+       const regexSoloLetras = /^[A-ZÁÉÍÓÚÜÑ\s]+$/i;
+
+       //  Solo números
+       const regexSoloNumeros = /^[0-9]+$/;
+
+
+       if (!nombre) errores.push('nombre');
+       else if (!regexSoloLetras.test(nombre)) errores.push('nombre');
+
+
+       if (!apellido) errores.push('apellido');
+       else if (!regexSoloLetras.test(apellido)) errores.push('apellido');
+
+
+       if (!telefono) errores.push('telefono');
+       else if (!regexSoloNumeros.test(telefono)) errores.push('telefono');
+
+
+       if (!documento) errores.push('documento');
+
+
+       if (!fechaNacimiento) errores.push('fechaNacimiento');
+
+
+       if (!ocupacion) errores.push('ocupacion');
+       else if (!regexSoloLetras.test(ocupacion)) errores.push('ocupacion');
+
+
+       if (!nacionalidad) errores.push('nacionalidad');
+       else if (!regexSoloLetras.test(nacionalidad)) errores.push('nacionalidad');
+
+
+       if (!direccion.pais) errores.push('pais');
+       else if (!regexSoloLetras.test(direccion.pais)) errores.push('pais');
+
+
+       if (!direccion.provincia) errores.push('provincia');
+       else if (!regexSoloLetras.test(direccion.provincia)) errores.push('provincia');
+
+
+       if (!direccion.localidad) errores.push('localidad');
+       else if (!regexSoloLetras.test(direccion.localidad)) errores.push('localidad');
+
+
+       if (!direccion.calle) errores.push('calle');
+       else if (!regexSoloLetras.test(direccion.calle)) errores.push('calle');
+
+       if (!direccion.numero) errores.push('numero');
+       else if (!regexSoloNumeros.test(direccion.numero)) errores.push('numero');
+
+
+       if (direccion.piso && !regexSoloNumeros.test(direccion.piso)) errores.push('piso');
+
+       if (!direccion.codigoPostal) errores.push('codigoPostal');
+       else if (!regexSoloNumeros.test(direccion.codigoPostal)) errores.push('codigoPostal');
+
+       return errores;
+   };
+
+
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -129,7 +182,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
         
         if (erroresDeValidacion.length > 0) {
 
-            setError("Campos obligatorios no completados, complete todo los campos obligatorios (*)");
+            setError("Campos obligatorios no completados o formato invalido, complete todo los campos obligatorios (*)");
             setErrorCampos(erroresDeValidacion);
             setIsLoading(false);
 
@@ -271,7 +324,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
                                 <option value="DNI">DNI</option>
                                 <option value="LE">LE</option>
                                 <option value="LC">LC</option>
-                                <option value="Pasaporte">Pasaporte</option>
+                                <option value="PASAPORTE">PASAPORTE</option>
                                 <option value="Otro">Otro</option>
                             </select>
                         </div>

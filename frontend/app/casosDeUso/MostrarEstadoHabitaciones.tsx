@@ -102,7 +102,6 @@ export default function MostrarEstadoHabitaciones({
             case 'LIBRE': style.backgroundColor = '#4a7c35'; style.color = 'white'; break;
             case 'OCUPADA': style.backgroundColor = '#fcd5d5'; style.color = '#333'; break;
             case 'RESERVADA': style.backgroundColor = '#1a3b70'; style.color = 'white'; break;
-            case 'MANTENIMIENTO': style.backgroundColor = '#ccc'; style.color = '#333'; break;
             default: style.backgroundColor = '#ccc';
         }
         return { style, texto: celda.texto };

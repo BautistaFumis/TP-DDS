@@ -184,7 +184,7 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
                                         <option value="DNI">DNI</option>
                                         <option value="LE">LE</option>
                                         <option value="LC">LC</option>
-                                        <option value="Pasaporte">Pasaporte</option>
+                                        <option value="PASAPORTE">PASAPORTE</option>
                                         <option value="Otro">Otro</option>
                                     </select>
                                 </div>
