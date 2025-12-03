@@ -399,7 +399,6 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         );
     }
 
-
     if (paso === 'RESULTADOS_HUESPED') {
         return (
             <div style={{ width: '700px', margin: '20px auto', border: '1px solid #000', backgroundColor: '#f9f9f9' }}>

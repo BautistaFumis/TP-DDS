@@ -251,6 +251,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
         );
     }
 
+
     if (paso === 'CONFIRMACION') {
         return (
             <div className="modal-overlay">

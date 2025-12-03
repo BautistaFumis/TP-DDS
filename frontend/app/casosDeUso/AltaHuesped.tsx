@@ -108,6 +108,7 @@ export default function AltaHuesped({ onCancel }: AltaHuespedProps) {
            direccion
        } = formData;
 
+
        const errores: string[] = [];
 
        // Solo letras

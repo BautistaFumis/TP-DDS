@@ -107,6 +107,7 @@ export default function MostrarEstadoHabitaciones({
         return { style, texto: celda.texto };
     };
 
+
     return (
         <div style={{ width: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
             {modalError.show && (
