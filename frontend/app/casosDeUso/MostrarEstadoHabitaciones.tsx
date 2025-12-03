@@ -120,7 +120,7 @@ export default function MostrarEstadoHabitaciones({
 
             <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px', backgroundColor: '#f9f9f9', border: '1px solid #000', borderTop: 'none' }}>
 
-                {/* Solo mostramos el buscador de fechas si NO estamos en modo externo */}
+
                 {!esModoExterno && (
                     <form onSubmit={handleConsultar} style={{ display: 'flex', gap: '20px', alignItems: 'flex-end' }}>
                         <div><label>Desde:</label><input type="date" value={fechaDesde} onChange={e => setFechaDesde(e.target.value)} /></div>
@@ -129,7 +129,7 @@ export default function MostrarEstadoHabitaciones({
                     </form>
                 )}
 
-                {/* Filtro de Tipo de Habitación */}
+
                 {grilla.length > 0 && (
                     <div>
                         <select
@@ -189,7 +189,7 @@ export default function MostrarEstadoHabitaciones({
                     !esModoExterno && <p>Ingrese fechas para consultar.</p>
                 )}
 
-                {/* Area de Botones: Si hay children (botones de Reservar/Ocupar), los renderiza. Si no, botón cancelar por defecto */}
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
                     {children ? children : (
                         onCancel && <button onClick={onCancel} style={{padding:'10px 20px'}}>Volver</button>
