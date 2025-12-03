@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import BuscarHuesped from './BuscarHuesped';
 import ReservarHabitacion from './ReservarHabitacion';
-import OcuparHabitacion from './OcuparHabitacion'; // Importamos el nuevo componente
+import OcuparHabitacion from './OcuparHabitacion';
 
 
 type Vista = 'MENU' | 'BUSCAR_HUESPED' | 'RESERVAR_HABITACION' | 'OCUPAR_HABITACION';
@@ -18,7 +18,7 @@ export default function MenuPrincipal() {
                 return <BuscarHuesped onCancel={irAlMenu} />;
             case 'RESERVAR_HABITACION':
                 return <ReservarHabitacion onCancel={irAlMenu} />;
-            case 'OCUPAR_HABITACION': // Nuevo caso para renderizar el componente
+            case 'OCUPAR_HABITACION':
                 return <OcuparHabitacion onCancel={irAlMenu} />;
             default:
                 return (

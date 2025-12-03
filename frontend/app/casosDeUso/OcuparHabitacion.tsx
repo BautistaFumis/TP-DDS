@@ -1,20 +1,7 @@
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 import ModalAlerta from './ModalAlerta';
-
-// --- TIPOS ---
-interface Celda {
-    idHabitacion: string;
-    numero: string;
-    estado: string; // disponible , ocupada , reservada
-    texto: string;
-    tipoHabitacion: string;
-}
-
-interface Fila {
-    fechaStr: string;
-    celdas: Celda[];
-}
+import MostrarEstadoHabitaciones, { Fila, Celda } from './MostrarEstadoHabitaciones';
 
 interface Seleccion {
     idHabitacion: string;
@@ -46,14 +33,18 @@ type Paso =
     | 'GESTION_FINAL';
 
 export default function OcuparHabitacion({ onCancel }: { onCancel: () => void }) {
-    // --- ESTADOS ---
     const [paso, setPaso] = useState<Paso>('INGRESO_FECHAS');
-    const [modal, setModal] = useState<{show: boolean, msg: string | React.ReactNode}>({show:false, msg:''});
+
+    const [modal, setModal] = useState<{
+        show: boolean,
+        msg: string | React.ReactNode,
+        onOk?: () => void
+    }>({show:false, msg:''});
 
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
     const [grilla, setGrilla] = useState<Fila[]>([]);
-    const [filtroTipo, setFiltroTipo] = useState<string>('Todos');
+
     const [cargando, setCargando] = useState(false);
 
 
@@ -61,12 +52,11 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
     const [seleccion, setSeleccion] = useState<Seleccion | null>(null);
     const [modalConflicto, setModalConflicto] = useState<{show: boolean, data: Seleccion | null, huespedNombre?: string}>({show: false, data: null});
 
-    const [busqueda, setBusqueda] = useState({ nombre: '', apellido: '', tipo: 'DNI', documento: '' });
+    const [busqueda, setBusqueda] = useState({ nombre: '', apellido: '', tipo: '', documento: '' });
     const [listaResultados, setListaResultados] = useState<Huesped[]>([]);
     const [huespedTemporal, setHuespedTemporal] = useState<Huesped | null>(null);
     const [listaHuespedesAsignados, setListaHuespedesAsignados] = useState<Huesped[]>([]);
 
- // auxiliar
     const convertirFechaIso = (f: string) => { const [d,m,a] = f.split('/'); return `${a}-${m}-${d}`; }
 
     const sumarDia = (fechaStr: string) => {
@@ -104,14 +94,13 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
             const data: Fila[] = await res.json();
             setGrilla(data);
             setPaso('SELECCION_GRILLA');
-            // Resets
             setSeleccion(null); setPrimerClick(null); setListaHuespedesAsignados([]);
         } catch (e) { setModal({show: true, msg: 'Error de conexión'}); }
         finally { setCargando(false); }
     };
 
     const handleCellClick = (celda: Celda, idxFila: number) => {
-        // Bloquear si ya está ocupada
+
         if (celda.estado === 'OCUPADA') {
             setModal({show: true, msg: 'La habitación ya está ocupada.'});
             return;
@@ -141,10 +130,14 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
                 }
                 if(c?.estado === 'RESERVADA') {
                     tieneReservadas = true;
-                    nombreReserva = c.texto || "Reservado";
+                    if (c.texto && c.texto !== 'RESERVADA' && c.texto.trim() !== '' && !nombreReserva) {
+                        nombreReserva = c.texto;
+                    }
                 }
             }
-
+            if (tieneReservadas && !nombreReserva) {
+                nombreReserva = "Nombre no disponible";
+            }
             const fechaFinCalc = sumarDia(grilla[fin].fechaStr);
             const nuevaSeleccion: Seleccion = {
                 idHabitacion: celda.idHabitacion,
@@ -174,7 +167,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         setPaso('PINTAR_OCUPADA');
     };
 
-    // --- BÚSQUEDA HUÉSPED (CORREGIDO EL FILTRO) ---
+
     const handleBuscarHuesped = async (e?: React.FormEvent) => {
         if(e) e.preventDefault();
 
@@ -184,7 +177,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
             if(busqueda.apellido) params.append('apellido', busqueda.apellido);
             if(busqueda.documento) params.append('documento', busqueda.documento);
 
-            // --- CORRECCIÓN IMPORTANTE: ENVIAR EL TIPO DE DOCUMENTO ---
+
             if(busqueda.tipo) params.append('tipoDocumento', busqueda.tipo);
 
             const res = await fetch(`http://localhost:8081/api/huespedes/buscar?${params.toString()}`);
@@ -211,7 +204,6 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
             return;
         }
 
-        // Validación de Duplicados
         const yaExiste = listaHuespedesAsignados.some(h => h.id === huespedTemporal.id);
         if (yaExiste) {
             setModal({show: true, msg: "Este huésped ya está cargado para el check-in."});
@@ -222,7 +214,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         setPaso('GESTION_FINAL');
     };
 
-    // --- GUARDADO FINAL ---
+
     const crearEstadia = async (accion: 'SALIR' | 'CARGAR_OTRA') => {
         if (!seleccion || listaHuespedesAsignados.length === 0) return;
 
@@ -242,18 +234,22 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
             });
 
             if (res.ok) {
-                setModal({show: true, msg: "Estadía cargada con éxito."});
-                setTimeout(() => {
-                    setModal({show:false, msg:''});
-                    if (accion === 'SALIR') {
-                        onCancel();
-                    } else {
-                        setSeleccion(null);
-                        setListaHuespedesAsignados([]);
-                        setBusqueda({nombre:'', apellido:'', tipo:'DNI', documento:''});
-                        handleConsultar();
+                setModal({
+                    show: true,
+                    msg: "Estadía cargada con éxito.",
+                    onOk: () => {
+                        setModal({show:false, msg:''});
+
+                        if (accion === 'SALIR') {
+                            onCancel();
+                        } else {
+                            setSeleccion(null);
+                            setListaHuespedesAsignados([]);
+                            setBusqueda({nombre:'', apellido:'', tipo:'DNI', documento:''});
+                            handleConsultar();
+                        }
                     }
-                }, 1500);
+                });
             } else {
                 const errorText = await res.text();
                 setModal({show: true, msg: "Error: " + errorText});
@@ -263,31 +259,22 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         }
     };
 
-    // estilos por celda
     const getCellStyle = (celda: Celda, idxFila: number) => {
         let bg = '#ccc'; let color = '#000'; let cursor = 'default'; let textoCelda = celda.texto;
 
-        //estados que vienen del backend
         if (celda.estado === 'LIBRE') {
             bg = '#4a7c35'; color = 'white'; cursor = 'pointer';
         }
         else if (celda.estado === 'OCUPADA') {
-            bg = '#ffd1dc'; // COLOR ROSA (Solicitado)
-            color = 'black';
-            cursor = 'not-allowed';
-            textoCelda = 'OCUPADA'; // Forzamos texto por requerimiento
+            bg = '#ffd1dc'; color = 'black'; cursor = 'not-allowed'; textoCelda = 'OCUPADA';
         }
         else if (celda.estado === 'RESERVADA') {
-            bg = '#f4b942'; color = 'black'; cursor = 'pointer';
+            bg = '#f4b942'; color = 'black'; cursor = 'pointer'; textoCelda='RESERVADA';
         }
 
-        // aca pintaremos las celdas
-        // esto sobrescribe visualmente para que el usuario vea qué está seleccionando ahora
         if (paso === 'PINTAR_OCUPADA' && seleccion) {
             if (celda.idHabitacion === seleccion.idHabitacion && idxFila >= seleccion.indiceInicio && idxFila <= seleccion.indiceFin) {
-                bg = '#ffcccc';
-                color = 'black';
-                textoCelda = 'OCUPADA';
+                bg = '#ffcccc'; color = 'black'; textoCelda = 'OCUPADA';
             }
         }
 
@@ -297,20 +284,13 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         return { style: { backgroundColor: bg, color, cursor, border, padding: '10px', textAlign: 'center' as const, fontWeight: 'bold' }, texto: textoCelda };
     };
 
-
-    const indicesColumnas = useMemo(() => {
-        if(grilla.length===0) return [];
-        return grilla[0].celdas.map((c,i) => (filtroTipo==='Todos'||c.tipoHabitacion===filtroTipo) ? i : -1).filter(i=>i!==-1);
-    }, [grilla, filtroTipo]);
-    const tipos = useMemo(() => grilla.length>0 ? ['Todos', ...Array.from(new Set(grilla[0].celdas.map(c=>c.tipoHabitacion)))] : [], [grilla]);
-
-
-
+    // const indicesColumnas = ... (Eliminado, lo maneja MostrarEstado)
+    // const tipos = ... (Eliminado, lo maneja MostrarEstado)
 
     if (paso === 'INGRESO_FECHAS') {
         return (
             <div style={{ width: '800px', margin: '0 auto', border: '1px solid #000', backgroundColor: '#f9f9f9', display: 'flex' }}>
-                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={()=>setModal({show:false, msg:''})} />}
+                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={modal.onOk || (()=>setModal({show:false, msg:''}))} />}
                 <div style={{ backgroundColor: '#dceca4', width: '50%', padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <h1 style={{ fontSize: '3rem', margin: 0, lineHeight: 1.2 }}>OCUPAR<br/>HABITACION</h1>
                     <button style={{ marginTop: '50px', backgroundColor: '#ffbdad', border: '1px solid #cc8b79', padding: '10px 20px', fontWeight: 'bold', width: 'fit-content' }} onClick={onCancel}>Cancelar</button>
@@ -331,8 +311,8 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
 
     if (paso === 'SELECCION_GRILLA' || paso === 'PINTAR_OCUPADA') {
         return (
-            <div style={{ width: '900px', margin: '0 auto', border: '1px solid #000', backgroundColor: '#f9f9f9', position: 'relative' }}>
-                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={()=>setModal({show:false, msg:''})} />}
+            <div style={{ position: 'relative' }}> {/* Wrapper para los modales absolutos */}
+                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={modal.onOk || (()=>setModal({show:false, msg:''}))} />}
 
                 {paso === 'PINTAR_OCUPADA' && (
                     <div style={{ position: 'fixed', bottom: '0', left: '0', width: '100%', backgroundColor: '#bee3f8', borderTop: '2px solid #3182ce', padding: '20px', textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold', color: '#2c5282', zIndex: 9999 }}>
@@ -358,39 +338,16 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
                     </div>
                 )}
 
-                <div style={{ backgroundColor: '#dceca4', padding: '15px', textAlign: 'center', borderBottom: '1px solid #999' }}>
-                    <h2 style={{ margin: 0 }}>Estado de Habitaciones</h2>
-                </div>
-                <div style={{ padding: '20px' }}>
-                    <div style={{ marginBottom: '15px' }}>
-                        <select value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)} style={{ padding: '8px' }}>
-                            {tipos.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                    </div>
-                    <div style={{ overflowX: 'auto', marginBottom: '20px', maxHeight:'400px' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                            <tr>
-                                <th style={{padding:'10px', border:'1px solid #999', background:'#ddd'}}>Día \ Hab</th>
-                                {indicesColumnas.map(i => <th key={i} style={{padding:'10px', border:'1px solid #999', background:'#ddd'}}>{grilla[0].celdas[i].numero}</th>)}
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {grilla.map((f, i) => (
-                                <tr key={i}>
-                                    <td style={{padding:'10px', background:'#eee', border:'1px solid #999', fontWeight:'bold'}}>{f.fechaStr}</td>
-                                    {indicesColumnas.map(cIdx => {
-                                        const celda = f.celdas[cIdx];
-                                        const {style, texto} = getCellStyle(celda, i);
-                                        return <td key={celda.idHabitacion} style={style} onClick={()=>handleCellClick(celda, i)}>{texto}</td>
-                                    })}
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
+
+                <MostrarEstadoHabitaciones
+                    grillaExterna={grilla}
+                    onCeldaClickExterna={handleCellClick}
+                    getEstiloCeldaExterna={getCellStyle}
+                >
+
                     <button style={{ backgroundColor: '#ffbdad', border: '1px solid #cc8b79', padding: '10px 30px', fontWeight: 'bold' }} onClick={onCancel}>Cancelar</button>
-                </div>
+                </MostrarEstadoHabitaciones>
+
             </div>
         );
     }
@@ -399,6 +356,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
     if (paso === 'BUSQUEDA_HUESPED') {
         return (
             <div style={{ width: '800px', margin: '20px auto', display: 'flex', border: '1px solid #000', backgroundColor: '#fff', minHeight: '400px' }}>
+                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={modal.onOk || (()=>setModal({show:false, msg:''}))} />}
                 {/* Panel Izquierdo */}
                 <div style={{ width: '35%', backgroundColor: '#dceca4', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderRight: '1px solid #000', padding: '20px' }}>
                     <h1 style={{ fontSize: '2.5rem', margin: '0 0 30px 0', textAlign: 'center', lineHeight: '1.1' }}>GESTIONAR<br/>HUESPED</h1>
@@ -421,6 +379,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
                             <div style={{ width: '30%' }}>
                                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Tipo</label>
                                 <select value={busqueda.tipo} onChange={e=>setBusqueda({...busqueda, tipo: e.target.value})} style={{ width: '100%', padding: '8px', border: '1px solid #ccc' }}>
+                                    <option value="">CUALQUIERA</option>
                                     <option value="DNI">DNI</option>
                                     <option value="LE">LE</option>
                                     <option value="LC">LC</option>
@@ -445,7 +404,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
     if (paso === 'RESULTADOS_HUESPED') {
         return (
             <div style={{ width: '700px', margin: '20px auto', border: '1px solid #000', backgroundColor: '#f9f9f9' }}>
-                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={()=>setModal({show:false, msg:''})} />}
+                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={modal.onOk || (()=>setModal({show:false, msg:''}))} />}
                 <div style={{ backgroundColor: '#dceca4', padding: '15px', textAlign: 'center', borderBottom: '1px solid #999' }}>
                     <h2 style={{ margin: 0 }}>Resultados</h2>
                 </div>
@@ -487,6 +446,8 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
     if (paso === 'GESTION_FINAL') {
         return (
             <div style={{ width: '700px', margin: '20px auto', border: '1px solid #000', backgroundColor: '#fff', minHeight:'500px', display:'flex', flexDirection:'column' }}>
+                {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={modal.onOk || (()=>setModal({show:false, msg:''}))} />}
+
                 <div style={{ backgroundColor: '#dceca4', padding: '40px', textAlign: 'center', borderBottom: '1px solid #000' }}>
                     <h1 style={{ margin: 0, fontSize: '3rem' }}>INFORMACION</h1>
                     <div style={{ marginTop:'20px', textAlign:'left', padding:'0 20px' }}>

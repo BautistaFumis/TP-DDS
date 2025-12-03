@@ -55,7 +55,7 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
 
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
-    const [tipoDocumento, setTipoDocumento] = useState('DNI');
+    const [tipoDocumento, setTipoDocumento] = useState('');
     const [documento, setDocumento] = useState('');
 
     const [resultados, setResultados] = useState<Huesped[]>([]);
@@ -87,7 +87,6 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
             const data: Huesped[] = await response.json();
             
             if (data.length > 0) {
-                // Éxito: Se encontraron huéspedes
                 setResultados(data);
                 setVista('resultados');
             } else {
@@ -181,6 +180,7 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
                                         value={tipoDocumento}
                                         onChange={(e) => setTipoDocumento(e.target.value)}
                                     >
+                                        <option value="">Cualquiera</option>
                                         <option value="DNI">DNI</option>
                                         <option value="LE">LE</option>
                                         <option value="LC">LC</option>
@@ -280,7 +280,6 @@ export default function BuscarHuesped({ onCancel }: BuscarHuespedProps) {
 
     // nos movemos al caso de uso 10 , modificar huesped (no implementado en el tp)
     if (vista === 'modificar' && huespedSeleccionadoId) {
-        // Sigue usando el "stub" falso por ahora
         return <ModificarHuesped 
                     huespedId={huespedSeleccionadoId} 
                     onCancel={() => setVista('resultados')} 

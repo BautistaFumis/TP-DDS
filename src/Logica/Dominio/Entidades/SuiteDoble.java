@@ -12,10 +12,10 @@ public class SuiteDoble extends Habitacion {
     private Integer cantCamasIndividuales;
 
     public SuiteDoble() {}
-    
+
     @Override
     public String getNombreTipo() {
-        return "Suite Doble"; // <--- AQUÍ DEFINES EL NOMBRE
+        return "Suite Doble";
     }
 
     public SuiteDoble(String numero, EstadoHabitacion estado, Float costoNoche, Integer cantCamasDobles, Integer cantCamasIndividuales) {
@@ -30,7 +30,7 @@ public class SuiteDoble extends Habitacion {
                 (cantCamasIndividuales != null ? cantCamasIndividuales : 0);
     }
 
-    // Getters y Setters
+
     public Integer getCantCamasDobles() { return cantCamasDobles; }
     public void setCantCamasDobles(Integer cantCamasDobles) { this.cantCamasDobles = cantCamasDobles; }
     public Integer getCantCamasIndividuales() { return cantCamasIndividuales; }

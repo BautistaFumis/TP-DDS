@@ -26,46 +26,39 @@ public class GestorHabitacion {
         List<FilaGrillaDTO> grilla = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // 1. Obtener Habitaciones ordenadas por número
         List<Habitacion> habitaciones = habitacionRepository.findAll(Sort.by(Sort.Direction.ASC, "numero"));
 
-        // 2. Obtener Estadias en el rango
         List<Estadia> estadias = estadiaRepository.buscarPorRango(desde, hasta);
 
         LocalDate diaActual = desde;
 
-        // 3. Recorrer Días
         while (!diaActual.isAfter(hasta)) {
             List<CeldaEstadoDTO> celdasFila = new ArrayList<>();
 
-            // 4. Recorrer Habitaciones para este día
             for (Habitacion hab : habitaciones) {
                 String estadoCodigo = "LIBRE";
                 String texto = "DISPONIBLE";
 
-                // Buscamos si hay alguna estadía que ocupe esta habitación en este día
+                // aca vamos a buscar si hay alguna estadía que ocupe esta habitación en este día
                 for (Estadia e : estadias) {
-                    // Condición de solapamiento: Habitación coincide Y día está en rango [CheckIn, CheckOut)
+
                     if (e.getHabitacion().getId().equals(hab.getId()) &&
                             !diaActual.isBefore(e.getFechaCheckin()) && // fecha >= inicio
                             diaActual.isBefore(e.getFechaCheckout())) {     // fecha < fin
 
-                        // --- LÓGICA DE ESTADOS CORREGIDA ---
                         if (e.getTipoEstado() == TipoEstadoEstadia.ACTIVA) {
                             estadoCodigo = "OCUPADA";
                             texto = "OCUPADA";
                         }
                         else if (e.getTipoEstado() == TipoEstadoEstadia.RESERVADA) {
                             estadoCodigo = "RESERVADA";
-                            texto = "RESERVADA";
+                            texto = e.getReserva().getApellido() + " " + e.getReserva().getNombre();
                  }
                         else if (e.getTipoEstado() == TipoEstadoEstadia.CERRADA) {
                             estadoCodigo = "LIBRE";
                             texto = "DISPONIBLE";
                         }
 
-
-                        // Si encontramos una ocupación, dejamos de buscar otras estadías para esta celda
                         break;
                     }
                 }

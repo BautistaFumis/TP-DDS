@@ -23,26 +23,26 @@ public class GestorEstadia {
 
     @Transactional
     public void registrarOcupacion(CrearOcupacionDTO dto) {
-        // 1. Obtener la Habitación
+
         Habitacion habitacion = habitacionRepository.findById(dto.getIdHabitacion())
                 .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
 
-        // 2. Obtener los Huéspedes (Responsable + Acompañantes seleccionados en el front)
+
         List<Huesped> listaHuespedes = huespedRepository.findAllById(dto.getIdsHuespedes());
         if (listaHuespedes.isEmpty()) {
             throw new RuntimeException("Debe existir al menos un huésped para registrar la ocupación.");
         }
 
-        // 3. Buscar conflictos de agenda para esta habitación en esas fechas
+
         List<Estadia> conflictos = estadiaRepository.buscarPorRango(dto.getFechaInicio(), dto.getFechaFin());
 
-        // Filtramos para obtener solo la estadía que conflicto con ESTA habitación
+
         Estadia estadiaConflicto = conflictos.stream()
                 .filter(e -> e.getHabitacion().getId().equals(habitacion.getId()))
                 .findFirst()
                 .orElse(null);
 
-        // --- LÓGICA CORE DEL CU15 ---
+
         if (estadiaConflicto != null) {
 
             // CASO A: La habitación ya está ocupada físicamente (Check-in ya hecho)
@@ -53,19 +53,15 @@ public class GestorEstadia {
             // CASO B: La habitación está RESERVADA
             if (estadiaConflicto.getTipoEstado() == TipoEstadoEstadia.RESERVADA) {
                 if (dto.isEsOverrideReserva()) {
-                    // IMPORTANTE: REUTILIZAMOS LA RESERVA Y LA ACTIVAMOS
-                    // Actualizamos el estado a ACTIVA (Check-in realizado)
                     estadiaConflicto.setTipoEstado(TipoEstadoEstadia.ACTIVA);
 
-                    // Actualizamos las fechas reales de ocupación (pueden variar levemente de la reserva original)
                     estadiaConflicto.setFechaCheckin(dto.getFechaInicio());
                     estadiaConflicto.setFechaCheckout(dto.getFechaFin());
 
-                    // Actualizamos la lista de huéspedes (Agregamos acompañantes que no estaban en la reserva)
                     estadiaConflicto.setHuespedes(listaHuespedes);
 
                     estadiaRepository.save(estadiaConflicto);
-                    return; // Fin del flujo exitoso (Reserva transformada en Ocupación)
+                    return;
                 } else {
                     throw new RuntimeException("La habitación tiene una reserva vigente y no se confirmó la acción 'Ocupar Igual'.");
                 }

@@ -26,15 +26,11 @@ public class GestorHuesped {
         this.estadiaRepository = estadiaRepository;
     }
 
-    /**
-     * Crea las instancias de Huesped y Direccion a partir del DTO.
-     * (Equivale a los new() y set() del diagrama de secuencia).
-     */
+
     public Huesped convertirHuesped(HuespedAltaDTO dto) {
-        // 1. Instanciación del Huésped
+
         Huesped huesped = new Huesped();
 
-        // 2. Mapeo de datos simples
         huesped.setNombre(dto.getNombre());
         huesped.setApellido(dto.getApellido());
         huesped.setEmail(dto.getEmail());
@@ -46,22 +42,17 @@ public class GestorHuesped {
         huesped.setNacionalidad(dto.getNacionalidad());
         huesped.setCuit(dto.getCuit());
 
-        // Manejo de nulos en IVA
         if (dto.getCategoriaIVA() == null || dto.getCategoriaIVA().trim().isEmpty()) {
             huesped.setCategoriaIVA("Consumidor Final");
         } else {
             huesped.setCategoriaIVA(dto.getCategoriaIVA());
         }
 
-        // 3. Instanciación de Dirección y Mapeo
         if (dto.getDireccion() != null) {
-            // CORRECCIÓN AQUÍ: La variable local debe ser DireccionDTO
             DireccionDTO dirDto = dto.getDireccion();
 
-            // Creamos la Entidad Direccion
             Direccion direccion = new Direccion();
 
-            // Copiamos los datos del DTO a la Entidad
             direccion.setCalle(dirDto.getCalle());
             direccion.setNumero(dirDto.getNumero());
             direccion.setDepartamento(dirDto.getDepartamento());
@@ -71,14 +62,12 @@ public class GestorHuesped {
             direccion.setProvincia(dirDto.getProvincia());
             direccion.setPais(dirDto.getPais());
 
-            // Asignamos la entidad Dirección al Huésped
             huesped.setDireccion(direccion);
         }
 
         return huesped;
     }
 
-    // --- REGISTRO ---
 
     public void registrarNuevoHuesped(Huesped huesped) throws CamposObligatoriosException, DocumentoDuplicadoException {
         validarCamposObligatorios(huesped);
@@ -101,14 +90,13 @@ public class GestorHuesped {
         huespedRepository.save(huesped);
     }
 
-    // --- BÚSQUEDA ---
 
     public List<Huesped> buscarHuesped() {
         return huespedRepository.findAll();
     }
 
     public List<Huesped> buscarHuespedes(String apellido, String nombre, String tipoDocumento, String documento) {
-        // CORRECCIÓN: Agregamos la verificación de 'nombre' que faltaba
+
         boolean todosNulos = (apellido == null || apellido.isEmpty()) &&
                 (nombre == null || nombre.isEmpty()) &&
                 (tipoDocumento == null || tipoDocumento.isEmpty()) &&
@@ -121,20 +109,15 @@ public class GestorHuesped {
         }
     }
 
-    // --- BAJA Y MODIFICACIÓN ---
 
     public void darDeBajaHuesped(Huesped huesped) {
         if (!estadiaRepository.existsByHuespedes(huesped)) {
             huespedRepository.delete(huesped);
         } else {
-            // Opcional: Lanzar excepción o manejar que no se puede borrar
             System.out.println("No se puede borrar huésped con historial.");
         }
     }
 
-    // Aquí puedes implementar modificarHuesped si lo necesitas luego.
-
-    // --- VALIDACIONES ---
 
     private void validarCamposObligatorios(Huesped huesped) throws CamposObligatoriosException {
         if (huesped == null) throw new CamposObligatoriosException("Los datos del huésped no pueden ser nulos.");
@@ -149,7 +132,6 @@ public class GestorHuesped {
 
         if (huesped.getDireccion() == null) throw new CamposObligatoriosException("La 'Dirección' es obligatoria.");
 
-        // Validación de dirección
         Direccion dir = huesped.getDireccion();
         if (esNuloOVacio(dir.getCalle())) throw new CamposObligatoriosException("El campo 'Calle' es obligatorio.");
         if (dir.getNumero() == null) throw new CamposObligatoriosException("El campo 'Número' es obligatorio.");

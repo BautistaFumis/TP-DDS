@@ -18,16 +18,15 @@ public class Estadia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación con Habitación
+
     @ManyToOne
     @JoinColumn(name = "habitacion_id", nullable = false)
     private Habitacion habitacion;
 
-    // Relación con Servicios
+
     @OneToMany(mappedBy = "estadia", cascade = CascadeType.ALL)
     private List<Servicio> servicios = new ArrayList<>();
 
-    // Relación con Huéspedes
     @ManyToMany
     @JoinTable(
             name = "estadia_huespedes",
@@ -36,7 +35,6 @@ public class Estadia {
     )
     private List<Huesped> huespedes = new ArrayList<>();
 
-    // Relación con Reserva (Bidireccional opcional)
     @OneToOne
     @JoinColumn(name = "reserva_id", referencedColumnName = "id", nullable = true)
     private Reserva reserva;
@@ -50,11 +48,10 @@ public class Estadia {
     @Transient
     private EstadoEstadia estadoLogic;
 
-    // --- CONSTRUCTOR VACÍO (Requerido por JPA) ---
+
     public Estadia() {}
 
-    // --- CONSTRUCTOR PRINCIPAL (CORREGIDO) ---
-    // Este es el que usas en el GestorReserva. Antes estaba vacío y por eso fallaba.
+
     public Estadia(LocalDate fechaCheckin, LocalDate fechaCheckout, Habitacion habitacion, TipoEstadoEstadia tipoEstado) {
         this.fechaCheckin = fechaCheckin;
         this.fechaCheckout = fechaCheckout;
@@ -65,10 +62,10 @@ public class Estadia {
         if (tipoEstado == TipoEstadoEstadia.ACTIVA) {
             this.estadoLogic = new EstadoActiva();
         }
-        // Si es RESERVADA, no tiene estado lógico activo todavía o podrías asignar uno EstadoReservada si existe.
+        // Si es RESERVADA, no tiene estado lógico activo todavía o podemos asignar uno EstadoReservada si existe.
     }
 
-    // --- MÉTODOS DE LÓGICA (State Pattern) ---
+
     @PostLoad
     private void reconstruirEstado() {
         if (tipoEstado == TipoEstadoEstadia.ACTIVA) {
@@ -98,7 +95,7 @@ public class Estadia {
         servicio.setEstadia(this);
     }
 
-    // --- GETTERS Y SETTERS ---
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

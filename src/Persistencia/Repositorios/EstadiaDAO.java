@@ -14,8 +14,6 @@ import java.util.List;
 public interface EstadiaDAO extends JpaRepository<Estadia, Long> {
     boolean existsByHuespedes(Huesped huesped);
 
-    // Busca estadías activas que chocan con el rango
-    // Una estadía ocupa el día si CheckIn <= dia < CheckOut
     @Query("SELECT e FROM Estadia e WHERE e.fechaCheckin < :hasta AND e.fechaCheckout > :desde")
     List<Estadia> buscarPorRango(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 }

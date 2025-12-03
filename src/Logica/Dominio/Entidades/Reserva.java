@@ -13,29 +13,26 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Datos del diagrama
-    private String nombre; // Nombre de quien reserva (puede ser distinto al huesped)
+    private String nombre;
     private String apellido;
     private String telefono;
     private String codigoReserva;
 
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private LocalDate fechaReserva; // Fecha en la que se creó la reserva
+    private LocalDate fechaReserva;
 
-    // CAMBIO AQUI: Usamos el Enum con la anotación @Enumerated
+
     @Enumerated(EnumType.STRING)
     private EstadoReserva estado;
 
-    // RELACIÓN 1 a 1 con ESTADÍA
-    // mappedBy = "reserva" indica que Estadia es la dueña de la relación (tiene la FK)
+
     @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
     private Estadia estadia;
 
-    // Constructor vacío
     public Reserva() {}
 
-    // Constructor básico
+
     public Reserva(String nombre, String apellido, String telefono, String codigoReserva, LocalDate fechaInicio, LocalDate fechaFin, Huesped huespedPrincipal) {
         this.nombre = nombre;
         this.apellido = apellido;
@@ -46,7 +43,7 @@ public class Reserva {
         this.fechaReserva = LocalDate.now();
     }
 
-    // Getters y Setters
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNombre() { return nombre; }

@@ -22,7 +22,7 @@ public class DobleSuperior extends Habitacion {
     }
     @Override
     public String getNombreTipo() {
-        return "Doble Superior"; // <--- AQUÍ DEFINES EL NOMBRE QUE SE VE EN EL FRONT
+        return "Doble Superior";
     }
     @Override
     public int getCantidadCamas() {
@@ -31,7 +31,7 @@ public class DobleSuperior extends Habitacion {
                 (cantCamasKingSize != null ? cantCamasKingSize : 0);
     }
 
-    // Getters y Setters
+
     public Integer getCantCamasDobles() { return cantCamasDobles; }
     public void setCantCamasDobles(Integer cantCamasDobles) { this.cantCamasDobles = cantCamasDobles; }
     public Integer getCantCamasIndividuales() { return cantCamasIndividuales; }

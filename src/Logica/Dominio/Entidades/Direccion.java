@@ -3,7 +3,7 @@ package Logica.Dominio.Entidades;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "direcciones") // Nueva tabla independiente
+@Table(name = "direcciones")
 public class Direccion {
 
     @Id
@@ -46,7 +46,7 @@ public class Direccion {
         }
     }
 
-    // Getters y Setters necesarios (incluyendo ID)
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

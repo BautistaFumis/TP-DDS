@@ -14,7 +14,7 @@ public class DobleEstandar extends Habitacion {
     public DobleEstandar() {}
     @Override
     public String getNombreTipo() {
-        return "Doble Estándar"; // <--- AQUÍ DEFINES EL NOMBRE QUE SE VE EN EL FRONT
+        return "Doble Estándar";
     }
     public DobleEstandar(String numero, EstadoHabitacion estado, Float costoNoche, Integer cantCamasDobles, Integer cantCamasIndividuales) {
         super(numero, estado, costoNoche);
@@ -28,7 +28,7 @@ public class DobleEstandar extends Habitacion {
                 (cantCamasIndividuales != null ? cantCamasIndividuales : 0);
     }
 
-    // Getters y Setters
+
     public Integer getCantCamasDobles() { return cantCamasDobles; }
     public void setCantCamasDobles(Integer cantCamasDobles) { this.cantCamasDobles = cantCamasDobles; }
     public Integer getCantCamasIndividuales() { return cantCamasIndividuales; }

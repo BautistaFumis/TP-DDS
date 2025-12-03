@@ -10,10 +10,10 @@ public class Servicio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String descripcion; // Ej: "Desayuno a la habitación", "Coca Cola"
+    private String descripcion;
     private Float costoServicio;
 
-    // Relación: Muchos servicios pertenecen a una estadía
+
     @ManyToOne
     @JoinColumn(name = "estadia_id")
     private Estadia estadia;
@@ -25,7 +25,7 @@ public class Servicio {
         this.costoServicio = costoServicio;
     }
 
-    // Getters y Setters
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getDescripcion() { return descripcion; }

@@ -11,12 +11,12 @@ public class IndividualEstandar extends Habitacion {
     private Integer cantCamasIndividuales;
     @Override
     public String getNombreTipo() {
-        return "Individual Estándar"; // <--- AQUÍ DEFINES EL NOMBRE QUE SE VE EN EL FRONT
+        return "Individual Estándar";
     }
     public IndividualEstandar() {}
 
     public IndividualEstandar(String numero, EstadoHabitacion estado, Float costoNoche, Integer cantCamasIndividuales) {
-        super(numero, estado, costoNoche); // Llama al constructor de Habitacion
+        super(numero, estado, costoNoche);
         this.cantCamasIndividuales = cantCamasIndividuales;
     }
 
@@ -25,7 +25,7 @@ public class IndividualEstandar extends Habitacion {
         return (cantCamasIndividuales != null) ? cantCamasIndividuales : 0;
     }
 
-    // Getters y Setters
+
     public Integer getCantCamasIndividuales() { return cantCamasIndividuales; }
     public void setCantCamasIndividuales(Integer cantCamasIndividuales) { this.cantCamasIndividuales = cantCamasIndividuales; }
 }

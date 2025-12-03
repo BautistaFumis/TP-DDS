@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "habitaciones")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Estrategia: Una sola tabla para todos los hijos
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Una sola tabla para todos los hijos
 @DiscriminatorColumn(name = "tipo_habitacion", discriminatorType = DiscriminatorType.STRING) // Columna que diferencia
 public abstract class Habitacion {
 
@@ -31,10 +31,10 @@ public abstract class Habitacion {
         this.estado = estado;
         this.costoNoche = costoNoche;
     }
-    // MÉTODO ABSTRACTO: Obliga a las hijas a decir cómo se llaman
+    // METODO ABSTRACTO: Obliga a las hijas a decir cómo se llaman
     public abstract String getNombreTipo();
     // Metodo abstracto: obliga a las hijas a decir cuántas camas tienen
-    // Esto es útil si quieres preguntar habitacion.getCantidadCamas() sin importar el tipo
+
     public abstract int getCantidadCamas();
 
     // Getters y Setters comunes

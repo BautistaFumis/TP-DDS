@@ -85,8 +85,6 @@ public class Huesped {
             this.telefono = otro.telefono;
             this.documento = otro.documento;
 
-            // Copiamos la dirección usando su propio constructor de copia
-            // para evitar referencias cruzadas al mismo objeto en memoria.
             if (otro.direccion != null) {
                 this.direccion = new Direccion(otro.direccion);
             }
@@ -99,7 +97,7 @@ public class Huesped {
         }
     }
 
-    // --- GETTERS Y SETTERS ---
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

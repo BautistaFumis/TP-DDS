@@ -30,11 +30,9 @@ public class GestorReserva {
         String codigoGrupo = "GRP-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
         for (ReservaItemDTO item : dto.getItems()) {
-            // 1. Validar Habitacion
             Habitacion habitacion = habitacionRepository.findById(item.getIdHabitacion())
                     .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
 
-            // 2. Validar Disponibilidad (Doble chequeo de seguridad)
             List<Estadia> ocupaciones = estadiaRepository.buscarPorRango(item.getFechaInicio(), item.getFechaFin());
             boolean ocupada = ocupaciones.stream().anyMatch(e -> e.getHabitacion().getId().equals(habitacion.getId()));
 
@@ -42,18 +40,15 @@ public class GestorReserva {
                 throw new RuntimeException("La habitación " + habitacion.getNumero() + " ya no está disponible.");
             }
 
-            // 3. Crear y GUARDAR la Estadía (Esto es lo que bloquea la habitación en la grilla)
-            Estadia estadia = new Estadia(
+             Estadia estadia = new Estadia(
                     item.getFechaInicio(),
                     item.getFechaFin(),
                     habitacion,
                     TipoEstadoEstadia.RESERVADA
             );
 
-            // ---> ¡IMPORTANTE! GUARDAR LA ESTADÍA <---
             estadia = estadiaRepository.save(estadia);
 
-            // 4. Crear la Reserva (Dato administrativo)
             Reserva reserva = new Reserva();
             reserva.setCodigoReserva(codigoGrupo);
             reserva.setFechaReserva(LocalDate.now());
@@ -64,10 +59,8 @@ public class GestorReserva {
             reserva.setApellido(dto.getApellido());
             reserva.setTelefono(dto.getTelefono());
 
-            // Vincular
             reserva.setEstadia(estadia);
 
-            // 5. Guardar Reserva
             reservaRepository.save(reserva);
         }
     }

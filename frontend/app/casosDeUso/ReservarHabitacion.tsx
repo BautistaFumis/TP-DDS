@@ -1,21 +1,7 @@
 'use client';
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import ModalAlerta from './ModalAlerta';
-
-// --- DEFINICIONES ---
-interface Celda {
-    idHabitacion: string;
-    numero: string;
-    estado: string;
-    texto: string;
-    tipoHabitacion: string;
-}
-
-interface Fila {
-    fechaStr: string;
-    celdas: Celda[];
-}
-
+import MostrarEstadoHabitaciones, { Fila, Celda } from './MostrarEstadoHabitaciones';
 interface Seleccion {
     idHabitacion: string;
     numeroHabitacion: string;
@@ -37,35 +23,19 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
     const [fechaFin, setFechaFin] = useState('');
 
     const [grilla, setGrilla] = useState<Fila[]>([]);
-    const [filtroTipo, setFiltroTipo] = useState<string>('Todos');
     const [selecciones, setSelecciones] = useState<Seleccion[]>([]);
     const [huesped, setHuesped] = useState({ nombre: '', apellido: '', telefono: '' });
 
     const [modal, setModal] = useState<{show: boolean, msg: string | React.ReactNode}>({show:false, msg:''});
     const [primerClick, setPrimerClick] = useState<{ idHab: string, idx: number } | null>(null);
 
-
-    const tiposDisponibles = useMemo(() => {
-        if (grilla.length === 0) return [];
-        const tipos = new Set(grilla[0].celdas.map(c => c.tipoHabitacion));
-        return ['Todos', ...Array.from(tipos)];
-    }, [grilla]);
-
-    const indicesColumnasVisibles = useMemo(() => {
-        if (grilla.length === 0) return [];
-        return grilla[0].celdas
-            .map((c, i) => (filtroTipo === 'Todos' || c.tipoHabitacion === filtroTipo) ? i : -1)
-            .filter(i => i !== -1);
-    }, [grilla, filtroTipo]);
-
-
     const convertirFechaIso = (f: string) => { const [d,m,a] = f.split('/'); return `${a}-${m}-${d}`; }
 
-    //funcion para manejar la reserva de un solo dia
+
     const sumarDia = (fechaStr: string) => {
         const [d, m, a] = fechaStr.split('/').map(Number);
         const fecha = new Date(a, m - 1, d);
-        fecha.setDate(fecha.getDate() + 1); // Sumamos 1 día para el Checkout
+        fecha.setDate(fecha.getDate() + 1);
 
         const dd = String(fecha.getDate()).padStart(2, '0');
         const mm = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -76,8 +46,6 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
             display: `${dd}/${mm}/${aa}`
         };
     }
-
-
 
     const handleConsultar = async () => {
         setSelecciones([]);
@@ -163,9 +131,9 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
                 numeroHabitacion: celda.numero,
                 tipoHabitacion: celda.tipoHabitacion,
                 fechaInicio: convertirFechaIso(grilla[ini].fechaStr),
-                fechaFin: fechaFinCalc.iso,          // Usamos fecha calculada (+1 día)
+                fechaFin: fechaFinCalc.iso,
                 fechaInicioDisplay: grilla[ini].fechaStr,
-                fechaFinDisplay: fechaFinCalc.display, // Usamos fecha calculada (+1 día)
+                fechaFinDisplay: fechaFinCalc.display,
                 indiceInicio: ini,
                 indiceFin: fin
             };
@@ -216,7 +184,7 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
 
         if (celda.estado === 'LIBRE') { bg = '#4a7c35'; color = 'white'; cursor = 'pointer'; }
         else if (celda.estado === 'OCUPADA') { bg = '#ffd1dc'; color = 'black'; }
-        else if (celda.estado === 'RESERVADA') { bg = '#f4b942'; color = 'black'; }
+        else if (celda.estado === 'RESERVADA') { bg = '#f4b942'; color = 'black'; texto = "RESERVADA";}
 
         const estaSeleccionada = selecciones.some(sel =>
             sel.idHabitacion === celda.idHabitacion && idxFila >= sel.indiceInicio && idxFila <= sel.indiceFin
@@ -257,70 +225,29 @@ export default function ReservarHabitacion({ onCancel }: { onCancel: () => void 
 
     if (paso === 'SELECCION_GRILLA') {
         return (
-            <div style={{ width: '900px', margin: '0 auto', border: '1px solid #000', backgroundColor: '#f9f9f9' }}>
+            <>
                 {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={()=>setModal({show:false, msg:''})} />}
-                <div style={{ backgroundColor: '#dceca4', padding: '15px', textAlign: 'center', borderBottom: '1px solid #999' }}>
-                    <h2 style={{ margin: 0, fontSize: '2rem' }}>Estado de Habitaciones</h2>
-                </div>
 
-                <div style={{ padding: '20px' }}>
-                    <div style={{ marginBottom: '15px' }}>
-                        <select
-                            value={filtroTipo}
-                            onChange={(e) => setFiltroTipo(e.target.value)}
-                            style={{ padding: '8px', fontSize: '1rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                        >
-                            {tiposDisponibles.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                    </div>
+                {/* AQUI USAMOS EL COMPONENTE COMPARTIDO CON LA LOGICA DE RESERVAR */}
+                <MostrarEstadoHabitaciones
+                    grillaExterna={grilla}
+                    onCeldaClickExterna={handleCellClick}
+                    getEstiloCeldaExterna={getCellStyle}
+                    onCancel={() => { setSelecciones([]); setPaso('INGRESO_FECHAS'); }}
+                >
+                    {/* BOTONES PERSONALIZADOS DE RESERVA */}
+                    <button style={{ backgroundColor: '#ffbdad', border: '1px solid #cc8b79', padding: '10px 30px', fontWeight: 'bold' }}
+                            onClick={() => { setSelecciones([]); setPaso('INGRESO_FECHAS'); }}>Cancelar</button>
 
-                    <div style={{ overflowX: 'auto', marginBottom: '20px', maxHeight:'400px' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                            <tr>
-                                <th style={{padding:'10px', background:'#ddd', border:'1px solid #999'}}>Día \ Habitación</th>
-                                {indicesColumnasVisibles.map(idx => {
-                                    const c = grilla[0].celdas[idx];
-                                    return <th key={c.idHabitacion} style={{padding:'10px', background:'#ddd', border:'1px solid #999'}}>{c.numero}</th>
-                                })}
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {grilla.map((fila, i) => (
-                                <tr key={i}>
-                                    <td style={{padding:'10px', background:'#eee', border:'1px solid #999', fontWeight:'bold'}}>{fila.fechaStr}</td>
-                                    {indicesColumnasVisibles.map(idx => {
-                                        const celda = fila.celdas[idx];
-                                        const { style, texto } = getCellStyle(celda, i);
-                                        return (
-                                            <td key={celda.idHabitacion}
-                                                style={style}
-                                                onClick={() => handleCellClick(celda, i)}
-                                            >
-                                                {texto}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <button style={{ backgroundColor: '#ffbdad', border: '1px solid #cc8b79', padding: '10px 30px', fontWeight: 'bold' }}
-                                onClick={() => { setSelecciones([]); setPaso('INGRESO_FECHAS'); }}>Cancelar</button>
-
-                        <button
-                            disabled={selecciones.length === 0}
-                            style={{ backgroundColor: selecciones.length > 0 ? '#999' : '#ccc', border: '1px solid #666', padding: '10px 30px', fontWeight: 'bold', color: 'white', cursor: selecciones.length>0?'pointer':'default' }}
-                            onClick={() => setPaso('CONFIRMACION')}
-                        >
-                            Continuar
-                        </button>
-                    </div>
-                </div>
-            </div>
+                    <button
+                        disabled={selecciones.length === 0}
+                        style={{ backgroundColor: selecciones.length > 0 ? '#999' : '#ccc', border: '1px solid #666', padding: '10px 30px', fontWeight: 'bold', color: 'white', cursor: selecciones.length>0?'pointer':'default' }}
+                        onClick={() => setPaso('CONFIRMACION')}
+                    >
+                        Continuar
+                    </button>
+                </MostrarEstadoHabitaciones>
+            </>
         );
     }
 
