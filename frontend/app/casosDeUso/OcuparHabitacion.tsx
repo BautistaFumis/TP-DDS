@@ -284,8 +284,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         return { style: { backgroundColor: bg, color, cursor, border, padding: '10px', textAlign: 'center' as const, fontWeight: 'bold' }, texto: textoCelda };
     };
 
-    // const indicesColumnas = ... (Eliminado, lo maneja MostrarEstado)
-    // const tipos = ... (Eliminado, lo maneja MostrarEstado)
+
 
     if (paso === 'INGRESO_FECHAS') {
         return (
