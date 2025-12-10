@@ -168,6 +168,7 @@ public class CargadorDeDatos implements CommandLineRunner {
 
 
         Estadia estadia = new Estadia(fechaIn, fechaOut, habitacion, Logica.Dominio.Enum.TipoEstadoEstadia.ACTIVA);
+        estadia.setHuespedes(huespedes); // <--- ESTA LÍNEA ES LA QUE FALTABA Y VINCULA LAS TABLAS
 
         if (conReserva) {
             Reserva reserva = new Reserva();

@@ -356,7 +356,7 @@ export default function OcuparHabitacion({ onCancel }: { onCancel: () => void })
         return (
             <div style={{ width: '800px', margin: '20px auto', display: 'flex', border: '1px solid #000', backgroundColor: '#fff', minHeight: '400px' }}>
                 {modal.show && <ModalAlerta mensaje={modal.msg} onAceptar={modal.onOk || (()=>setModal({show:false, msg:''}))} />}
-                {/* Panel Izquierdo */}
+
                 <div style={{ width: '35%', backgroundColor: '#dceca4', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderRight: '1px solid #000', padding: '20px' }}>
                     <h1 style={{ fontSize: '2.5rem', margin: '0 0 30px 0', textAlign: 'center', lineHeight: '1.1' }}>GESTIONAR<br/>HUESPED</h1>
                     <button onClick={onCancel} style={{ backgroundColor: '#ffbdad', border: '1px solid #cc8b79', padding: '10px 30px', fontWeight: 'bold', cursor: 'pointer' }}>Cancelar</button>
