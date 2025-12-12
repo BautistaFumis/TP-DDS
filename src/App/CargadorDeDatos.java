@@ -19,16 +19,11 @@ import java.util.*;
 @Order(1)
 public class CargadorDeDatos implements CommandLineRunner {
 
-    @Autowired
-    private UsuarioDAO usuarioRepository;
-    @Autowired
-    private HuespedDAO huespedRepository;
-    @Autowired
-    private EstadiaDAO estadiaRepository;
-    @Autowired
-    private ReservaDAO reservaRepository;
-    @Autowired
-    private HabitacionDAO habitacionRepository;
+    @Autowired private UsuarioDAO usuarioRepository;
+    @Autowired private HuespedDAO huespedRepository;
+    @Autowired private EstadiaDAO estadiaRepository;
+    @Autowired private ReservaDAO reservaRepository;
+    @Autowired private HabitacionDAO habitacionRepository;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -36,81 +31,100 @@ public class CargadorDeDatos implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
+        // 1. USUARIO ADMIN
         if (usuarioRepository.count() == 0) {
             System.out.println(">>> Cargando usuario por defecto...");
             usuarioRepository.save(new Usuario("Conserje", "conserje123"));
         }
 
+        // 2. HABITACIONES
         if (habitacionRepository.count() == 0) {
-            System.out.println(">>> Cargando habitaciones (Probando Herencia)...");
+            System.out.println(">>> Cargando habitaciones...");
             List<Habitacion> habitaciones = new ArrayList<>();
-
-            // 1. Individual Estándar (1 Cama Indiv)
-            habitaciones.add(new IndividualEstandar("101", EstadoHabitacion.LIBRE, 40000.0f, 1));
-
-            // 2. Doble Estándar (1 Doble, 0 Indiv)
-            habitaciones.add(new DobleEstandar("102", EstadoHabitacion.OCUPADA, 60000.0f, 1, 0));
-
-            // 3. Doble Superior (1 Doble, 1 Indiv, 1 King)
-            habitaciones.add(new DobleSuperior("201", EstadoHabitacion.LIBRE, 90000.0f, 1, 1, 1));
-
-            // 4. Suite Doble (2 Dobles, 0 Indiv)
-            habitaciones.add(new SuiteDoble("202", EstadoHabitacion.OCUPADA, 120000.0f, 2, 0));
-
-            // 5. Superior Family Plan (2 Dobles, 2 Indiv)
-            habitaciones.add(new SuperiorFamilyPlan("301", EstadoHabitacion.LIBRE, 150000.0f, 2, 2));
-
+            habitaciones.add(new IndividualEstandar("101", EstadoHabitacion.OCUPADA, 40000.0f, 1)); // Ocupada hoy
+            habitaciones.add(new DobleEstandar("102", EstadoHabitacion.OCUPADA, 60000.0f, 1, 0));    // Ocupada hoy
+            habitaciones.add(new DobleSuperior("201", EstadoHabitacion.LIBRE, 90000.0f, 1, 1, 1));   // Reservada futuro
+            habitaciones.add(new SuiteDoble("202", EstadoHabitacion.LIBRE, 120000.0f, 2, 0));        // Reservada futuro
+            habitaciones.add(new SuperiorFamilyPlan("301", EstadoHabitacion.LIBRE, 150000.0f, 2, 2)); // Libre
             habitacionRepository.saveAll(habitaciones);
-            System.out.println(">>> " + habitaciones.size() + " habitaciones cargadas.");
         }
 
+        // 3. HUÉSPEDES
         if (huespedRepository.count() == 0) {
-            System.out.println(">>> Cargando huéspedes iniciales...");
-            List<Huesped> huespedesACargar = Arrays.asList(
-                    crearHuesped("FUMIS", "BAUTISTA", "DNI", "45828019", "20-45828019-4", "CONSUMIDOR FINAL", "28/05/2004", "SAAVEDRA", "2444", "", "9", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3425112233", "bautistafumis@gmail.com", "ESTUDIANTE", "ARGENTINA"),
-                    crearHuesped("FERNANDEZ", "JUAN", "LE", "8123456", "20-8123456-9", "MONOTRIBUTISTA", "11/12/1950", "BV. PELLEGRINI", "3201", "", "2", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3424111222", "juan.fernandez@example.com", "JUBILADO", "ARGENTINA"),
-                    crearHuesped("GARCIA", "SOFIA", "DNI", "41987654", "27-41987654-5", "CONSUMIDOR FINAL", "19/09/1999", "ALVEAR", "1530", "", "", "2000", "ROSARIO", "SANTA FE", "ARGENTINA", "3415876543", "sofia.garcia@example.com", "DISEÑADORA", "ARGENTINA"),
-                    crearHuesped("LOPEZ", "MARTIN", "DNI", "35123456", "", "CONSUMIDOR FINAL", "18/02/1990", "URQUIZA", "1850", "", "", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3425443322", "martin.lopez@example.com", "PROGRAMADOR", "ARGENTINA"),
-                    crearHuesped("GOMEZ", "ANA", "PASAPORTE", "DEF45678", "", "MONOTRIBUTISTA", "25/06/1992", "RIVADAVIA", "2899", "", "", "3100", "PARANA", "ENTRE RIOS", "ARGENTINA", "3434556677", "ana.gomez@example.com", "ABOGADA", "ARGENTINA"),
-                    crearHuesped("PEREZ", "JUANA", "DNI", "38765432", "", "CONSUMIDOR FINAL", "30/11/1995", "J. J. PASO", "4500", "", "", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3425998877", "juana.perez@example.com", "MEDICA", "ARGENTINA"),
-                    crearHuesped("LOCATELLI", "CRISTIAN", "DNI", "44292971", "20-44292971-9", "CONSUMIDOR FINAL", "07/11/2002", "SALTA", "2200", "A", "1", "3000", "SANTA FE", "SANTA FE", "ARGENTINA", "3482257103", "criatanlocatelli02@gmail.com", "ESTUDIANTE", "ARGENTINA"),
-                    crearHuesped("CAVANI", "EDISON", "LE", "912", "", "CONSUMIDOR FINAL", "10/10/2010", "LA BOCA", "8990", "", "", "3000", "BSAS", "BUENOS AIRES", "ARGENTINA", "", "", "FUTBOLISTA", "URUGUAYO"),
-                    crearHuesped("MESSI", "LEO", "DNI", "124", "", "CONSUMIDOR FINAL", "10/10/2010", "BARCELONA", "30", "", "10", "2000", "CATALUNIA", "ESPAIN", "ESPAIN", "", "", "GOAT", "OTRO PLANETA"),
-                    crearHuesped("MARTINEZ", "MATIAS", "LE", "32144231", "20-32144231-9", "CONSUMIDOR FINAL", "22/05/2003", "JUJUY", "516", "", "", "3100", "PARANA", "ENTRE RIOS", "ARG", "", "", "", ""),
-                    crearHuesped("GOMEZ", "CARLOS", "PASAPORTE", "ABC98765", "20-28765432-1", "RESPONSABLE INSCRIPTO", "22/07/1980", "AV. CORRIENTES", "950", "A", "5", "1043", "BUENOS AIRES", "CABA", "ARGENTINA", "1155667788", "carlos.martinez@work.com", "ARQUITECTO", "URUGUAYA")
+            System.out.println(">>> Cargando huéspedes...");
+            List<Huesped> huespedes = Arrays.asList(
+                    // Huésped para Factura B (Consumidor Final) - Ocupando Hab 101
+                    crearHuesped("FUMIS", "BAUTISTA", "DNI", "45828019", "20-45828019-4", "CONSUMIDOR FINAL", "28/05/2004", "SAAVEDRA", "2444", "SANTA FE"),
+
+                    // Huésped para Historial Pasado (No se puede borrar)
+                    crearHuesped("FERNANDEZ", "JUAN", "LE", "8123456", "20-8123456-9", "MONOTRIBUTISTA", "11/12/1950", "BV. PELLEGRINI", "3201", "SANTA FE"),
+
+                    // Huésped para Cancelar Reserva (Futura) - Hab 201
+                    crearHuesped("GARCIA", "SOFIA", "DNI", "41987654", "27-41987654-5", "CONSUMIDOR FINAL", "19/09/1999", "ALVEAR", "1530", "ROSARIO"),
+
+                    // Huésped sin historial (Se puede borrar)
+                    crearHuesped("LOPEZ", "MARTIN", "DNI", "35123456", "", "CONSUMIDOR FINAL", "18/02/1990", "URQUIZA", "1850", "SANTA FE"),
+
+                    // Huésped para Factura A (Responsable Inscripto) - Ocupando Hab 102
+                    crearHuesped("GOMEZ", "CARLOS", "PASAPORTE", "ABC98765", "20-28765432-1", "RESPONSABLE INSCRIPTO", "22/07/1980", "AV. CORRIENTES", "950", "CABA"),
+
+                    // Otro huésped para reserva futura - Hab 202
+                    crearHuesped("MESSI", "LEO", "DNI", "10101010", "", "CONSUMIDOR FINAL", "24/06/1987", "ROSARIO", "10", "ROSARIO")
             );
-            huespedRepository.saveAllAndFlush(huespedesACargar);
-            System.out.println(">>> " + huespedesACargar.size() + " huéspedes cargados exitosamente.");
+            huespedRepository.saveAllAndFlush(huespedes);
+            System.out.println(">>> Huéspedes cargados.");
         }
 
+        // 4. ESTADÍAS Y RESERVAS (Lógica Dinámica)
         if (estadiaRepository.count() == 0) {
-            System.out.println(">>> Cargando estadías, reservas y asignando servicios...");
-            List<Estadia> estadiasACargar = new ArrayList<>();
+            System.out.println(">>> Generando estadías dinámicas (relativas a HOY)...");
 
-            // obtenemos las habitaciones para asignarlas
-            List<Habitacion> habitaciones = habitacionRepository.findAll();
+            List<Habitacion> habs = habitacionRepository.findAll();
+            // Mapeo rápido por número para no confundirnos
+            Habitacion h101 = habs.stream().filter(h -> h.getNumero().equals("101")).findFirst().get();
+            Habitacion h102 = habs.stream().filter(h -> h.getNumero().equals("102")).findFirst().get();
+            Habitacion h201 = habs.stream().filter(h -> h.getNumero().equals("201")).findFirst().get();
+            Habitacion h202 = habs.stream().filter(h -> h.getNumero().equals("202")).findFirst().get();
+            Habitacion h301 = habs.stream().filter(h -> h.getNumero().equals("301")).findFirst().get();
+
+            LocalDate hoy = LocalDate.now();
+            List<Estadia> estadías = new ArrayList<>();
 
             try {
+                // --- CASO 1: ESTADÍA ACTIVA (Para Facturar) - Habitacion 102 ---
+                // Carlos Gomez (RI). Entró hace 2 días, sale mañana.
+                // Ideal para probar "Facturar" -> Debería salir Factura A.
+                Estadia eActiva1 = crearEstadia(hoy.minusDays(2), hoy.plusDays(1), "PASAPORTE", "ABC98765", true, h102);
+                eActiva1.agregarServicio(new Servicio("Champagne", 15000f));
+                eActiva1.agregarServicio(new Servicio("Room Service Cena", 25000f));
+                estadías.add(eActiva1);
 
-                Estadia e1 = crearEstadia("15/10/2025", "20/10/2025", "DNI", "45828019", true, habitaciones.get(0));
-                e1.agregarServicio(new Servicio("Coca Cola", 2500f));
-                e1.agregarServicio(new Servicio("Papas Fritas", 3500f));
-                estadiasACargar.add(e1);
+                // --- CASO 2: ESTADÍA ACTIVA (Para Facturar) - Habitacion 101 ---
+                // Bautista Fumis (CF). Entró hoy, sale en 3 días.
+                // Ideal para probar "Facturar" -> Debería salir Factura B.
+                Estadia eActiva2 = crearEstadia(hoy, hoy.plusDays(3), "DNI", "45828019", false, h101);
+                eActiva2.agregarServicio(new Servicio("Coca Cola", 3000f));
+                eActiva2.agregarServicio(new Servicio("Papas Fritas", 4500f));
+                estadías.add(eActiva2);
 
-                Estadia e2 = crearEstadia("01/11/2025", "10/11/2025", "PASAPORTE", "ABC98765", false, habitaciones.get(1));
-                e2.agregarServicio(new Servicio("Desayuno Continental", 8000f));
-                estadiasACargar.add(e2);
+                // --- CASO 3: RESERVA FUTURA (Para Cancelar) - Habitacion 201 ---
+                // Sofia Garcia. Reserva para dentro de 15 días.
+                // Ideal para probar "Cancelar Reserva" -> Buscar por "GARCIA".
+                estadías.add(crearEstadia(hoy.plusDays(15), hoy.plusDays(20), "DNI", "41987654", true, h201));
 
-                Estadia e3 = crearEstadia("12/12/2025", "15/12/2025", "LE", "8123456", true, habitaciones.get(2));
-                e3.agregarServicio(new Servicio("Lavandería", 5000f));
-                estadiasACargar.add(e3);
+                // --- CASO 4: RESERVA FUTURA (Para Cancelar) - Habitacion 202 ---
+                // Leo Messi. Reserva para el mes que viene.
+                estadías.add(crearEstadia(hoy.plusMonths(1), hoy.plusMonths(1).plusDays(5), "DNI", "10101010", true, h202));
 
-                estadiasACargar.add(crearEstadia("20/12/2025", "22/12/2025", "DNI", "41987654", true, habitaciones.get(3)));
+                // --- CASO 5: ESTADÍA PASADA (Historial) - Habitacion 301 ---
+                // Juan Fernandez. Estuvo el mes pasado.
+                // Ideal para probar que NO se puede borrar al huésped.
+                Estadia ePasada = crearEstadia(hoy.minusMonths(1), hoy.minusMonths(1).plusDays(5), "LE", "8123456", true, h301);
+                ePasada.agregarServicio(new Servicio("Lavandería", 5000f));
+                estadías.add(ePasada);
 
-                estadiasACargar.add(crearEstadia("01/12/2025", "05/12/2025", "PASAPORTE", "DEF45678", false, habitaciones.get(4)));
-
-                estadiaRepository.saveAll(estadiasACargar);
-                System.out.println(">>> " + estadiasACargar.size() + " estadías cargadas exitosamente.");
+                estadiaRepository.saveAll(estadías);
+                System.out.println(">>> Estadías y reservas cargadas exitosamente.");
 
             } catch (Exception e) {
                 System.err.println("ERROR al cargar estadías: " + e.getMessage());
@@ -119,97 +133,81 @@ public class CargadorDeDatos implements CommandLineRunner {
         }
     }
 
+    // --- MÉTODOS AUXILIARES ---
 
-    private Huesped crearHuesped(String apellido, String nombre, String tipoDoc, String doc, String cuit, String iva, String fechaNac,
-                                 String calle, String numero, String depto, String piso, String cp, String localidad, String prov, String pais,
-                                 String tel, String email, String ocup, String nac) {
+    private Huesped crearHuesped(String apellido, String nombre, String tipoDoc, String doc, String cuit, String iva, String fechaNac, String calle, String numero, String localidad) {
         Direccion dir = new Direccion();
-        dir.setCalle(parseStringMayus(calle));
-        dir.setDepartamento(parseStringMayus(depto));
-        dir.setCodigoPostal(parseStringMayus(cp));
-        dir.setLocalidad(parseStringMayus(localidad));
-        dir.setProvincia(parseStringMayus(prov));
-        dir.setPais(parseStringMayus(pais));
-        dir.setNumero(parseInteger(numero));
-        dir.setPiso(parseInteger(piso));
+        dir.setCalle(calle);
+        dir.setNumero(Integer.parseInt(numero));
+        dir.setLocalidad(localidad);
+        dir.setProvincia("SANTA FE");
+        dir.setPais("ARGENTINA");
+        dir.setCodigoPostal("3000");
 
         Huesped h = new Huesped();
-        h.setApellido(parseStringMayus(apellido));
-        h.setNombre(parseStringMayus(nombre));
-        h.setTipoDocumento(parseStringMayus(tipoDoc));
-        h.setDocumento(parseStringMayus(doc));
-        h.setCuit(parseStringMayus(cuit));
-        h.setCategoriaIVA(parseStringMayus(iva));
-        h.setTelefono(parseStringMayus(tel));
-        h.setOcupacion(parseStringMayus(ocup));
-        h.setNacionalidad(parseStringMayus(nac));
-        h.setFechaNacimiento(parseLocalDate(fechaNac));
-        h.setEmail(parseString(email));
+        h.setApellido(apellido);
+        h.setNombre(nombre);
+        h.setTipoDocumento(tipoDoc);
+        h.setDocumento(doc);
+        h.setCuit(cuit != null && !cuit.isEmpty() ? cuit : null);
+        h.setCategoriaIVA(iva);
+        h.setFechaNacimiento(parseLocalDateStr(fechaNac));
+        h.setTelefono("342000000");
+        h.setEmail(nombre.toLowerCase() + "." + apellido.toLowerCase() + "@mail.com");
+        h.setOcupacion("VARIOS");
+        h.setNacionalidad("ARGENTINA");
         h.setDireccion(dir);
         return h;
     }
 
+    private Estadia crearEstadia(LocalDate checkin, LocalDate checkout, String tipoDoc, String numDoc, boolean conReserva, Habitacion habitacion) {
 
-    private Estadia crearEstadia(String checkin, String checkout, String tipoDoc, String numDoc, boolean conReserva, Habitacion habitacion) {
-
-        Optional<Huesped> huespedOpt = huespedRepository.findByTipoDocumentoAndDocumento(
-                parseStringMayus(tipoDoc),
-                parseStringMayus(numDoc)
-        );
-
+        // 1. Buscar Huésped
+        Optional<Huesped> huespedOpt = huespedRepository.findByTipoDocumentoAndDocumento(tipoDoc, numDoc);
         if (huespedOpt.isEmpty()) throw new RuntimeException("Huésped no encontrado: " + numDoc);
-
         Huesped principal = huespedOpt.get();
 
-        List<Huesped> huespedes = new ArrayList<>(Collections.singletonList(principal));
+        // 2. Crear Lista de Huéspedes
+        List<Huesped> listaHuespedes = new ArrayList<>();
+        listaHuespedes.add(principal);
 
-        LocalDate fechaIn = parseLocalDate(checkin);
-        LocalDate fechaOut = parseLocalDate(checkout);
+        // 3. Determinar Estado
+        TipoEstadoEstadia estado;
+        LocalDate hoy = LocalDate.now();
+        if (checkout.isBefore(hoy)) {
+            estado = TipoEstadoEstadia.CERRADA; // Pasada
+        } else if (checkin.isAfter(hoy)) {
+            estado = TipoEstadoEstadia.RESERVADA; // Futura
+        } else {
+            estado = TipoEstadoEstadia.ACTIVA; // En curso
+        }
 
+        // 4. Crear Estadía
+        Estadia estadia = new Estadia(checkin, checkout, habitacion, estado);
+        estadia.setHuespedes(listaHuespedes); // <--- VINCULACIÓN IMPORTANTE
 
-        Estadia estadia = new Estadia(fechaIn, fechaOut, habitacion, Logica.Dominio.Enum.TipoEstadoEstadia.ACTIVA);
-        estadia.setHuespedes(huespedes); // <--- ESTA LÍNEA ES LA QUE FALTABA Y VINCULA LAS TABLAS
-
-        if (conReserva) {
+        // 5. Crear Reserva asociada si corresponde
+        if (conReserva || estado == TipoEstadoEstadia.RESERVADA) {
             Reserva reserva = new Reserva();
-            reserva.setFechaInicio(fechaIn);
-            reserva.setFechaFin(fechaOut);
-            reserva.setFechaReserva(fechaIn.minusDays(15));
-            reserva.setEstado(EstadoReserva.RESERVADA);
+            reserva.setFechaInicio(checkin);
+            reserva.setFechaFin(checkout);
+            reserva.setFechaReserva(checkin.minusDays(10)); // Reservó 10 días antes
+            reserva.setEstado(estado == TipoEstadoEstadia.CERRADA ? EstadoReserva.FINALIZADA : EstadoReserva.RESERVADA);
 
-            String codigo = "RES-" + principal.getApellido().substring(0, Math.min(3, principal.getApellido().length()))
-                    + "-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+            String codigo = "RES-" + UUID.randomUUID().toString().substring(0, 5).toUpperCase();
             reserva.setCodigoReserva(codigo);
             reserva.setNombre(principal.getNombre());
             reserva.setApellido(principal.getApellido());
             reserva.setTelefono(principal.getTelefono());
 
-
             reserva = reservaRepository.save(reserva);
             estadia.setReserva(reserva);
-        }
-
-        LocalDate hoy = LocalDate.now();
-
-        if (fechaOut.isBefore(hoy)) {
-            estadia.setTipoEstado(TipoEstadoEstadia.CERRADA); // Pasada
-        } else if (fechaIn.isAfter(hoy)) {
-            estadia.setTipoEstado(TipoEstadoEstadia.RESERVADA); // Futura
-        } else {
-            estadia.setTipoEstado(TipoEstadoEstadia.ACTIVA); // Hoy o en curso
         }
 
         return estadia;
     }
 
-    private Integer parseInteger(String valor) {
-        if (valor == null || valor.trim().isEmpty()) return null;
-        try { return Integer.parseInt(valor.trim()); } catch (NumberFormatException e) { return null; }
-    }
-    private String parseString(String valor) { return (valor == null || valor.trim().isEmpty()) ? null : valor.trim(); }
-    private String parseStringMayus(String valor) { return (valor == null || valor.trim().isEmpty()) ? null : valor.trim().toUpperCase(); }
-    private LocalDate parseLocalDate(String valor) {
-        if (valor == null || valor.trim().isEmpty()) return null;
-        try { return LocalDate.parse(valor.trim(), formatter); } catch (Exception e) { return null; }
+    private LocalDate parseLocalDateStr(String fecha) {
+        try { return LocalDate.parse(fecha, formatter); } catch (Exception e) { return null; }
     }
 }
