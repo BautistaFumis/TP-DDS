@@ -15,7 +15,7 @@ import java.util.List;
 public class ReservaController {
 
     @Autowired private GestorReserva gestorReserva;
-
+    // Crear Reservas
     @PostMapping("/crear")
     public ResponseEntity<?> crearReserva(@RequestBody CrearReservaDTO dto) {
         try {
@@ -26,7 +26,7 @@ public class ReservaController {
         }
     }
 
-    // NUEVO: Buscar Reservas
+    // Buscar Reservas
     @GetMapping("/buscar")
     public ResponseEntity<List<ReservaBusquedaDTO>> buscarReservas(
             @RequestParam(required = false) String nombre,
@@ -35,7 +35,7 @@ public class ReservaController {
         return ResponseEntity.ok(gestorReserva.buscarReservas(nombre, apellido));
     }
 
-    // NUEVO: Cancelar Reservas
+    //Cancelar Reservas
     @PostMapping("/cancelar")
     public ResponseEntity<?> cancelarReservas(@RequestBody List<Long> ids) {
         try {

@@ -31,13 +31,11 @@ public class CargadorDeDatos implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
-        // 1. USUARIO ADMIN
         if (usuarioRepository.count() == 0) {
             System.out.println(">>> Cargando usuario por defecto...");
             usuarioRepository.save(new Usuario("Conserje", "conserje123"));
         }
 
-        // 2. HABITACIONES
         if (habitacionRepository.count() == 0) {
             System.out.println(">>> Cargando habitaciones...");
             List<Habitacion> habitaciones = new ArrayList<>();
@@ -49,7 +47,6 @@ public class CargadorDeDatos implements CommandLineRunner {
             habitacionRepository.saveAll(habitaciones);
         }
 
-        // 3. HUÉSPEDES
         if (huespedRepository.count() == 0) {
             System.out.println(">>> Cargando huéspedes...");
             List<Huesped> huespedes = Arrays.asList(
@@ -75,12 +72,10 @@ public class CargadorDeDatos implements CommandLineRunner {
             System.out.println(">>> Huéspedes cargados.");
         }
 
-        // 4. ESTADÍAS Y RESERVAS (Lógica Dinámica)
         if (estadiaRepository.count() == 0) {
             System.out.println(">>> Generando estadías dinámicas (relativas a HOY)...");
 
             List<Habitacion> habs = habitacionRepository.findAll();
-            // Mapeo rápido por número para no confundirnos
             Habitacion h101 = habs.stream().filter(h -> h.getNumero().equals("101")).findFirst().get();
             Habitacion h102 = habs.stream().filter(h -> h.getNumero().equals("102")).findFirst().get();
             Habitacion h201 = habs.stream().filter(h -> h.getNumero().equals("201")).findFirst().get();
@@ -91,34 +86,19 @@ public class CargadorDeDatos implements CommandLineRunner {
             List<Estadia> estadías = new ArrayList<>();
 
             try {
-                // --- CASO 1: ESTADÍA ACTIVA (Para Facturar) - Habitacion 102 ---
-                // Carlos Gomez (RI). Entró hace 2 días, sale mañana.
-                // Ideal para probar "Facturar" -> Debería salir Factura A.
                 Estadia eActiva1 = crearEstadia(hoy.minusDays(2), hoy.plusDays(1), "PASAPORTE", "ABC98765", true, h102);
                 eActiva1.agregarServicio(new Servicio("Champagne", 15000f));
                 eActiva1.agregarServicio(new Servicio("Room Service Cena", 25000f));
                 estadías.add(eActiva1);
 
-                // --- CASO 2: ESTADÍA ACTIVA (Para Facturar) - Habitacion 101 ---
-                // Bautista Fumis (CF). Entró hoy, sale en 3 días.
-                // Ideal para probar "Facturar" -> Debería salir Factura B.
                 Estadia eActiva2 = crearEstadia(hoy, hoy.plusDays(3), "DNI", "45828019", false, h101);
                 eActiva2.agregarServicio(new Servicio("Coca Cola", 3000f));
                 eActiva2.agregarServicio(new Servicio("Papas Fritas", 4500f));
                 estadías.add(eActiva2);
 
-                // --- CASO 3: RESERVA FUTURA (Para Cancelar) - Habitacion 201 ---
-                // Sofia Garcia. Reserva para dentro de 15 días.
-                // Ideal para probar "Cancelar Reserva" -> Buscar por "GARCIA".
                 estadías.add(crearEstadia(hoy.plusDays(15), hoy.plusDays(20), "DNI", "41987654", true, h201));
+       estadías.add(crearEstadia(hoy.plusMonths(1), hoy.plusMonths(1).plusDays(5), "DNI", "10101010", true, h202));
 
-                // --- CASO 4: RESERVA FUTURA (Para Cancelar) - Habitacion 202 ---
-                // Leo Messi. Reserva para el mes que viene.
-                estadías.add(crearEstadia(hoy.plusMonths(1), hoy.plusMonths(1).plusDays(5), "DNI", "10101010", true, h202));
-
-                // --- CASO 5: ESTADÍA PASADA (Historial) - Habitacion 301 ---
-                // Juan Fernandez. Estuvo el mes pasado.
-                // Ideal para probar que NO se puede borrar al huésped.
                 Estadia ePasada = crearEstadia(hoy.minusMonths(1), hoy.minusMonths(1).plusDays(5), "LE", "8123456", true, h301);
                 ePasada.agregarServicio(new Servicio("Lavandería", 5000f));
                 estadías.add(ePasada);
@@ -133,7 +113,6 @@ public class CargadorDeDatos implements CommandLineRunner {
         }
     }
 
-    // --- MÉTODOS AUXILIARES ---
 
     private Huesped crearHuesped(String apellido, String nombre, String tipoDoc, String doc, String cuit, String iva, String fechaNac, String calle, String numero, String localidad) {
         Direccion dir = new Direccion();
@@ -162,17 +141,14 @@ public class CargadorDeDatos implements CommandLineRunner {
 
     private Estadia crearEstadia(LocalDate checkin, LocalDate checkout, String tipoDoc, String numDoc, boolean conReserva, Habitacion habitacion) {
 
-        // 1. Buscar Huésped
         Optional<Huesped> huespedOpt = huespedRepository.findByTipoDocumentoAndDocumento(tipoDoc, numDoc);
         if (huespedOpt.isEmpty()) throw new RuntimeException("Huésped no encontrado: " + numDoc);
         Huesped principal = huespedOpt.get();
 
-        // 2. Crear Lista de Huéspedes
         List<Huesped> listaHuespedes = new ArrayList<>();
         listaHuespedes.add(principal);
 
-        // 3. Determinar Estado
-        TipoEstadoEstadia estado;
+      TipoEstadoEstadia estado;
         LocalDate hoy = LocalDate.now();
         if (checkout.isBefore(hoy)) {
             estado = TipoEstadoEstadia.CERRADA; // Pasada
@@ -182,11 +158,9 @@ public class CargadorDeDatos implements CommandLineRunner {
             estado = TipoEstadoEstadia.ACTIVA; // En curso
         }
 
-        // 4. Crear Estadía
         Estadia estadia = new Estadia(checkin, checkout, habitacion, estado);
         estadia.setHuespedes(listaHuespedes); // <--- VINCULACIÓN IMPORTANTE
 
-        // 5. Crear Reserva asociada si corresponde
         if (conReserva || estado == TipoEstadoEstadia.RESERVADA) {
             Reserva reserva = new Reserva();
             reserva.setFechaInicio(checkin);

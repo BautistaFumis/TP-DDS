@@ -10,7 +10,7 @@ public class ItemFacturableDTO {
         this.monto = monto;
         this.esEstadia = esEstadia;
     }
-    // Getters y Setters
+
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public Double getMonto() { return monto; }

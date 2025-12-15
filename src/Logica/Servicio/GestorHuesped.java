@@ -28,7 +28,6 @@ public class GestorHuesped {
         this.estadiaRepository = estadiaRepository;
     }
 
-    // --- CONVERSIONES Y VALIDACIONES ---
 
     public Huesped convertirHuesped(HuespedAltaDTO dto) {
         Huesped huesped = new Huesped();
@@ -111,7 +110,6 @@ public class GestorHuesped {
         huespedRepository.save(huesped);
     }
 
-    // --- BÚSQUEDA ---
 
     public List<Huesped> buscarHuesped() {
         return huespedRepository.findAll();
@@ -135,7 +133,6 @@ public class GestorHuesped {
                 .orElseThrow(() -> new EntidadNoEncontradaException("El huésped no existe."));
     }
 
-    // --- MODIFICACIÓN (CU10) ---
 
     public Huesped modificarHuesped(Long id, HuespedAltaDTO dto, boolean forzarDuplicado)
             throws EntidadNoEncontradaException, CamposObligatoriosException, DocumentoDuplicadoException {
@@ -146,14 +143,12 @@ public class GestorHuesped {
         Huesped datosNuevos = convertirHuesped(dto);
         validarCamposObligatorios(datosNuevos);
 
-        // Verificamos si existe OTRO usuario con el mismo documento
         Optional<Huesped> posibleDuplicado = huespedRepository.findByTipoDocumentoAndDocumento(
                 datosNuevos.getTipoDocumento(),
                 datosNuevos.getDocumento()
         );
 
         if (posibleDuplicado.isPresent()) {
-            // Si el ID del encontrado NO es el mismo que estamos editando, hay conflicto
             if (!posibleDuplicado.get().getId().equals(id)) {
                 if (!forzarDuplicado) {
                     throw new DocumentoDuplicadoException("¡CUIDADO! El tipo y número de documento ya existen en el sistema.");
@@ -165,7 +160,6 @@ public class GestorHuesped {
         return huespedRepository.save(huespedExistente);
     }
 
-    // --- BAJA (CU11) ---
 
     public void darDeBajaHuesped(Long id) throws EntidadNoEncontradaException, OperacionNoPermitidaException {
         Huesped huesped = huespedRepository.findById(id)

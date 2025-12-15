@@ -68,7 +68,7 @@ public class GestorEstadia {
             }
         }
 
-        // CASO C: No hay conflictos (Habitación LIBRE) -> Creamos nueva estadía
+
         Estadia nuevaEstadia = new Estadia();
         nuevaEstadia.setHabitacion(habitacion);
         nuevaEstadia.setFechaCheckin(dto.getFechaInicio());

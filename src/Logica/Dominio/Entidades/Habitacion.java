@@ -31,13 +31,10 @@ public abstract class Habitacion {
         this.estado = estado;
         this.costoNoche = costoNoche;
     }
-    // METODO ABSTRACTO: Obliga a las hijas a decir cómo se llaman
     public abstract String getNombreTipo();
-    // Metodo abstracto: obliga a las hijas a decir cuántas camas tienen
 
     public abstract int getCantidadCamas();
 
-    // Getters y Setters comunes
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNumero() { return numero; }

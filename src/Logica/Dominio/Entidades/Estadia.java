@@ -62,7 +62,6 @@ public class Estadia {
         if (tipoEstado == TipoEstadoEstadia.ACTIVA) {
             this.estadoLogic = new EstadoActiva();
         }
-        // Si es RESERVADA, no tiene estado lógico activo todavía o podemos asignar uno EstadoReservada si existe.
     }
 
 

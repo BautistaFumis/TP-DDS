@@ -65,8 +65,7 @@ public class Reserva {
 
     public Estadia getEstadia() { return estadia; }
 
-    // Setter especial para mantener coherencia bidireccional
-    public void setEstadia(Estadia estadia) {
+ public void setEstadia(Estadia estadia) {
         this.estadia = estadia;
         if (estadia != null && estadia.getReserva() != this) {
             estadia.setReserva(this);

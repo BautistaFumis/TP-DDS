@@ -10,7 +10,7 @@ public class ReservaBusquedaDTO {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
 
-    // Getters y Setters
+
     public Long getIdReserva() { return idReserva; }
     public void setIdReserva(Long idReserva) { this.idReserva = idReserva; }
     public String getNombre() { return nombre; }

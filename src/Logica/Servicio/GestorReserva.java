@@ -66,7 +66,6 @@ public class GestorReserva {
         }
     }
 
-    // --- NUEVO: CU06 Cancelar Reserva ---
 
     public List<ReservaBusquedaDTO> buscarReservas(String nombre, String apellido) {
         List<Reserva> reservas = reservaRepository.buscarPorNombreYApellido(nombre, apellido);
@@ -93,10 +92,8 @@ public class GestorReserva {
             Reserva reserva = reservaRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
-            // Cambiamos estado de la reserva
             reserva.setEstado(EstadoReserva.CANCELADA);
 
-            // Liberamos la estadía asociada (o la eliminamos/cancelamos para liberar fechas)
             if (reserva.getEstadia() != null) {
                 Estadia estadia = reserva.getEstadia();
                 estadia.setTipoEstado(TipoEstadoEstadia.CANCELADA); // Esto libera la habitación en el buscador

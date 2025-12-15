@@ -9,7 +9,7 @@ public class GenerarFacturaDTO {
     private Double montoTotal;
     private String tipoFactura;
 
-    // Getters y Setters standard...
+
     public Long getIdEstadia() { return idEstadia; }
     public void setIdEstadia(Long idEstadia) { this.idEstadia = idEstadia; }
     public Long getIdResponsablePago() { return idResponsablePago; }

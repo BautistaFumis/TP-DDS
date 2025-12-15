@@ -26,7 +26,6 @@ public class HuespedController {
     @Autowired
     private GestorHuesped gestorHuesped;
 
-    // --- BÚSQUEDA ---
     @GetMapping("/buscar")
     public ResponseEntity<List<HuespedBusquedaDTO>> buscarHuespedes(
             @RequestParam(required = false) String nombre,
@@ -41,7 +40,6 @@ public class HuespedController {
         return ResponseEntity.ok(respuesta);
     }
 
-    // --- OBTENER POR ID (Para llenar el formulario y verificar borrado) ---
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerHuesped(@PathVariable Long id) {
         try {
@@ -60,7 +58,6 @@ public class HuespedController {
         }
     }
 
-    // --- REGISTRAR ---
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarNuevoHuesped(
             @RequestBody HuespedAltaDTO huespedDTO,
@@ -84,7 +81,6 @@ public class HuespedController {
         }
     }
 
-    // --- MODIFICAR (Siempre permitido, salvo errores de validación) ---
     @PutMapping("/{id}")
     public ResponseEntity<?> modificarHuesped(
             @PathVariable Long id,
@@ -105,7 +101,6 @@ public class HuespedController {
         }
     }
 
-    // --- BAJA (Restringida por lógica de negocio si tiene historial) ---
     @DeleteMapping("/{id}")
     public ResponseEntity<?> darDeBajaHuesped(@PathVariable Long id) {
         try {
