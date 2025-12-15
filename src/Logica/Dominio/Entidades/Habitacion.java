@@ -24,7 +24,10 @@ public abstract class Habitacion {
     @OneToMany(mappedBy = "habitacion")
     private List<Estadia> estadias;
 
-    public Habitacion() {}
+    protected Habitacion() {
+        // Constructor requerido por JPA
+    }
+
 
     public Habitacion(String numero, EstadoHabitacion estado, Float costoNoche) {
         this.numero = numero;
