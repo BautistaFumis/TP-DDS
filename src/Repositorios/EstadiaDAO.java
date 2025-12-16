@@ -1,4 +1,4 @@
-package Persistencia.Repositorios;
+package Repositorios;
 
 import Logica.Dominio.Entidades.Estadia;
 import Logica.Dominio.Entidades.Habitacion; // Asegúrate de tener este import
@@ -25,7 +25,7 @@ public interface EstadiaDAO extends JpaRepository<Estadia, Long> {
     List<Estadia> buscarPorRango(@Param("fechaInicio") LocalDate fechaInicio,
                                  @Param("fechaFin") LocalDate fechaFin);
 
-    // NUEVO: Para facturación (buscar estadía ocupada actual por habitación)
+
     @Query("SELECT e FROM Estadia e WHERE e.habitacion.numero = :numeroHabitacion AND e.tipoEstado = 'ACTIVA'")
     Optional<Estadia> findEstadiaActivaPorHabitacion(@Param("numeroHabitacion") String numeroHabitacion);
 }

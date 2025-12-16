@@ -1,0 +1,437 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' Enumeración
+
+enum  TipoServicio{
+  LAVADO_PLANCHADO
+  SAUNA
+  BAR
+}
+
+enum EstadoFactura{
+  VIGENTE
+  CANCELADA
+}
+
+enum EstadoReserva{
+  RESERVADA
+  CANCELADA
+}
+
+enum EstadoEstadia{
+  ACTIVA
+  CERRADA
+}
+
+enum EstadoHabitacion{
+  OCUPADA
+  LIBRE
+}
+
+enum TipoFactura{
+  A
+  B
+}
+
+enum TipoMoneda{
+  EURO
+  DOLAR
+  PESO
+}
+
+enum TipoCheque{
+  PROPIO
+  TERCERO
+}
+
+' Clases
+class PersonaFisica {
+  +huesped: huesped
+}
+
+class Efectivo {
+  +tipoMoneda: TipoMoneda
+}
+
+class TarjetaCredito {
+}
+class TarjetaDebito{
+}
+class Cheque {
+  +tipo: TipoCheque
+}
+
+
+class Huesped {
+  +nombre: String
+  +apellido: String
+  +email: String
+  +tipoDocumento: String
+  +documento: String
+  +telefono: String
+  +direccion: Direccion
+}
+
+class Direccion{
+  +pais: String
+  +provincia: String
+  +localidad: String
+  +codigoPostal: Int
+  +calle: String
+  +numero: Int
+  +departamento: String
+  +piso: Int
+}
+
+class PersonaJuridica {
+  +nombreEmpresa: String
+  +razonSocial: String
+  +direccion: DireccionDTO
+  +telefono: Int
+  +cuit: String 
+}
+
+class Habitacion {
+  +estado: EstadoHabitacion
+  +costo_noche: Float
+}
+
+class IndividualEstandar {
+  +cant_camas_individuales:Int
+}
+class DobleEstandar {
+  +cant_camas_dobles:Int
+  +cant_camas_individuales:Int
+}
+class DobleSuperior {
+  +cant_camas_dobles:Int
+  +cant_camas_individuales:Int
+  +cant_camas_king_size:Int
+}
+class SuperiorFamilyPlan {
+  +cant_camas_dobles:Int
+  +cant_camas_individuales:Int
+}
+class SuiteDoble {
+  +cant_camas_dobles:Int
+  +cant_camas_individuales:Int
+}
+
+class Servicio {
+  +costo_servicio: Float
+}
+
+class ResponsableDePago {
+  
+}
+
+class Estadia {
+  +fechaCheckin: Date
+  +fechaCheckout: Date
+  +huespedes: List<Huesped>
+  +estado: EstadoEstadia
+  +reserva: Reserva
+}
+
+class Factura {
+  +numeroFactura: String
+  +fechaEmision: Date
+  +tipoFactura: TipoFactura
+  +cuit: String
+  +montoTotal: Float
+  +estado: EstadoFactura
+  +descuento: Float
+}
+
+class Reserva {
+  +nombre: String
+  +apellido: String
+  +telefono: String
+  +codigoReserva: String
+  +fechaInicio: Date
+  +fechaFin: Date
+  +fechaReserva: Date
+  +estado: EstadoReserva
+  +responsableDelPago: ResponsablePago
+}
+
+class NotaDeCredito {
+  +numero: String
+  +fecha: Date
+  +montoTotal: Float
+}
+
+class Pago {
+  +monto: Float
+}
+
+class MedioDePago {
+}
+
+class Usuario {
+  +id: String
+  +password: String
+}
+
+'DTO
+
+
+class ServicioDTO {
+  +costo_servicio: Float
+}
+
+class DireccionDTO{
+  +pais: String
+  +provincia: String
+  +localidad: String
+  +codigoPostal: Int
+  +calle: String
+  +numero: Int
+  +departamento: String
+  +piso: Int
+}
+
+class PersonaJuridicaDTO{
+  +nombreEmpresa: String
+  +razonSocial: String
+  +direccion: DireccionDTO
+  +telefono: String
+  +cuit: String 
+}
+class HuespedDTO {
+  +nombre: String
+  +apellido: String
+  +email: String
+  +tipoDocumento: String
+  +documento: Int
+  +telefono: Int
+}
+
+class HabitacionDTO {
+  +estado: EstadoHabitacion
+  +cant_habitaciones: Int
+  +costo_noche: Float
+  +cant_camas_individuales: Int
+  +cant_camas_dobles: Int
+  +cant_camas_king_size: Int
+}
+
+class EstadiaDTO {
+  +fechaCheckin: Date
+  +fechaCheckout: Date
+  +huespedes: List<Huesped>
+  +estado: EstadoEstadia
+  +reserva: Reserva
+}
+class ReservaDTO {
+  +codigoReserva: String
+  +fechaInicio: Date
+  +fechaFin: Date
+  +fechaReserva: Date
+  +estado: EstadoReserva
+  +responsableDelPago: ResponsablePago
+}
+
+class PagoDTO {
+  +monto: Float
+}
+class UsuarioDTO {
+  +id: String
+  +password: String
+}
+
+class FacturaDTO {
+  +numeroFactura: String
+  +fechaEmision: Date
+  +tipoFactura: TipoFactura
+  +cuit: String
+  +montoTotal: Int
+  +estado: EstadoFactura
+  +descuento: Int
+}
+
+class NotaDeCreditoDTO {
+  +numero: String
+  +fecha: Date
+  +montoTotal: Float
+}
+
+' DAO
+class DireccionDAO{
+  +darAltaDireccion
+  +darBajaDireccion
+  +modificarDireccion
+}
+class ResponsableDePagoDAO{
+  +darAltaResponsablePago
+  +darBajaResponsablePago
+  +modificarResponsablePago
+}
+class NotaDeCreditoDAO {
+  +modificarNotaDeCredicto()
+  +crearNotaDeCredicto()
+  +eliminarNotaDeCredicto()
+}
+
+class ServicioDAO {
+  +modificarServicio()
+  +darAltaServicio()
+  +darBajaServicio()
+}
+
+class HuespedDAO {
+  +buscarHuesped()
+  +modificarHuesped()
+  +bajaHuesped()
+  +altaHuesped()
+}
+
+class ReservaDAO {
+  +modificarReserva()
+  +darBajaReserva()
+  +darAltaReserva()
+}
+
+class EstadiaDAO{
+  +darAltaEstadia()
+  +darBajaEstadia()
+  +modificarEstadia()
+}
+
+class PagoDAO {
+  +darAltaResponsablePago()
+  +darBajaResponsablePago()
+  +modificarResponsablePago()
+}
+
+class HabitacionDAO {
+  +modificarHabitacion()
+  +darAltaHabitacion()
+  +darBajaHabitacion()
+}
+
+class FacturaDAO {
+  +modificarFactura()
+  +darAltaFactura()
+  +darBajaFactura()
+}
+
+class UsuarioDAO {
+  +modificarUsuario()
+  +darAltaUsuario()
+  +darBajaUsuario()
+}
+
+
+' Gestores (controladores)
+class GestorHuesped {
+}
+
+class GestorReserva {
+  +reservarHabitacion()
+  +consultarReserva()
+  +listarReserva()
+}
+
+class GestorEstadia{
+  +darAltaEstadia()
+  +darBajaEstadia()
+  +modificarEstadia()
+}
+
+class GestorPago {
+  +buscarResponsablePago()
+  +listarPagos()
+  +listarCheques()
+  +ingresarPago()
+}
+
+class GestorHabitacion {
+  +ocuparHabitacion()
+  +mostrarEstado()
+}
+
+class GestorFactura {
+
+}
+
+class GestorUsuario {
+  +autenticar(String id, String password)
+
+}
+  
+' Herencias
+ResponsableDePago <|-- PersonaFisica
+ResponsableDePago <|-- PersonaJuridica
+
+Habitacion <|-- IndividualEstandar
+Habitacion <|-- DobleEstandar
+Habitacion <|-- DobleSuperior
+Habitacion <|-- SuperiorFamilyPlan
+Habitacion <|-- SuiteDoble
+MedioDePago  <|-- Efectivo
+MedioDePago  <|-- TarjetaDebito
+MedioDePago  <|-- TarjetaCredito
+MedioDePago  <|-- Cheque
+
+' Composición
+Estadia "0..1" *-- "0..N" Servicio
+
+' Asociaciones
+Factura "1..N" -- "1..1" Estadia
+Estadia "0..1" -- "0..1" Reserva
+Habitacion "0..1" -- "0..1" Estadia
+Factura "1..1" -- "0..N" Pago
+Factura "1..N" -- "0..N" NotaDeCredito
+Factura "0..N" -- "1..1" ResponsableDePago
+Huesped "0..N" -- "0..N" Estadia
+MedioDePago "1..N" -- "1..1" Pago
+
+' Dependencias (líneas punteadas con punta sin relleno)
+GestorHuesped ..> Huesped
+GestorReserva ..> Reserva
+GestorPago ..> Pago
+GestorHabitacion ..> Habitacion
+GestorEstadia ..> Estadia
+GestorEstadia ..> Servicio
+GestorFactura ..> Factura
+GestorUsuario ..> Usuario
+GestorPago ..> ResponsableDePago
+GestorFactura ..> NotaDeCredito
+
+GestorFactura ..> NotaDeCreditoDAO
+GestorReserva ..> ReservaDAO
+GestorEstadia ..> EstadiaDAO
+GestorFactura ..> FacturaDAO
+GestorUsuario ..> UsuarioDAO
+GestorHabitacion ..> HabitacionDAO
+GestorPago ..> PagoDAO
+GestorPago ..> PersonaJuridica
+GestorPago ..> ResponsableDePagoDAO
+GestorEstadia ..> ServicioDAO
+GestorHuesped ..> HuespedDAO
+
+
+NotaDeCreditoDAO ..> NotaDeCreditoDTO
+ResponsableDePagoDAO ..> PersonaJuridicaDTO
+ResponsableDePagoDAO ..> DireccionDTO
+
+ReservaDAO ..> ReservaDTO
+EstadiaDAO ..> EstadiaDTO
+FacturaDAO ..> FacturaDTO
+UsuarioDAO ..> UsuarioDTO
+HabitacionDAO ..> HabitacionDTO
+PagoDAO ..> PagoDTO
+ServicioDAO ..> ServicioDTO
+
+PersonaFisica --> Huesped
+Huesped --> Direccion
+HuespedDTO --> DireccionDTO
+PersonaJuridicaDTO --> DireccionDTO
+EstadiaDTO --> ServicioDTO
+
+GestorHuesped ..> DireccionDAO
+GestorPago ..> DireccionDAO
+
+@enduml

@@ -1,4 +1,4 @@
-package Logica.Servicio;
+package Tests;
 
 import DTO.CrearOcupacionDTO;
 import Logica.Dominio.Entidades.Estadia;
@@ -7,9 +7,10 @@ import Logica.Dominio.Entidades.Huesped;
 import Logica.Dominio.Entidades.IndividualEstandar;
 import Logica.Dominio.Enum.EstadoHabitacion;
 import Logica.Dominio.Enum.TipoEstadoEstadia;
-import Persistencia.Repositorios.EstadiaDAO;
-import Persistencia.Repositorios.HabitacionDAO;
-import Persistencia.Repositorios.HuespedDAO;
+import Logica.Servicio.GestorEstadia;
+import Repositorios.EstadiaDAO;
+import Repositorios.HabitacionDAO;
+import Repositorios.HuespedDAO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,9 +66,8 @@ class GestorEstadiaTest {
         huesped.setId(1L);
     }
 
-    // -------------------------------
     // CASO 1: Ocupación correcta
-    // -------------------------------
+
     @Test
     void registrarOcupacion_ok() {
         when(habitacionRepository.findById(1L)).thenReturn(Optional.of(habitacion));
@@ -79,9 +79,8 @@ class GestorEstadiaTest {
         verify(estadiaRepository, times(1)).save(any(Estadia.class));
     }
 
-    // ----------------------------------------
     // CASO 2: Habitación inexistente
-    // ----------------------------------------
+
     @Test
     void registrarOcupacion_habitacionNoExiste() {
         when(habitacionRepository.findById(1L)).thenReturn(Optional.empty());
@@ -92,9 +91,7 @@ class GestorEstadiaTest {
         assertEquals("Habitación no encontrada", ex.getMessage());
     }
 
-    // ----------------------------------------
     // CASO 3: No hay huéspedes
-    // ----------------------------------------
     @Test
     void registrarOcupacion_sinHuespedes() {
         when(habitacionRepository.findById(1L)).thenReturn(Optional.of(habitacion));
@@ -109,9 +106,8 @@ class GestorEstadiaTest {
         );
     }
 
-    // -------------------------------------------------
     // CASO 4: Habitación ya ACTIVA (ocupada)
-    // -------------------------------------------------
+
     @Test
     void registrarOcupacion_habitacionOcupadaActiva() {
         Estadia estadiaActiva = new Estadia();
@@ -128,9 +124,8 @@ class GestorEstadiaTest {
         assertTrue(ex.getMessage().contains("OCUPADA"));
     }
 
-    // -------------------------------------------------
     // CASO 5: Reserva existente con override
-    // -------------------------------------------------
+
     @Test
     void registrarOcupacion_reservaConOverride() {
         dto.setEsOverrideReserva(true);

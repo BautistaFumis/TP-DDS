@@ -1,4 +1,4 @@
-package Persistencia.Repositorios;
+package Repositorios;
 
 import Logica.Dominio.Entidades.NotaDeCredito;
 

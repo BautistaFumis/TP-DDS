@@ -1,12 +1,13 @@
-package Logica.Servicio;
+package Tests;
 
 import DTO.DatosFacturacionDTO;
 import DTO.GenerarFacturaDTO;
 import Logica.Dominio.Entidades.Estadia;
 import Logica.Dominio.Entidades.Habitacion;
 import Logica.Dominio.Enum.TipoEstadoEstadia;
-import Persistencia.Repositorios.EstadiaDAO;
-import Persistencia.Repositorios.HuespedDAO;
+import Logica.Servicio.GestorFactura;
+import Repositorios.EstadiaDAO;
+import Repositorios.HuespedDAO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,10 +32,10 @@ class GestorFacturaTest {
     @InjectMocks
     private GestorFactura gestorFactura;
 
-    // ✅ TEST 1: Obtener datos de facturación correctamente
+    //EST 1: Obtener datos de facturación correctamente
     @Test
     void obtenerDatosFacturacion_estadiaActiva_devuelveDTO() {
-        // Arrange
+
         Habitacion habitacion = mock(Habitacion.class);
         when(habitacion.getCostoNoche()).thenReturn(1000f);
 
@@ -59,7 +60,7 @@ class GestorFacturaTest {
                 .findEstadiaActivaPorHabitacion("101");
     }
 
-    // ❌ TEST 2: No hay estadía activa → excepción
+    //TEST 2: No hay estadía activa → excepción
     @Test
     void obtenerDatosFacturacion_sinEstadia_lanzaExcepcion() {
         // Arrange
@@ -75,7 +76,7 @@ class GestorFacturaTest {
         assertTrue(ex.getMessage().contains("No hay una estadía activa"));
     }
 
-    // ✅ TEST 3: Generar factura cierra la estadía
+    //TEST 3: Generar factura cierra la estadía
     @Test
     void generarFactura_cierraEstadia() {
         // Arrange
@@ -97,7 +98,7 @@ class GestorFacturaTest {
         verify(estadiaDAO, times(1)).save(estadia);
     }
 
-    // ❌ TEST 4: Estadía inexistente al generar factura
+    //TEST 4: Estadía inexistente al generar factura
     @Test
     void generarFactura_estadiaInexistente_lanzaExcepcion() {
         // Arrange

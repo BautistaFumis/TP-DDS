@@ -4,7 +4,7 @@ import Logica.Dominio.Entidades.Usuario;
 import Logica.Excepciones.CredencialesInvalidasException;
 
 // <-- NUEVO: Importamos el Repositorio de Spring Data
-import Persistencia.Repositorios.UsuarioDAO;
+import Repositorios.UsuarioDAO;
 // <-- ADIÓS: Ya no usamos DAOFactory ni UsuarioDAO
 // import Persistencia.DAOFactory;
 // import Persistencia.Repositorios.UsuarioDAO;

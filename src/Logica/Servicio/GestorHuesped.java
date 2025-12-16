@@ -8,8 +8,8 @@ import Logica.Excepciones.CamposObligatoriosException;
 import Logica.Excepciones.DocumentoDuplicadoException;
 import Logica.Excepciones.EntidadNoEncontradaException;
 import Logica.Excepciones.OperacionNoPermitidaException;
-import Persistencia.Repositorios.EstadiaDAO;
-import Persistencia.Repositorios.HuespedDAO;
+import Repositorios.EstadiaDAO;
+import Repositorios.HuespedDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -4,18 +4,15 @@ import DTO.DatosFacturacionDTO;
 import DTO.GenerarFacturaDTO;
 import DTO.ItemFacturableDTO;
 import Logica.Dominio.Entidades.*;
-import Logica.Dominio.Enum.EstadoFactura;
-import Logica.Dominio.Enum.TipoFactura;
 import Logica.Dominio.Enum.TipoEstadoEstadia;
-import Persistencia.Repositorios.EstadiaDAO;
-import Persistencia.Repositorios.HuespedDAO;
+import Repositorios.EstadiaDAO;
+import Repositorios.HuespedDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service

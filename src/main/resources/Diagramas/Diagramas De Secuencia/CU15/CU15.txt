@@ -1,0 +1,147 @@
+@startuml
+actor Conserje
+participant "UI_OcuparHabitacion" as UI
+participant "GestorHabitacion" as Gestor
+participant "UI_BuscarHuesped" as UIBuscar
+participant "GestorHuesped" as GestorH
+participant  "Estadia"
+participant  "EstadiaDAO" as EDAO     
+participant  "GestorEstadia" as GestorE
+
+' --- Inicio del caso de uso ---
+Conserje -> UI : Solicitar ocupar habitación en rango de fechas
+
+loop (2–11.B) Mientras el conserje quiera cargar habitación
+   UI -> UI : Ejecutar CU5
+   opt La grilla esta vacia
+        UI -> Conserje: Mostrar mensaje "No existe habitaciones disponibles", CU termina
+   end 
+    ' --- Selección de habitación ---
+    loop Selección de habitación
+        UI -> Conserje : Mostrar grilla con estado de habitaciones
+        Conserje -> UI : Selecciona un día Inicio y un día Fin
+
+        alt 3.B - Estado distinto a “Disponible” o “Reservada”
+            UI -> Conserje : Mostrar mensaje "La habitación no está disponible"
+            ' Repite el loop
+
+        else 3.C - Fechas incluyen días no “Disponibles” o “Reservados”
+            UI -> Conserje : Mostrar mensaje "Fechas inválidas en la selección"
+            ' Repite el loop
+
+        else Fechas disponibles 
+            UI ->UI :pintarHabitacion("OCUPADA")
+        else 3.D - Días reservados por otro huésped
+            UI -> Conserje : Mostrar mensaje con días y huésped que reservó
+            Conserje --> UI :
+            UI -> Conserje : Mostrar opciones “OCUPAR IGUAL” / “VOLVER”
+
+            alt El actor elige “OCUPAR IGUAL”
+                Conserje -> UI : El actor preciona OCUPAR IGUAL 
+                                UI --> UI : pintarHabitacion("OCUPADA")
+         deactivate Gestor
+    
+      
+            else El actor elige “VOLVER”
+              Conserje -> UI : El actor preciona VOLVER
+              ' Repite el loop
+            end
+        end
+    end
+
+    ' --- Ocupación de habitación ---
+      
+         
+          activate UI
+    UI -> Conserje : Mostrar mensaje "Presione una tecla para continuar"
+         activate   Conserje
+    Conserje -> UI : Presionar tecla para continuar
+    UI -> Conserje : abrirPantallaBusquedaHuesped()
+         deactivate   UI
+         deactivate   Conserje
+    ' --- Carga de huéspedes y acompañantes ---
+    loop (6–11.B) Mientras el Conserje quiera seguir cargando huéspedes o listaHuespedesesVacia 
+        Conserje -> UIBuscar : Ingresar criterios de búsqueda o no y presiona ACEPTAR
+        UIBuscar -> GestorH : buscarHuespedes
+        activate GestorH
+        alt : No ingresa ningun criterio  
+           GestorH -> HuespedDAO : buscarHuespedes 
+           activate HuespedDAO
+        else : Ingresa uno o mas criterios
+           GestorH -> HuespedDAO : buscarHuesped(criterios)
+           
+            
+        end
+            HuespedDAO -> GestorH : listaHuespedes
+               deactivate HuespedDAO
+            opt Lista vacia
+                GestorH -> UIBuscar : Erorr lista vacia
+                deactivate GestorH
+                 activate UIBuscar
+                UIBuscar -> Conserje : Mostrar mensaje "Error no existe huesped con ese criterio"
+                 
+  
+        end
+        ' --- Búsqueda y selección de huésped ---
+        
+            UIBuscar -> Conserje : Mostrar listaHuesped
+            deactivate UIBuscar 
+            alt 8.A - Actor presiona “ACEPTAR” sin seleccionar huésped
+                 Conserje ->UIBuscar :Actor presiona “ACEPTAR” sin seleccionar huésped
+                 UIBuscar -> Conserje : Mostrar advertencia "Debe seleccionar un huésped"
+                 deactivate UIBuscar  
+            else 9 - Actor presiona “ACEPTAR”
+                Conserje -> UI : Seleccionar huésped principal / acompañantes y preciona ACEPTAR 
+                activate UI
+                UI -> Conserje : mostrarMensaje “SEGUIR CARGANDO”, “CARGAR OTRA HABITACIÓN”, “SALIR”
+                  deactivate GestorE
+                  
+            opt 11.A - Actor presiona “SEGUIR CARGANDO”
+            Conserje -> UI : El actor presiona SEGUIR CARGANDO 
+            
+            ' (11.A.1) El sistema vuelve al punto 6 del flujo principal
+           end
+
+
+    end
+
+            end
+
+        ' --- Opciones finales ---
+        
+
+       
+        alt 11.B - Actor presiona “CARGAR OTRA HABITACIÓN”
+             Conserje -> UI : El actor presiona CARGAR OTRA HABITACIÓN  
+            '(11.B.1) El sistema vuelve al punto 2 del flujo principal
+            
+        else 11 - Actor presiona “SALIR”
+            ' El caso de uso finaliza
+            Conserje -> UI :Actor presiona “SALIR”
+           
+        end
+                UI -> GestorE : crearEstadia(habitacion, listaHuespedes)
+                  activate GestorE
+                  deactivate UIBuscar
+                   GestorE -> Estadia : create;
+                   activate Estadia
+                   GestorE -> Estadia : SetHHuespedes(ListaHuesped)
+                   Estadia --> GestorE :
+                   GestorE -> Estadia : SetfechaCheckin()
+                   Estadia --> GestorE :
+                   GestorE -> Estadia : SetfechaCheckout() 
+                   Estadia --> GestorE :
+                   GestorE -> Estadia : SetEstado() 
+                   Estadia -> GestorE : return estadia
+                   deactivate Estadia
+                   GestorE -> EDAO : DardeAltaEstadia
+                   activate EDAO
+                   EDAO -> GestorE : Confirmacion
+                  deactivate EDAO
+                   GestorE --> UI : Confirmacion
+                   deactivate GestorE
+                   UI -> Conserje : mostrar mensaje "Estadia cargada con exito"
+   end
+
+deactivate UI
+@enduml

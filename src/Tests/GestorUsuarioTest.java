@@ -1,8 +1,9 @@
-package Logica.Servicio;
+package Tests;
 
 import Logica.Dominio.Entidades.Usuario;
 import Logica.Excepciones.CredencialesInvalidasException;
-import Persistencia.Repositorios.UsuarioDAO;
+import Logica.Servicio.GestorUsuario;
+import Repositorios.UsuarioDAO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +23,7 @@ class GestorUsuarioTest {
     @InjectMocks
     private GestorUsuario gestorUsuario;
 
-    // ✅ TEST 1: Usuario y contraseña correctos → NO lanza excepción
+    //TEST 1: Usuario y contraseña correctos → NO lanza excepción
     @Test
     void autenticar_usuarioValido_noLanzaExcepcion() {
         // Arrange
@@ -39,7 +40,7 @@ class GestorUsuarioTest {
         verify(usuarioDAO, times(1)).findById("Conserje");
     }
 
-    // ❌ TEST 2: Usuario no existe → lanza excepción
+    //TEST 2: Usuario no existe → lanza excepción
     @Test
     void autenticar_usuarioNoExiste_lanzaExcepcion() {
         // Arrange
@@ -54,7 +55,7 @@ class GestorUsuarioTest {
         verify(usuarioDAO, times(1)).findById("Admi");
     }
 
-    // ❌ TEST 3: Contraseña incorrecta → lanza excepción
+    //TEST 3: Contraseña incorrecta → lanza excepción
     @Test
     void autenticar_passwordIncorrecta_lanzaExcepcion() {
         // Arrange

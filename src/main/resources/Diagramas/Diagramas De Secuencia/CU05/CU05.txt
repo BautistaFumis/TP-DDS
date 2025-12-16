@@ -1,0 +1,60 @@
+@startuml
+actor Conserje
+participant MostrarEstadoHabitaciones as UI
+participant GestorHabitaciones as Gestor
+participant DAO as "HabitacionDAO"
+participant Habitacion 
+participant HabitacionDTO as DTO
+
+' --- Inicio del caso de uso ---
+Conserje -> UI : Solicitar estado de habitaciones
+activate UI
+UI -> Conserje : Mostrar campos "Desde" y "Hasta"
+
+' --- Validación Fechas ---
+loop [Mientras fecha inválida]
+  Conserje -> UI : Ingresa "Fecha desde"
+  UI -> UI : validarFechas(desde)
+ 
+
+  alt Alguna fecha inválida
+  
+    UI -> Conserje : Mostrar "FECHA DESDE INVALIDA" y foco en campo
+  end
+
+  Conserje -> UI : Ingresa "Fecha hasta"
+  UI -> UI : validarFechas(hasta)
+  
+  alt Alguna fecha inválida
+    UI -> Conserje : Mostrar "FECHA HASTA INVALIDA" y foco en campo
+  end
+  deactivate UI
+end
+
+' --- Consulta de estados ---
+Conserje -> UI : Presiona botón "CONSULTAR"
+UI -> Gestor : consultarEstadoHabitaciones(desde,hasta)
+activate Gestor
+Gestor -> DAO : buscarEstadosPorRangoFecha(desde,hasta)
+activate DAO
+DAO --> Gestor : ListaHabitacionesDTO
+deactivate DAO
+
+' --- Loop de creación de grilla de estado por habitación y día ---
+loop [Para cada habitación en la lista]
+  Gestor -> Habitacion : new()
+  activate Habitacion
+  Gestor -> Habitacion : setNumero(DTO.numero)
+  Gestor -> Habitacion : setCostoNoche(DTO.costoNoche)
+  Gestor -> Gestor : GenerarColumnaGrillaEstadoHabitacion(habitacion, FechaDesde, FechaHasta)
+  
+  Habitacion --> Gestor 
+  deactivate Habitacion
+end
+
+Gestor --> UI : GrillaEstadoHabitaciones
+deactivate Gestor
+
+UI -> Conserje : Mostrar grilla en pantalla
+deactivate UI
+@enduml

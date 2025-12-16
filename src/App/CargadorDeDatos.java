@@ -4,7 +4,7 @@ import Logica.Dominio.Entidades.*;
 import Logica.Dominio.Enum.EstadoHabitacion;
 import Logica.Dominio.Enum.EstadoReserva;
 import Logica.Dominio.Enum.TipoEstadoEstadia;
-import Persistencia.Repositorios.*;
+import Repositorios.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;

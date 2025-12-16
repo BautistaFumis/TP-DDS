@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"Logica.Servicio", "App"})
-@EnableJpaRepositories(basePackages = {"Persistencia.Repositorios"})
+@EnableJpaRepositories(basePackages = {"Repositorios"})
 @EntityScan(basePackages = {"Logica.Dominio.Entidades" , "Logica.Dominio.State" })
 @Order(2)
 public class Main implements CommandLineRunner {

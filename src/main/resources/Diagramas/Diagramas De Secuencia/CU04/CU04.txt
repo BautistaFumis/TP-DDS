@@ -1,0 +1,99 @@
+@startuml
+actor Conserje
+participant ReservarHabitacion as UI
+participant GestorReserva as Gestor
+participant ReservaDAO as ResDAO
+participant Reserva as Reserva
+
+' --- Inicio del caso de uso ---
+Conserje -> UI : Ingresar fechas "Inicio" y "Fin", Presiona botón "CONSULTAR"
+activate UI
+UI -> UI : navegar al caso de uso 5
+
+alt Grilla vacía (sin habitaciones disponibles)
+  UI -> UI : Mostrar mensaje "No hay habitaciones disponibles en el rango seleccionado"
+  UI -> Conserje : Mostrar aviso y finalizar CU
+  deactivate UI
+
+else Grilla con habitaciones disponibles
+  UI -> Conserje : Mostrar grilla de habitaciones
+
+  ' --- Selección de habitaciones ---
+  loop [Mientras el conserje desee seleccionar habitaciones]
+    Conserje -> UI : Seleccionar habitación en grilla
+    activate UI
+    UI -> UI : validarDisponibilidad(habitacionSeleccionada)
+    
+    opt Habitación no disponible
+      UI -> Conserje : Mostrar mensaje "No disponible"
+    end
+
+    UI -> Conserje : Pintar habitación como "RESERVADA"
+    deactivate UI
+  end
+
+  Conserje -> UI : Reservar
+
+  ' --- Creación de la lista de reservas ---
+  activate UI
+  UI -> UI : prepararDatosLista(tipo, ingreso, egreso)
+  
+  UI -> Gestor : <<create>> nuevaLista()
+  activate Gestor
+  UI -> Gestor : cargarDatos(tipo, ingreso, egreso)
+  Gestor --> UI : return lista creada
+  deactivate Gestor
+  deactivate UI
+
+  ' --- Mostrar listado de reserva ---
+  UI -> Conserje : Mostrar datos (tipo, ingreso, egreso) y opciones ACEPTAR / RECHAZAR 
+
+  opt Conserje presiona RECHAZAR
+    UI -> Conserje : Se deshacen operaciones en grilla y Finaliza el CU (cancelado)
+  end
+
+  ' --- Loop de carga de datos ---
+  loop [Mientras no confirme datos correctos]
+    UI -> Conserje : Solicita datos (Apellido, Nombre, Teléfono)
+    Conserje -> UI : Completa datos
+    activate UI
+    UI -> UI : validarDatosReserva(datosReserva)
+    alt algún campo inválido
+      UI -> Conserje : Mostrar cartel de Error, con el Foco en el campo erróneo
+    end
+    deactivate UI
+  end
+
+  UI -> Gestor : procesarReservas(DTO)
+  ' --- Creación de reservas por habitación ---
+  activate Gestor
+  loop [Para cada habitación seleccionada]
+    Gestor -> Reserva : <<create>> new()
+    activate Reserva
+    Gestor -> Reserva : setCodigo(DTO.codigo)
+    Gestor -> Reserva : setFechas(DTO.desde, DTO.hasta)
+    Gestor -> Reserva : setHuesped(DTO.datosReserva)
+    Gestor -> Reserva : setEstado("RESERVADA")
+    Gestor -> Reserva : setHabitacion(habitacionSeleccionada)
+    Gestor -> Reserva : setNombre(DTO.Nombre)
+    Gestor -> Reserva : setApellido(DTO.Apellido)
+    Gestor -> Reserva : setTelefono(DTO.Telefono)
+    Reserva --> Gestor : return reserva
+    deactivate Reserva
+
+    Gestor -> ResDAO : darAltaReserva(reserva)
+    activate ResDAO
+    ResDAO --> Gestor : confirmación
+    deactivate ResDAO
+  end
+  deactivate Gestor
+
+  Gestor --> UI : Reservas registradas
+
+  ' --- Finalización del caso de uso ---
+  activate UI
+  UI -> Conserje : Mostrar "Reserva confirmada"
+  UI -> Conserje : Fin del CU (éxito)
+  deactivate UI
+end
+@enduml

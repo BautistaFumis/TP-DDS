@@ -1,0 +1,100 @@
+@startuml
+
+actor Conserje
+
+participant "UI_BuscarHuesped" as UI
+
+participant "GestorHuesped" as Gestor
+
+participant "Huesped" as Hues
+
+participant "HuespedDAO" as DAO
+
+participant Direccion as dir
+
+
+Conserje -> UI : Solicitar búsqueda de huésped
+
+activate UI
+
+UI -> Conserje : Mostrar pantalla de búsqueda
+
+
+
+Conserje -> UI : Ingresar criterios de búsqueda o no y presiona ACEPTAR
+        UI -> Gestor : buscarHuespedes
+        activate Gestor
+        alt : No ingresa ningun criterio  
+           Gestor -> DAO : buscarHuespedes 
+           activate DAO
+        else : Ingresa uno o mas criterios
+           Gestor -> DAO : buscarHuesped(criterios)
+           
+            
+        end
+            DAO -> Gestor : listaHuespedes
+               deactivate DAO
+            opt Lista vacia
+                Gestor -> UI : Erorr lista vacia
+                deactivate Gestor
+                
+                UI -> Conserje : Mostrar mensaje "Error no existe huesped con ese criterio"
+                Conserje -> Conserje :  Ejecutar CU09 "Dar Alta de Huésped"
+  
+        end
+        ' --- Búsqueda y selección de huésped ---
+            Gestor -> UI : Mostrar listaHuesped
+            UI -> Conserje : Mostrar listaHuesped
+            deactivate UI 
+
+  Conserje -> UI : Seleccionar huésped y presionar "Siguiente"
+
+  opt No seleccionó ningún huésped
+  
+  UI -> Conserje : Ejecutar CU09 "Dar Alta de Huésped"
+
+end
+
+  UI -> Gestor : seleccionarHuesped(huesped)
+  
+  deactivate UI
+  
+  Gestor-> Hues: new()
+
+activate Hues
+
+Gestor -> Hues: setNombre(DTO.nombre)
+
+Gestor -> Hues: setApellido(DTO.apellido)
+
+Gestor -> Hues: setEmail(DTO.email)
+
+Gestor -> Hues: settipoDocumento(DTO.tipoDocumento)
+
+Gestor -> Hues: setDocumento(DTO.documento)
+
+Gestor -> Hues: setTelefono(DTO.telefono)
+
+Hues -> Gestor : return Huesped
+
+deactivate Hues
+
+        Gestor -> dir : new()
+        activate dir
+        Gestor -> dir : set.pais(DTO.pais)
+        Gestor -> dir : set.provincia(DTO.provincia)
+        Gestor -> dir : set.localidad(DTO.localidad)
+        Gestor -> dir : set.codigoPostal(DTO.codigoPostal)
+        Gestor -> dir : set.calle(DTO.calle)
+        Gestor -> dir : set.numero(DTO.numero)
+        Gestor -> dir : set.departamento(DTO.departamento)
+        Gestor -> dir : set.piso(DTO.piso)
+        dir -> Gestor : Direccion
+        deactivate dir
+
+  Gestor -> UI : Ejecutar CU10 "Modificar Huésped"
+  UI -> Conserje : Ejecutar CU10 "Modificar Huésped"
+
+
+
+@enduml

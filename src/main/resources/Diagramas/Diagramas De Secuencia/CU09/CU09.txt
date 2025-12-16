@@ -1,0 +1,156 @@
+@startuml
+actor Conserje
+participant DardeAltaHuesped as UI
+participant GestorHuesped as Gestor
+participant HuespedDAO as DAO
+participant DireccionDAO as DAOd
+participant Direccion as dir
+participant Huesped as hues
+
+Conserje -> UI : Solicitar alta
+activate UI
+UI -> Conserje : Mostrar formulario en blanco
+
+    ' CORRECCION 2: Segundo loop que engloba todo (condición: usuario corrige)
+    loop [El usuario corrige]
+        
+        ' CORRECCION 1 y 3: Primer loop para validar datos
+        loop [Datos obligatorios faltantes]
+            Conserje -> UI : Ingresa los datos
+            UI -> UI : validarDatosObligatorios(datos)
+            
+            opt Datos obligatorios faltantes
+                UI -> Conserje : Mostrar errores y hacer foco
+            end
+        end 
+        ' Fin del primer loop
+        alt Presiona Cancelar
+    UI -> Conserje : Finaliza el CU 
+else Presiona Siguiente
+        UI -> Gestor : verificarDocumento(tipo,nro)
+        activate Gestor
+        Gestor -> DAO : verificarDocumento(tipo,nro)
+        activate DAO
+        DAO --> Gestor : resultadoVerificacion
+        deactivate DAO
+
+        alt Documento duplicado
+            Gestor -> UI : Aviso duplicado
+            UI -> Conserje : ¡CUIDADO! Ya existe. [Aceptar] / [Corregir]
+            
+            alt Aceptar igualmente
+                Conserje -> UI: Acepta igualmente
+                
+                ' --- BLOQUE DE CREACION (REPLICA 1) ---
+                UI -> Gestor : Crear Huesped
+                
+                
+            Gestor -> dir : new()
+            activate dir
+            Gestor -> dir : set.pais(DTO.pais)
+            Gestor -> dir : set.provincia(DTO.provincia)
+            Gestor -> dir : set.localidad(DTO.localidad)
+            Gestor -> dir : set.calle(DTO.calle)
+            Gestor -> dir : set.numero(DTO.numero)
+            dir -> Gestor : Direccion
+            deactivate dir
+            
+                Gestor -> hues : new()
+                activate hues
+                Gestor -> hues : set.nombre(DTO.nombre)
+                Gestor -> hues : set.apellido(DTO.apellido)
+                Gestor -> hues : set.email(DTO.email)
+                Gestor -> hues : set.tipoDocumento(DTO)
+                Gestor -> hues : set.documento(DTO.documento)
+                Gestor -> hues : set.telefono(DTO.telefono)
+                hues -> Gestor : Huesped
+                deactivate hues
+
+                Gestor -> DAOd : persistirDireccion(direccion)
+                activate DAOd
+                DAOd -> Gestor : confirmación
+                deactivate DAOd
+                
+                Gestor -> hues : setDireccion(Direccion)
+                
+                Gestor -> DAO : persistirHuesped(Huesped)
+                activate DAO
+                DAO -> Gestor : confirmación
+                deactivate DAO
+                
+                Gestor --> UI : Alta exitosa
+                UI -> Conserje : Mensaje "Alta exitosa, ¿cargar otro?"
+
+                ' CORRECCION 4: Manejo de SI/NO completo
+                alt Presiona SI
+                    Conserje -> UI : Presiona botón SI
+                    UI --> Conserje : Redirige a nuevo formulario
+                else Presiona NO
+                    Conserje -> UI : Presiona botón NO
+                    UI --> Conserje : Redirige a Pantalla Principal
+                end
+                ' --- FIN BLOQUE CREACION ---
+
+            else Corregir
+                UI -> Conserje : Volver al formulario (foco en Tipo Doc)
+                ' Al no hacer nada más aqui, el loop "Usuario corrige" vuelve a empezar
+            end
+        
+        else Documento NO Duplicado
+            ' CORRECCION 5: Flujo principal (REPLICA 2 del bloque de creación)
+            
+            UI -> Gestor : Crear Huesped
+            
+                        Gestor -> dir : new()
+            activate dir
+            Gestor -> dir : set.pais(DTO.pais)
+            Gestor -> dir : set.provincia(DTO.provincia)
+            Gestor -> dir : set.localidad(DTO.localidad)
+            Gestor -> dir : set.calle(DTO.calle)
+            Gestor -> dir : set.numero(DTO.numero)
+            dir -> Gestor : Direccion
+            deactivate dir
+
+            Gestor -> hues : new()
+            activate hues
+            Gestor -> hues : set.nombre(DTO.nombre)
+            Gestor -> hues : set.apellido(DTO.apellido)
+            Gestor -> hues : set.email(DTO.email)
+            Gestor -> hues : set.tipoDocumento(DTO)
+            Gestor -> hues : set.documento(DTO.documento)
+            Gestor -> hues : set.telefono(DTO.telefono)
+            hues -> Gestor : Huesped
+            deactivate hues
+
+
+            Gestor -> DAOd : persistirDireccion(direccion)
+            activate DAOd
+            DAOd -> Gestor : confirmación
+            deactivate DAOd
+            
+            Gestor -> hues : setDireccion(Direccion)
+            
+            Gestor -> DAO : persistirHuesped(Huesped)
+            activate DAO
+            DAO -> Gestor : confirmación
+            deactivate DAO
+            
+            Gestor --> UI : Alta exitosa
+            UI -> Conserje : Mensaje "Alta exitosa, ¿cargar otro?"
+
+            ' CORRECCION 4: Manejo de SI/NO completo (Replica)
+            alt Presiona SI
+                Conserje -> UI : Presiona botón SI
+                UI --> Conserje : Redirige a nuevo formulario
+            else Presiona NO
+                Conserje -> UI : Presiona botón NO
+                UI --> Conserje : Redirige a Pantalla Principal
+            end
+        end
+        deactivate Gestor
+    end 
+    ' Fin loop usuario corrige
+end
+
+deactivate UI
+@enduml
