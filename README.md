@@ -8,7 +8,7 @@ Integrantes:
     - Locatelli Cristian
     - Soto Payva Juana
 
-
+ 
 ## Requisitos Previos
 
 * **Java JDK 17** o superior.
