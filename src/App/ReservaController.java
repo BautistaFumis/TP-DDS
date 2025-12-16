@@ -39,6 +39,7 @@ public class ReservaController {
     @PostMapping("/cancelar")
     public ResponseEntity<?> cancelarReservas(@RequestBody List<Long> ids) {
         try {
+
             gestorReserva.cancelarReservas(ids);
             return ResponseEntity.ok("Reservas canceladas correctamente.");
         } catch (Exception e) {
