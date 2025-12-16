@@ -45,4 +45,16 @@ public class ReservaController {
             return ResponseEntity.badRequest().body("Error al cancelar: " + e.getMessage());
         }
     }
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstadoReserva(
+            @PathVariable Long id,
+            @RequestParam String estado
+    ) {
+        return ResponseEntity.ok("Estado de reserva actualizado");
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarReserva(@PathVariable Long id) {
+        return ResponseEntity.ok("Reserva eliminada");
+    }
+
 }
